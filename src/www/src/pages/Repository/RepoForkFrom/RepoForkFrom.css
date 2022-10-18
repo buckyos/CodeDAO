@@ -1,0 +1,13 @@
+.repo-detail-fork-from {
+	margin-left: 20px;
+	font-size: 12px;
+}
+
+.repo-detail-fork-from-link {
+	color: #8cc8ff;
+	cursor: pointer;
+}
+
+.repo-detail-fork-from-link:hover {
+	text-decoration: underline;
+}

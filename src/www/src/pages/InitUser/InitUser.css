@@ -1,0 +1,56 @@
+.init-user-main {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+    flex-direction: column;
+	height: 100%;
+}
+.user-info-setting {
+	height: 54px;
+	line-height: 54px;
+	font-size: 24px;
+	font-family: PingFangSC-Medium, PingFang SC;
+	font-weight: 500;
+	color: rgba(0, 0, 0, 0.85);
+	text-align: center;
+}
+
+.init-repo-content {
+	width: 700px;
+	margin: 20px auto 0 auto;
+}
+
+.owner-reponame {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    margin-bottom: 20px;
+    height: 40px;
+
+}
+
+.owner-reponame.reponame-desc {
+    display: flex;
+    justify-content: left;
+    align-items: flex-start;
+    height: auto;
+}
+
+.owner-reponame>label {
+    width: 150px;
+    text-align: right;
+    box-sizing: border-box;
+    padding-right: 20px;
+}
+
+.owner-reponame .require::before {
+    margin: -.2em 0 0 .2em;
+    content: '*';
+    color: #db2828;
+}
+
+.create-repo-buttons {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+}

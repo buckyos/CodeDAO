@@ -1,0 +1,101 @@
+@font-color: rgb(131, 24, 24);
+
+@container-height: calc(100vh - 64px);
+
+.btn {
+    border: 0;
+    cursor: pointer;
+    user-select: none;
+    &:active,
+    &:focus {
+        outline: 0;
+    }
+}
+
+button {
+    border: 0;
+    cursor: pointer;
+    user-select: none;
+}
+* {
+    padding: 0;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial,
+        Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+    outline: none;
+    /* border: 1px solid #663399; */
+}
+
+textarea.section-container.input {
+    display: none;
+}
+
+.btn {
+    border: 0;
+    cursor: pointer;
+    user-select: none;
+}
+
+button {
+    border: 0;
+    cursor: pointer;
+    user-select: none;
+}
+
+.btn,
+.btn:active,
+.btn:focus {
+    outline: 0;
+}
+
+.ant-tabs > .ant-tabs-nav .ant-tabs-nav-list,
+.ant-tabs > div > .ant-tabs-nav .ant-tabs-nav-list {
+    width: 100vw;
+    padding: 0 80px;
+}
+
+.ant-tabs-tab + .ant-tabs-tab {
+    margin: 0 0 0 50px;
+}
+
+.ant-tabs > .ant-tabs-nav,
+.ant-tabs > div > .ant-tabs-nav {
+    margin-bottom: 24px;
+}
+
+.ant-select {
+    width: 435px;
+}
+
+.ant-radio-checked:after,
+.ant-radio-inner:after {
+    background-color: #00cc99 !important;
+}
+
+.ant-radio-checked .ant-radio-inner,
+.ant-radio:hover .ant-radio-inner {
+    border-color: #00cc99 !important;
+}
+
+.ant-modal-close-x {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+@media screen and (max-width: 1140px) {
+    .header {
+        width: 1140px;
+    }
+
+    .repo-detail-header2 {
+        width: 1140px;
+    }
+}

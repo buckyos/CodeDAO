@@ -1,0 +1,30 @@
+.repo-detail-commi-item {
+    display: flex;
+    justify-content: center;
+    cursor: pointer;
+    margin-right: 33px;
+    line-height: 32px;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.repo-detail-commi-item img {
+    margin-right: 10px;
+}
+
+.repo-detail-commi-item .repo-branch {
+    /* width: 9px; */
+    height: 14px;
+    margin-right: 1px;
+}
+
+.repo-detail-commi-item .repo-tag {
+    width: 14px;
+    height: 14px;
+}
+
+.repo-detail-commi-item dd {
+    margin-bottom: 0;
+    margin-left: 10px;
+}

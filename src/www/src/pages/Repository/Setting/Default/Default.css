@@ -1,0 +1,144 @@
+.container {
+    width: 100%;
+}
+
+.title {
+    font-size: 24px;
+    border-bottom: 1px solid rgb(216, 222, 228);
+    margin-bottom: 20px;
+}
+
+.title h1 {
+    font-size: 24px;
+    font-weight: 500;
+}
+
+.manage-btn {
+    padding-top: 30px;
+}
+
+.setting-btn {
+    border: 0;
+    cursor: pointer;
+    width: 120px;
+    height: 32px;
+    line-height: 32px;
+    background: #00cc99;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: PingFangSC-Regular, PingFang SC;
+    font-weight: 400;
+    color: #ffffff;
+    display: block;
+}
+
+.repo-setting-btn-delete {
+    border: 0;
+    cursor: pointer;
+    width: 120px;
+    height: 32px;
+    line-height: 32px;
+    background: #ff4d4f;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: PingFangSC-Regular, PingFang SC;
+    font-weight: 400;
+    color: #ffffff;
+    margin-top: 30px;
+}
+
+.repo-drop-btn {
+    margin-left: 20px;
+}
+
+.friend-item {
+    padding: 4px 0;
+}
+
+.friend-manage {
+    margin-top: 30px;
+}
+
+.friend-manage-header {
+    padding: 11px 14px;
+    background-color: #f7f7f7;
+    border-radius: 4px 4px 0 0;
+    border: 1px solid #d4d4d5;
+    font-weight: bold;
+}
+
+.friend-manage-item {
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #d4d4d5;
+    border-top: 0;
+}
+
+.friend-id {
+    width: 400px;
+    margin-left: 8px;
+}
+
+.friend-privilege {
+    cursor: pointer;
+    user-select: none;
+    flex: 1;
+    text-align: center;
+    padding: 0 10px;
+}
+
+.friend-delete {
+    padding: 8px 15px;
+    border: 0;
+    cursor: pointer;
+    background: #ff4d4f;
+    border-radius: 4px;
+    min-height: 1em;
+    font-size: 12px;
+    line-height: 1em;
+    font-family: PingFangSC-Regular, PingFang SC;
+    font-weight: 400;
+    color: #ffffff;
+    text-align: center;
+}
+
+.friend-manage-bottom {
+    padding: 20px 14px;
+    border: 1px solid #d4d4d5;
+    border-top: 0;
+    border-radius: 0 0 4px 4px;
+}
+
+.friend-manage-bottom input {
+    box-sizing: border-box;
+    margin: 0;
+    list-style: none;
+    display: inline-block;
+    width: 200px;
+    padding: 8px 11px;
+    color: rgba(0, 0, 0, 0.85);
+    font-size: 14px;
+    line-height: 1em;
+    background-color: #fff;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+}
+
+.friend-manage-bottom button {
+    padding: 10px 15px;
+    border: 0;
+    cursor: pointer;
+    background: #00cc99;
+    border-radius: 4px;
+    min-height: 1em;
+    font-size: 14px;
+    line-height: 1em;
+    font-family: PingFangSC-Regular, PingFang SC;
+    font-weight: 400;
+    color: #ffffff;
+    text-align: center;
+    margin-left: 20px;
+}

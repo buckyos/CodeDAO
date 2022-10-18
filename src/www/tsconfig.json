@@ -1,0 +1,18 @@
+{
+	"compilerOptions": {
+		"target": "ES2019",
+		"module": "commonjs",
+		"jsx": "react",
+		"sourceMap": true,
+		"strict": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"baseUrl": ".",
+		"paths": {
+			"@src/*": ["src/*"],
+			"@root/*": ["../*"]
+		}
+	},
+	"exclude": ["node_modules"]
+}

@@ -1,0 +1,72 @@
+.header {
+    /* margin-bottom: 10px; */
+    padding: 0 24px;
+    background: #002140;
+    box-shadow: 2px 0px 6px 0px rgba(0, 21, 41, 0.35);
+    font-family: PingFang SC-Heavy, PingFang SC;
+}
+.header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 64px;
+}
+
+.header-left-wrap {
+    display: flex;
+}
+
+.header-left-content {
+    /* margin-left: 10px; */
+    box-sizing: border-box;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: PingFangSC-Medium, PingFang SC;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 32px;
+    margin-right: 30px;
+    user-select: none;
+}
+
+.header-left {
+    align-items: center;
+    display: inline-flex;
+    font-size: 0.75rem;
+    line-height: 1;
+    min-height: 1.5rem;
+    letter-spacing: 0.075em;
+    color: #663399;
+    border: 0;
+    margin-right: 124px;
+    cursor: pointer;
+}
+
+.header-left .cyfs-git-logo {
+    width: 40px;
+}
+
+.header-left .cyfs-git-name {
+    font-size: 18px;
+    font-family: SanFranciscoDisplay-Semibold-, SanFranciscoDisplay-Semibold;
+    font-weight: 500;
+    color: #ffffff;
+    line-height: 25px;
+    margin-left: 3px;
+}
+
+.header-left-content {
+    /* margin-left: 10px; */
+    box-sizing: border-box;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: PingFangSC-Medium, PingFang SC;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 32px;
+    margin-right: 30px;
+    user-select: none;
+}
+
+.header-right {
+}

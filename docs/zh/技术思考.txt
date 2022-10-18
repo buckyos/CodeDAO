@@ -1,0 +1,8 @@
+考虑异常：是否会让ood上的git-db无法正确重建，进而完全毁坏
+通过这个例子来讲解事务：先保存Object，然后在设置HEAD（生效）
+
+
+在OOD上是否使用NOC+ChunkManager来保存 git-objects.blob对象可以用chunk manger保存
+
+进一步的，OOD上的不同repo之间，可以共享相同git blob对象的存储
+

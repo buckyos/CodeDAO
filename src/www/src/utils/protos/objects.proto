@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+
+
+// post请求 text object
+message GitTextDescContent {
+    string id = 1;
+}
+
+message GitTextBodyContent {
+    string id = 1;
+    string header = 2;
+    string value = 3;
+}
+
+enum Actions {
+    CREATE = 0;    // 创建
+    UPDATE = 1;    // 更新
+    RETRIEVE = 2;  // 查询
+    DELETE = 3;    // 删除
+}
+
+message PubSubObject {
+    string appName = 1; // 如wiki-peadia、D.Tools等
+    string decId = 2;   // 应用id
+    Actions actionType = 3; // 动作类型
+    string actionTarget = 4; // 动作目标对象，如词条、文章、NFT
+    optional string describe = 5;  // 描述
+    optional string openURL = 6;  // 跳转链接
+}
+
+message NoneObject {
+}

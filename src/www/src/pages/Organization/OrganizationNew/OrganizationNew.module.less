@@ -1,0 +1,81 @@
+.detail-main {
+    border-radius: 4px;
+    width: 1140px;
+    padding-top: 40px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+}
+
+.new-organization-content {
+    width: 510px;
+    margin: 160px auto 0 auto;
+}
+
+.empty-organization-header {
+    font-size: 20px;
+    font-family: PingFangSC-Medium, PingFang SC;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.85);
+    line-height: 28px;
+    margin-bottom: 40px;
+    padding-left: 10px;
+}
+
+.owner-organization-name {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    margin-bottom: 18px;
+    height: 40px;
+}
+
+.owner-organization-name > label {
+    width: 90px;
+    text-align: right;
+    box-sizing: border-box;
+    display: inline-block;
+}
+
+.owner-organization-name .require::before {
+    margin: -0.2em 0 0 0.2em;
+    content: '*';
+    color: #db2828;
+}
+
+.create-organization-buttons {
+    /* width: 224px; */
+    display: flex;
+    flex-direction: row;
+    /* justify-content: space-between; */
+    justify-content: center;
+    margin: 28px auto 0 auto;
+}
+
+.create-btn {
+    .btn();
+    min-width: 92px;
+    height: 32px;
+    background: #00cc99;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: PingFangSC-Regular, PingFang SC;
+    font-weight: 400;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 400;
+    padding: 0 10px;
+    margin: 0 10px;
+}
+
+.cancel-btn {
+    .btn();
+    width: 92px;
+    height: 32px;
+    background: #ffffff;
+    border-radius: 4px;
+    border: 1px solid #d9d9d9;
+    color: rgba(0, 0, 0, 0.65);
+    margin: 0 10px;
+}

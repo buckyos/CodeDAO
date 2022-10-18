@@ -1,0 +1,122 @@
+.repo-detail-commit {
+    /* border: 1px solid #999; */
+    /* border-radius: 4px; */
+    display: flex;
+    /* justify-content: space-between; */
+    align-items: center;
+    /* line-height: 40px; */
+    /* padding: 0 100px; */
+    box-sizing: border-box;
+    /* padding-top: 24px; */
+    margin: 0 auto;
+    margin-bottom: 32px;
+}
+
+.repo-detail-commi-item {
+    display: flex;
+    justify-content: center;
+    cursor: pointer;
+    margin-right: 33px;
+    line-height: 32px;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.repo-detail-commi-item img {
+    margin-right: 10px;
+}
+
+.repo-detail-commi-item .repo-branch {
+    /* width: 9px; */
+    height: 14px;
+    margin-right: 1px;
+}
+
+.repo-detail-commi-item .repo-tag {
+    width: 14px;
+    height: 14px;
+}
+
+.repo-detail-commi-item dd {
+    margin-bottom: 0;
+    margin-left: 10px;
+}
+
+.branch-switch-dropdown {
+    cursor: pointer;
+    padding: 0 5px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    /* display: inline-block; */
+    user-select: none;
+    display: flex;
+    align-items: center;
+}
+
+.repo-url {
+    position: relative;
+}
+
+.repo-url-box {
+    width: 300px;
+    height: auto;
+    background-color: #ffffff;
+    position: absolute;
+    right: 0;
+    top: 42px;
+    word-break: break-word;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid rgba(27, 31, 35, 0.15);
+    box-shadow: rgba(140, 149, 159, 0.2) 0px 8px 24px 0px;
+    position: absolute;
+    z-index: 100;
+}
+
+.repo-url-box::after {
+    content: '';
+    position: absolute;
+    z-index: 5;
+    right: 20px;
+    top: -5px;
+    height: 10px;
+    width: 10px;
+    transform: translateX(-50%) rotate(45deg);
+    border-style: solid;
+    border-width: 5px;
+    border-color: #fff transparent transparent #fff;
+    box-shadow: -2px -2px 5px rgba(0, 0, 0, 0.06);
+}
+
+.repo-url-main {
+    background-color: #00cc99;
+    height: 32px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    border-radius: 6px;
+    color: #ffffff;
+    float: right;
+    cursor: pointer;
+    user-select: none;
+}
+
+.repo-url-main span:nth-child(1) {
+    font-weight: bold;
+}
+
+.repo-url-main span:nth-child(2) {
+    width: 0;
+    height: 0;
+    vertical-align: middle;
+    content: '';
+    border-style: solid;
+    border-width: 4px 4px 0;
+    margin-left: 4px;
+    color: #ffffff;
+    /* border: #ffffff transparent transparent transparent;    */
+    border-right-color: transparent;
+    border-bottom-color: transparent;
+    border-left-color: transparent;
+}

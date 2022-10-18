@@ -1,0 +1,59 @@
+.main {
+    width: 1140px;
+    margin: 0 auto;
+    margin-top: 30px;
+}
+.repo-header {
+    box-sizing: border-box;
+    padding: 0 20px;
+    margin: 0;
+    height: 54px;
+    line-height: 54px;
+    background: #fafafa;
+    border-radius: 4px 4px 0px 0px;
+    font-family: PingFangSC-Medium, PingFang SC;
+    /* font-weight: 500; */
+    color: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.userInfo-repo-item {
+    display: flex;
+    flex-direction: row;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.userInfo-repo-item-left {
+    width: 20px;
+}
+
+.userInfo-repo-item-left img {
+    width: 100%;
+}
+
+.userInfo-repo-item-right {
+    flex: 1;
+    padding-left: 16px;
+}
+
+.userInfo-repo-item-name {
+    height: 22px;
+    font-size: 14px;
+    font-family: PingFangSC-Medium, PingFang SC;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.65);
+    line-height: 1em;
+    margin-bottom: 4px;
+    cursor: pointer;
+}
+
+.userInfo-repo-item-time {
+    height: 22px;
+    font-size: 14px;
+    font-family: PingFangSC-Medium, PingFang SC;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.25);
+    line-height: 22px;
+}

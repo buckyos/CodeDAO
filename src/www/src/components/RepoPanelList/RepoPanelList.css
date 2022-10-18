@@ -1,0 +1,70 @@
+.repo-list-block {
+	overflow-y: auto;
+	overflow-x: hidden;
+	max-height: 500px;
+}
+
+.repo-list-item {
+	display: flex;
+	justify-content: left;
+	align-items: center;
+	cursor: pointer;
+	height: 22px;
+	margin-bottom: 18px;
+	position: relative;
+}
+
+.repo-list-item:nth-last-child(1) {
+	margin-bottom: 0;
+}
+
+.repo-list-item-icon {
+	width: 14px;
+	margin-right: 14px;
+}
+
+
+.repo-list-item-name {
+	font-size: 14px;
+	font-family: PingFangSC-Regular, PingFang SC;
+	font-weight: 400;
+	color: #00cc99;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.repo-list-item-float {
+	position: absolute;
+	bottom: 30px;
+	background-color: #fff;
+	left: 100px;
+	padding: 10px 20px;
+	border: 1px solid #e9e9e9;
+	border-radius: 4px;
+	display: flex;
+	align-items: center;
+	visibility: hidden;
+}
+
+.repo-list-item-float img {
+	width: 14px;
+}
+
+.repo-list-item-float::after {
+	content: "";
+	position: absolute;
+	width: 0;
+	height: 0;
+	border-width: 5px 5px 0 5px;
+	border-style: solid;
+	display: inline-block;
+	border-color: #ffffff transparent transparent transparent;
+	vertical-align: middle;
+	left: 30px;
+	bottom: -5px;
+}
+
+.repo-list-item:hover .repo-list-item-float {
+	visibility: visible;
+}

@@ -1,0 +1,110 @@
+.content-left {
+    padding: 22px;
+    position: fixed;
+    left: 0;
+    top: 64px;
+    width: 367px;
+    background-color: #f0f2f5;
+    height: calc(100vh - 64px);
+    overflow-y: auto;
+}
+
+.new-repo {
+    width: 74px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 4px;
+    box-sizing: border-box;
+    cursor: pointer;
+    line-height: 1;
+    -webkit-text-decoration: none;
+    text-decoration: none;
+    color: #ffffff;
+    font-size: 1rem;
+    padding: 3px 11px;
+    background: #00cc99;
+}
+
+.new-repo img {
+    width: 14px;
+}
+
+/* .content-left-main{
+    height: calc(100vh - 64px);
+    padding: 22px 21px;
+} */
+
+.content-left-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.content-left-title {
+    font-size: 1.2rem;
+    width: 83px;
+    height: 22px;
+    font-size: 14px;
+    font-family: PingFangSC-Medium, PingFang SC;
+    font-weight: 500;
+    color: #000000;
+    line-height: 22px;
+}
+
+.search-repo-wrap {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: row;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.search-repo {
+    display: block;
+    width: 100%;
+    text-rendering: auto;
+    background-color: -internal-light-dark(rgb(255, 255, 255), rgb(59, 59, 59));
+    cursor: text;
+    padding: 2px 4px;
+    border-color: -internal-light-dark(rgb(118, 118, 118), rgb(133, 133, 133));
+    padding: 5px 12px;
+    font-size: 14px;
+    line-height: 20px;
+    color: rgb(36, 41, 46);
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    /* border: 1px solid rgb(225, 228, 232); */
+    border: 0;
+    /* border-radius: 4px 4px 0 0; */
+    outline: none;
+    box-shadow: var(--color-shadow-inset);
+    background-color: #fff;
+    flex: 1;
+}
+
+.search-repo-span {
+    width: 38px;
+    height: 32px;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.repo-list-wrap {
+    margin-top: 12px;
+    margin-bottom: 18px;
+}
+
+.show-more-text {
+    font-size: 14px;
+    font-family: PingFangSC-Regular, PingFang SC;
+    font-weight: 400;
+    color: #000000;
+    line-height: 40px;
+    border-bottom: 1px solid #e9e9e9;
+    cursor: pointer;
+    user-select: none;
+}

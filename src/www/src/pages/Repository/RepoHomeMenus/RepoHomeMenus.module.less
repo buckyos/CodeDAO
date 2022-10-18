@@ -1,0 +1,62 @@
+.repo-detail-header2 {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
+
+.repo-detail-header2 .ant-tabs-tab {
+    padding: 20px 0;
+    font-size: 16px;
+    color: #282828;
+    font-weight: 500;
+}
+
+.repo-detail-header2 .ant-tabs-tab img {
+    width: 14px;
+    margin-right: 10px;
+    vertical-align: baseline;
+}
+
+.repo-tab {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    padding: 0 80px;
+    border-bottom: 1px solid #e9e9e9;
+}
+
+.repo-tab-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 62px;
+    margin-right: 50px;
+    font-size: 16px;
+    font-family: PingFangSC-Medium, PingFang SC;
+    font-weight: 500;
+    color: #282828;
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+}
+
+.repo-tab-item img,
+.repo-tab-item-active img {
+    width: 14px;
+    margin-right: 10px;
+}
+
+.repo-tab-item-active {
+    .repo-tab-item();
+    color: #00cc99;
+}
+
+.repo-tab-item.active::before {
+    content: '';
+    position: absolute;
+    display: block;
+    bottom: -1px;
+    width: 100%;
+    height: 1px;
+    background-color: #00cc99;
+}

@@ -1,0 +1,66 @@
+.activity-content {
+	padding-left: 367px;
+}
+
+.activity-content-main {
+	padding: 54px 97px;
+}
+
+.activity-content-title {
+	font-size: 20px;
+	font-family: PingFangSC-Medium, PingFang SC;
+	font-weight: 500;
+	color: rgba(0, 0, 0, 0.85);
+	line-height: 28px;
+	margin-bottom: 50px;
+}
+
+.activity-content-info {
+	width: 688px;
+	height: 338px;
+	background: #ffffff;
+	border-radius: 2px;
+	border: 1px solid #e9e9e9;
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	padding: 24px 0;
+}
+
+.activity-content-info .text-1 {
+	font-size: 16px;
+	font-family: PingFangSC-Medium, PingFang SC;
+	font-weight: 500;
+	color: rgba(0, 0, 0, 0.85);
+	line-height: 18px;
+	margin-bottom: 16px;
+}
+
+.activity-content-info .text-2 {
+	font-size: 14px;
+	font-family: PingFangSC-Regular, PingFang SC;
+	font-weight: 400;
+	color: rgba(0, 0, 0, 0.45);
+	line-height: 16px;
+}
+
+.activity-content-info .info-logo {
+	width: 106px;
+	display: block;
+	margin-top: 30px;
+	margin-bottom: 65px;
+}
+
+.activity-content-info .explore-btn {
+	width: 92px;
+	height: 32px;
+	line-height: 32px;
+	background: #00cc99;
+	border-radius: 4px;
+	font-size: 14px;
+	font-family: PingFangSC-Regular, PingFang SC;
+	font-weight: 400;
+	color: #ffffff;
+	text-align: center;
+	cursor: pointer;
+}

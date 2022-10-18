@@ -1,0 +1,24 @@
+.detail-main-right {
+    width: 280px;
+    padding: 0 16px;
+    word-break: break-word;
+}
+.detail-main {
+    border-radius: 4px;
+    width: 1140px;
+    padding-top: 40px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+}
+.detail-main-left {
+    flex: 1;
+    padding: 0 16px;
+}
+
+.detail-main-right {
+    width: 280px;
+    padding: 0 16px;
+    word-break: break-word;
+}

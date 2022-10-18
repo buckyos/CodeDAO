@@ -1,0 +1,152 @@
+.repo-tags-header {
+    display: flex;
+    justify-content: space-between;
+    .repo-tags-tab {
+        background: #ffffff;
+        border-radius: 4px;
+        display: flex;
+        justify-content: space-between;
+        border: 1px solid #d9d9d9;
+        .repo-tags-tab-item {
+            width: 120px;
+            height: 32px;
+            display: inline-block;
+            line-height: 32px;
+            text-align: center;
+            font-size: 14px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: #595959;
+            cursor: pointer;
+            &:not(:nth-last-child(1)) {
+                border-right: 1px solid #d9d9d9;
+            }
+        }
+        .repo-tags-tab-item-active {
+            .repo-tags-tab-item();
+            color: #ffffff;
+            background-color: #00cc99;
+        }
+    }
+    .repo-release-issue {
+        text-align: right;
+        /* margin-top: 10px; */
+        .repo-release-btn {
+            min-width: 92px;
+            height: 32px;
+            padding: 0 10px;
+            background: #00cc99;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            color: #ffffff;
+            display: inline-block;
+            .btn();
+        }
+    }
+}
+
+.repo-release-list {
+    border-top: 1px solid #e9e9e9;
+    margin-top: 24px;
+    .release-list-item {
+        display: flex;
+        flex-direction: row;
+        &:nth-child(1) {
+            .release-list-item-right {
+                padding-top: 24px;
+            }
+        }
+        .release-list-item-left {
+            width: 240px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            padding: 30px 16px;
+            word-break: break-all;
+            .release-tag,
+            .release-commit {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                img {
+                    margin-right: 5px;
+                }
+            }
+        }
+        .release-list-item-right {
+            flex: 1;
+            padding: 0 0 36px 18px;
+            border-left: 2px solid #e9e9e9;
+            word-break: break-all;
+            .release-list-item-right-main {
+                padding: 10px 18px 18px 18px;
+                background: #f6f8fa;
+                border-radius: 4px 4px 0px 0px;
+            }
+            .release-download {
+                padding-top: 36px;
+                font-size: 16px;
+                font-weight: 500;
+                font-family: PingFangSC-Medium, PingFang SC;
+                color: rgba(0, 0, 0, 0.85);
+                line-height: 22px;
+                .release-zip-title {
+                    margin-bottom: 8px;
+                }
+                .release-zip {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    user-select: none;
+                    cursor: pointer;
+                    font-size: 14px;
+                    font-weight: 500;
+                    color: #00cc99;
+                    line-height: 20px;
+                    width: 150px;
+                }
+            }
+        }
+    }
+}
+
+.release-list-item-right-head {
+    display: flex;
+    flex: row;
+    justify-content: space-between;
+    .release-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 14px;
+        position: relative;
+        flex: 1;
+        .release-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #cccccc;
+            position: absolute;
+            border-radius: 5px;
+            top: 50%;
+            left: -37px;
+            margin-top: -5px;
+            margin-left: -5px;
+        }
+    }
+    .release-edit {
+        width: 100px;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        .release-edit-btn {
+            color: #ffffff;
+            width: 66px;
+            height: 22px;
+            background: #00cc99;
+            border-radius: 11px;
+            font-size: 12px;
+            text-align: center;
+            .btn();
+        }
+    }
+}

@@ -1,0 +1,22 @@
+.header-right-wrap {
+    display: flex;
+    align-items: center;
+    color: #ffffff;
+}
+
+.header-right-dropdown {
+    cursor: pointer;
+    margin-right: 5px;
+    padding: 10px 5px;
+}
+
+.header-user-logo {
+    width: 24px;
+    border-radius: 50%;
+}
+
+.header-right-item {
+    margin-left: 10px;
+    font-size: 0.75rem;
+    color: #ffffff;
+}

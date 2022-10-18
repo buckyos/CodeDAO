@@ -1,0 +1,31 @@
+.repo-detail-header {
+    display: flex;
+    /* justify-content: flex-start;
+    align-items: center;
+    height: 60px; */
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 22px 22px 24px 22px;
+    min-width: 1140px;
+}
+
+.repo-detail-header-left {
+    display: flex;
+    flex-direction: column;
+}
+
+.repo-detail-header-name {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.repo-detail-name {
+    font-size: 18px;
+    font-weight: bold;
+    font-size: 20px;
+    font-family: PingFangSC-Medium, PingFang SC;
+    font-weight: 500;
+    color: #00cc99;
+    margin-left: 30px;
+}

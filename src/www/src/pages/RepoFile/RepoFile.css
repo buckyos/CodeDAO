@@ -1,0 +1,75 @@
+.file-content {
+    width: 1140px;
+    margin: 0 auto;
+}
+.file-content-header {
+	line-height: 22px;
+	padding: 10px 14px;
+	background: #f1f8ff;
+	font-size: 14px;
+	font-family: PingFangSC-Medium, PingFang SC;
+	font-weight: 500;
+	color: rgba(0, 0, 0, 0.85);
+	border: 1px solid #e3efff;
+	border-radius: 6px;
+	margin-bottom: 20px;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+
+.file-content-main {
+	background-color: #ffffff;
+}
+
+.file-content-main-header {
+	/* height: 54px; */
+	/* line-height: 54px; */
+	line-height: 22px;
+	padding: 10px 14px;
+	background: #f1f8ff;
+	font-size: 14px;
+	font-family: PingFangSC-Medium, PingFang SC;
+	font-weight: 500;
+	color: rgba(0, 0, 0, 0.85);
+	border: 1px solid #e3efff;
+	border-top-left-radius: 6px;
+	border-top-right-radius: 6px;
+}
+
+
+
+.file-content-list {
+	border-bottom-left-radius: 6px;
+	border-bottom-right-radius: 6px;
+	border: 1px solid #e3efff;
+	border-top: 0;
+	overflow-x: auto;
+}
+
+.file-content-list table {
+	width: 100%;
+}
+
+.file-content-item {
+	display: flex;
+	flex-direction: row;
+	line-height: 24px;
+	font-size: 14px;
+}
+
+.file-content-item:hover {
+	background-color: #e3efff;
+}
+
+.file-content-left {
+	width: 50px;
+	min-width: 50px;
+	text-align: right;
+	padding-right: 10px;
+}
+
+.file-content-right {
+	/* white-space: pre; */
+}

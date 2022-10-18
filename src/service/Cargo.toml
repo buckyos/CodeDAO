@@ -1,0 +1,12 @@
+[workspace]
+resolver = "2"
+
+members = [
+    "./dec-app",
+    "./dec-service",
+    "./proto",
+    "./testcase",
+    "./cyfs-git-base",
+    "./git-remote-cyfs",
+    "./service-manager",
+]
