@@ -1,5 +1,5 @@
 import React from 'react';
-import { repositoryAtom } from '../../../stores/repository';
+import { repositoryAtom } from '@src/stores/repository';
 import { useHistory } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import styles from './RepoForkFrom.css';

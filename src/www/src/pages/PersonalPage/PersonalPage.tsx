@@ -1,12 +1,5 @@
 import React, { useEffect, useMemo, useState, useRef } from 'react';
 import styles from './PersonalPage.module.less';
-// import {
-// 	notifyCreateAritcle,
-// 	getPeopleList,
-// 	addPublisher,
-// 	queryPubSubRecords as queryPubSubRecords2,
-// } from "../../../apis/test";
-// import { Button } from "antd";
 import PersonPagePeopleInfoPanel from '@src/components/PersonPagePeopleInfoPanel/PersonPagePeopleInfoPanel';
 import PersonPageCollectibles from '@src/components/PersonPageCollectibles/PersonPageCollectibles';
 import PersonPageDecApps from '@src/components/PersonPageDecApps/PersonPageDecApps';

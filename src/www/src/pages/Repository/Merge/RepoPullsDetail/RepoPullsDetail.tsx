@@ -1,9 +1,8 @@
 import React from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { Button, message, Spin, Tag } from 'antd';
-import { RequestRepositoryMergeDetail, ResponseMerge } from '../../../../types';
-// import {RepoMergeUrlParams} from "../../../../@types"
-import { requestLocal, requestTarget, useRequestShadow } from '../../../../utils/index';
+import { RequestRepositoryMergeDetail, ResponseMerge } from '@src/types';
+import { requestLocal, requestTarget, useRequestShadow } from '@src/utils/index';
 import { useTranslation } from 'react-i18next';
 import styles from './RepoPullsDetail.css';
 
@@ -71,9 +70,7 @@ const RepoPullsDetail: React.FC<RouteComponentProps> = ({ match }) => {
             </div>
             {mr.status == 'open' && (
                 <Button type="primary" loading={buttonLoading} onClick={() => acceptMerge()}>
-                    {buttonLoading ?
-                        t('repository.pull.detail.status.processing') :
-                        t('repository.pull.detail.status.accept')}
+                    {buttonLoading ? t('repository.pull.detail.status.processing') : t('repository.pull.detail.status.accept')}
                 </Button>
             )}
             {mr.status == 'close' && <Tag>{t('repository.pull.detail.status.finish')}</Tag>}

@@ -8,7 +8,7 @@ function makeTaskKey(fileId: cyfs.FileId, savePath: string): string {
 class DownloadTaskMgr {
     private m_stack: cyfs.SharedCyfsStack;
     private m_tasks: Map<string, DownloadFileTask> = new Map();
-    constructor(stack: cyfs.SharedCyfsStack) {
+    public constructor(stack: cyfs.SharedCyfsStack) {
         this.m_stack = stack;
     }
 

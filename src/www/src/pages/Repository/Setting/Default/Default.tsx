@@ -1,13 +1,13 @@
 import React, { useRef, useState } from 'react';
-import { repositoryAtom } from '../../../../stores/repository';
+import { repositoryAtom } from '@src/stores/repository';
 import { message } from 'antd';
 import { requestLocal } from '@src/utils/request';
 import { useHistory, useParams } from 'react-router-dom';
-import PromptDialog from '../../../../components/PromptDialog';
-import { userInfoAtom } from '../../../../stores/user';
+import PromptDialog from '@src/components/PromptDialog';
+import { userInfoAtom } from '@src/stores/user';
 import styles from './Default.css';
 import { useRecoilState } from 'recoil';
-import { RepositoryType } from '../../../../types/rpc_def';
+import { RepositoryType } from '@src/types/rpc_def';
 import { useTranslation } from 'react-i18next';
 
 const RepoSettingDefault: React.FC = () => {
@@ -19,9 +19,7 @@ const RepoSettingDefault: React.FC = () => {
     const [repository] = useRecoilState(repositoryAtom);
     const { t } = useTranslation();
     const text =
-        repository.is_private == RepositoryType.Public ?
-            t('repository.settings.repository.private') :
-            t('repository.settings.repository.public');
+        repository.is_private == RepositoryType.Public ? t('repository.settings.repository.private') : t('repository.settings.repository.public');
 
     const deleteCallBack = async () => {
         // if (repository.is_private == RepositoryType.Public ) {  // 公开仓库删除

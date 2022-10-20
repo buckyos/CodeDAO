@@ -1,7 +1,7 @@
 import React from 'react';
 import { Spin } from 'antd';
-import { toYMDHMS, requestLocal, useRequestShadow } from '../../utils';
-import { ResponseIssueItem, ResponseIssueList } from '../../types/index';
+import { toYMDHMS, requestLocal, useRequestShadow } from '@src/utils';
+import { ResponseIssueItem, ResponseIssueList } from '@src/types/index';
 import { useTranslation } from 'react-i18next';
 import styles from './Issues.module.less';
 import { useHistory } from 'react-router-dom';

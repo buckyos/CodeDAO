@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { classSet, getPageIndex } from '../../utils';
+import { classSet, getPageIndex } from '@src/utils';
 import styles from './Pagination.css';
 import { useTranslation } from 'react-i18next';
 

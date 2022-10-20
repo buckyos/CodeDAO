@@ -4,11 +4,10 @@ import {
     NONPostObjectOutputRequest,
     NONPostObjectOutputResponse,
     ObjectId,
-    RequestGlobalStatePath,
+    RequestGlobalStatePath
 } from 'cyfs-sdk';
 import { stack, stackInfo } from './stack';
 import { GitTextObject, GitTextObjectDecoder } from '@src/types/text';
-
 
 export async function requestLocal<S>(route: string, data: Object) {
     return generateRequest<S>(stackInfo.ood_device_id.object_id)(route, data);
@@ -43,12 +42,12 @@ export function generateRequest<S>(
         );
         const object_id = obj.desc().calculate_id();
         const object_raw = obj.to_vec().unwrap();
-        const req_path = new RequestGlobalStatePath(stackInfo.appID, "cyfs-git-app-handler");
+        const req_path = new RequestGlobalStatePath(stackInfo.appID, 'cyfs-git-app-handler');
 
         const req: NONPostObjectOutputRequest = {
             common: {
                 dec_id: stackInfo.appID,
-                req_path: req_path,
+                req_path: req_path.toString(),
                 flags: 0,
                 level: NONAPILevel.Router,
                 target: target

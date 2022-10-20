@@ -1,4 +1,4 @@
-import { repositoryAtom } from '../../../stores/repository';
+import { repositoryAtom } from '@src/stores/repository';
 import React from 'react';
 import { useRecoilState } from 'recoil';
 import { useTranslation } from 'react-i18next';

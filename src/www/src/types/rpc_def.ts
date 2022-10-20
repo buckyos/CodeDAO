@@ -556,7 +556,6 @@ declare global {
         name: string;
     }
 
-
     interface RequestRepoIssueComment {
         issue_id: string;
         id?: string;
@@ -709,8 +708,6 @@ export interface RequestRepositoryCommit {
     commitId: string;
 }
 
-
-
 export interface RequestIssueDetail {
     owner?: string;
     id?: string;
@@ -818,8 +815,6 @@ export interface GetObjectResponse<S> {
     object?: S;
     message: string;
 }
-
-
 
 export interface DiffResult {
     fileName: string;

@@ -2,10 +2,10 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { Input, Button, message } from 'antd';
 import { stackInfo } from '@src/utils/stack';
-import { requestLocal } from '../../utils';
+import { requestLocal } from '@src/utils';
 import { RequestUserInit, ResponseCheckUser } from '@src/types/index';
 import _ from 'lodash';
-import { validateEmail, validateName } from '../../utils/validate/validate';
+import { validateEmail, validateName } from '@src/utils/validate/validate';
 import { useTranslation } from 'react-i18next';
 import styles from './InitUser.css';
 

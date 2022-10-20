@@ -2,9 +2,8 @@ import { message } from 'antd';
 import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { stackInfo } from '@src/utils/stack';
-
-import { repositoryAtom } from '../../stores/repository';
-import { toYMDHMS, requestTarget, requestLocal } from '../../utils';
+import { repositoryAtom } from '@src/stores/repository';
+import { toYMDHMS, requestTarget, requestLocal } from '@src/utils';
 import { useRecoilState } from 'recoil';
 import { useTranslation } from 'react-i18next';
 import TagsIcon from '@src/assets/images/tags.png';

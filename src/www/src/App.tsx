@@ -13,7 +13,7 @@ import { initWithNativeStack } from './utils/cyfs_helper/stack_wraper';
 import * as MetaClient from './utils/cyfs_helper/meta_client';
 import { ENV_TARGET } from './utils/cyfs_helper/constant';
 
-/* eslint-disable */
+// eslint-disable-next-line
 console.log = (console as any).origin.log;
 
 declare const __VERSION__: String;

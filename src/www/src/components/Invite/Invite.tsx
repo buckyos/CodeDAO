@@ -1,9 +1,7 @@
 import React, { useCallback, useState } from 'react';
-import { inviteModalStoreAtom } from '../../stores/modal';
+import { inviteModalStoreAtom } from '@src/stores/modal';
 import { Modal, Input, AutoComplete, Spin, message } from 'antd';
-import { requestLocal, useRequestShadow } from '../../utils';
-
-// @ts-ignore
+import { requestLocal, useRequestShadow } from '@src/utils';
 import styles from './Invite.css';
 import { useRecoilState } from 'recoil';
 
@@ -16,21 +14,6 @@ export const InviteModal: React.FC<InviteModalProps> = ({ onConfirm }) => {
         [],
         'get friends faild'
     );
-    /* eslint-disable */
-    const options: any = [
-        {
-            label: '好友列表',
-            options: []
-        }
-    ];
-    if (data) {
-        options[0].options = data.data.map((item) => {
-            return {
-                value: item.id,
-                label: item.id
-            };
-        });
-    }
 
     const onClick = useCallback(() => {
         if (value === '') {
@@ -57,7 +40,6 @@ export const InviteModal: React.FC<InviteModalProps> = ({ onConfirm }) => {
                         dropdownClassName="certain-category-search-dropdown"
                         dropdownMatchSelectWidth={500}
                         style={{ width: 320 }}
-                        // options={options}
                         onSelect={setValue}
                     >
                         <Input

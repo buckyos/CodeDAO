@@ -6,7 +6,6 @@ import Suber from '@src/assets/images/personal_page/subscribers.png';
 import Subing from '@src/assets/images/personal_page/subscribings.png';
 import IntroIcon from '@src/assets/images/personal_page/intro.png';
 import { PlusSquareOutlined, MailOutlined } from '@ant-design/icons';
-import { checkStack } from '@src/utils/cyfs_helper/stack_wraper';
 import { getPubSubPeopleList, subscribePublisher } from '@src/apis/user';
 import { useTranslation } from 'react-i18next';
 import { message } from 'antd';

@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useParams } from 'react-router-dom';
-import { getBranch, requestLocal, requestTarget, useRequestShadow } from '../../../utils';
-import { languageColor } from '../../../utils/color';
-import { useRecoilState } from 'recoil';
-import { repositoryCurrentBranchAtom } from '../../../stores/repository';
+import { getBranch, requestLocal, useRequestShadow } from '@src/utils';
+import { languageColor } from '@src/utils/color';
 import style from './RepoLanguage.css';
 
 export const RepoLanguage: React.FC = () => {
@@ -43,9 +41,7 @@ export const RepoLanguage: React.FC = () => {
         // return
         return arr
             .map((ff) => {
-                const color = languageColor[ff.language_type] ?
-                    languageColor[ff.language_type].color || '#D2DE5E' :
-                    '#D2DE5E';
+                const color = languageColor[ff.language_type] ? languageColor[ff.language_type].color || '#D2DE5E' : '#D2DE5E';
                 const percent = Number((Math.round((ff.code / total) * 1000) / 1000).toFixed(3)); // 保留3位小数
                 return {
                     ...ff,

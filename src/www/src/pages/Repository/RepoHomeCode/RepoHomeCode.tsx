@@ -2,7 +2,7 @@ import React from 'react';
 import RepoHomeCodeHeader from '../Code/RepoHomeCodeHeader/RepoHomeCodeHeader';
 import { Route, Switch } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
-import { repositoryAtom } from '../../../stores/repository';
+import { repositoryAtom } from '@src/stores/repository';
 import EmptyRepository from '../EmptyRepository/EmptyRepository';
 import RepoTree from '../RepoTree/RepoTree';
 import RepoFile from '../../RepoFile/RepoFile';

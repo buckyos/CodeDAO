@@ -1,17 +1,15 @@
 import React, { useEffect } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-
 import { Button, message, Select } from 'antd';
-import { requestLocal, requestTarget } from '../../../../utils/index';
-import { RequestRepositoryMergeCompare } from '../../../../types';
+import { requestLocal, requestTarget } from '@src/utils/index';
 import RepoPullsCompare from '../RepoPullsCompare/RepoPullsCompare';
 import _ from 'lodash';
-import { branchesAtom } from '../../../../stores/repository';
+import { branchesAtom } from '@src/stores/repository';
 import { useRecoilState } from 'recoil';
-import { repositoryCompareInfoAtom, useCleanCompareInfo } from '../../../../stores/compare';
-const { Option } = Select;
+import { repositoryCompareInfoAtom, useCleanCompareInfo } from '@src/stores/compare';
 import { useTranslation } from 'react-i18next';
 import styles from './RepoPullsCreate.css';
+const { Option } = Select;
 
 const RepoPullsCreate: React.FC<RouteComponentProps> = ({ match }) => {
     const [diffResult, setDiffResult] = React.useState(0);

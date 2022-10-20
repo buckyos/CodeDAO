@@ -2,9 +2,9 @@ import { message } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { stackInfo } from '@src/utils/stack';
-import Editor from '../../../../components/Editor/Editor';
-import PromptDialog from '../../../../components/PromptDialog';
-import { checkName, requestTarget } from '../../../../utils';
+import Editor from '@src/components/Editor/Editor';
+import PromptDialog from '@src/components/PromptDialog';
+import { checkName, requestTarget } from '@src/utils';
 import styles from './RepoWikiNew.css';
 import { useTranslation } from 'react-i18next';
 

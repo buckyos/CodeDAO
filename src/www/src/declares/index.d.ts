@@ -79,12 +79,17 @@ declare interface LineContent {
     content: string;
     leftCount: number | string;
     rightCount: number | string;
+    diff_type: string;
+    left_line: string;
+    right_line: string;
 }
 
 declare interface LineData {
     pathName: string;
     title: string;
     data: Array<LineContent>;
+    file_name: string;
+    file_content: LineContent[];
 }
 
 declare interface UserLogoProps {

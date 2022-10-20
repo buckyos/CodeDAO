@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styles from './UserCommonInfo.module.less';
 import defaultIcon from '@src/assets/images/default_head.png';
 import * as cyfs from 'cyfs-sdk';
-import { queryPeopleInfo } from '../../apis/user';
+import { queryPeopleInfo } from '@src/apis/user';
 
 interface Props {
     peopleId: string | cyfs.PeopleId;

@@ -6,8 +6,6 @@ import UserLogo from '@src/components/UserLogo/UserLogo';
 import OrganizationLogo from '@src/components/OrganizationLogo/OrganizationLogo';
 import { InviteModal } from '@src/components/Invite/Invite';
 import OrganizationRepository from '../OrganizationRepository/OrganizationRepository';
-
-// @ts-ignore
 import styles from './OrganizationHome.module.less';
 import { useRecoilState } from 'recoil';
 import { userInfoAtom } from '@src/stores/user';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { RouteComponentProps, useHistory, withRouter } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import HeaderLogin from '../HeaderLogin/HeaderLogin';
 import { useTranslation } from 'react-i18next';
 import LogoIcon from '@src/assets/images/logo.png';
@@ -54,7 +54,7 @@ const Header: React.FC = () => {
                     >
                         <span> DAO </span>
                     </div>
-                        {/* 
+                    {/* 
 		    <div
                         className={styles.headerLeftContent}
                         onClick={() => {

@@ -1,19 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import styles from './PersonPageActivitiesItem.module.less';
 import Icon from '@src/assets/images/personal_page/app_default_logo.png';
-import * as cyfs from 'cyfs-sdk';
-import { queryPeopleInfo } from '../../apis/user';
 import UserCommonInfo from '@src/components/UserCommonInfo/UserCommonInfo';
-import {
-    PubSubObject,
-    Actions,
-    ActionsArrayZh,
-    ActionsArrayEn
-} from '@src/types';
+import { PubSubObject, Actions, ActionsArrayEn } from '@src/types';
 import { getLocalTime } from '@src/utils';
 
 interface Props extends Partial<PubSubObject> {
-	icon?: string;
+    icon?: string;
 }
 
 export default function PersonPageActivitiesItem({

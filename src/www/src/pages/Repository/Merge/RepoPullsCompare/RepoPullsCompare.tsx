@@ -3,17 +3,12 @@ import { RouteComponentProps, useParams, withRouter } from 'react-router-dom';
 
 import { Button, Tabs, Radio, Input, message, RadioChangeEvent } from 'antd';
 import { RightOutlined, DownOutlined } from '@ant-design/icons';
-import { requestLocal, requestTarget } from '../../../../utils';
-import {
-    DiffLineData,
-    DiffResult,
-    RequestRepositoryMergeCompareFile,
-    RequestRepositoryMergeCreate
-} from '../../../../common/types';
-import CommitDiff from '../../../../components/CommitDiff/CommitDiff';
+import { requestLocal, requestTarget } from '@src/utils';
+import { DiffLineData, DiffResult } from '@src/types';
+import CommitDiff from '@src/components/CommitDiff/CommitDiff';
 import style from './RepoPullsCompare.css';
 import { useRecoilState } from 'recoil';
-import { repositoryCompareInfoAtom } from '../../../../stores/compare';
+import { repositoryCompareInfoAtom } from '@src/stores/compare';
 import { useTranslation } from 'react-i18next';
 
 const { TabPane } = Tabs;

@@ -3,14 +3,14 @@ import { useParams } from 'react-router-dom';
 import { requestLocal, requestTarget } from '@src/utils/request';
 import { Dropdown, Menu, message, Tag, Spin } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
-import UserLogo from '../../../../components/UserLogo/UserLogo';
-import { InviteModal } from '../../../../components/Invite/Invite';
-import { repositoryAtom } from '../../../../stores/repository';
+import UserLogo from '@src/components/UserLogo/UserLogo';
+import { InviteModal } from '@src/components/Invite/Invite';
+import { repositoryAtom } from '@src/stores/repository';
 import { MenuInfo } from 'rc-menu/lib/interface';
 import styles from './Member.css';
-import { useRequestShadow } from '../../../../utils';
+import { useRequestShadow } from '@src/utils';
 import { useRecoilState } from 'recoil';
-import { inviteModalStoreAtom } from '../../../../stores/modal';
+import { inviteModalStoreAtom } from '@src/stores/modal';
 import { useTranslation } from 'react-i18next';
 
 const PrivilegeBox: React.FC<PrivilegeBox> = ({ data, onChange }) => {

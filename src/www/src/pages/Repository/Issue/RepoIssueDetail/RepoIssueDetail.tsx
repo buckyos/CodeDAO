@@ -2,16 +2,16 @@ import React, { useCallback, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { message, Spin } from 'antd';
 import { ResponseIssueItem, ResponseIssue, RequestIssueDetail } from '@src/types';
-import { classSet, requestLocal, useRequestShadow } from '../../../../utils';
-import UserLogo from '../../../../components/UserLogo/UserLogo';
+import { classSet, requestLocal, useRequestShadow } from '@src/utils';
+import UserLogo from '@src/components/UserLogo/UserLogo';
 import styles from './RepoIssueDetail.module.less';
-import Editor from '../../../../components/Editor/Editor';
+import Editor from '@src/components/Editor/Editor';
 import { stackInfo } from '@src/utils/stack';
-import { NftModal, NftIcon } from '../../../../components/NftModal/Nft';
+import { NftModal, NftIcon } from '@src/components/NftModal/Nft';
 
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { MdShow } from '../../../../components/MdShow/MdShow';
+import { MdShow } from '@src/components/MdShow/MdShow';
 dayjs.extend(relativeTime);
 import { useTranslation } from 'react-i18next';
 
@@ -92,12 +92,11 @@ const RepoIssueDetail: React.FC = () => {
         });
     }, [content]);
 
-
     const onCloseIssue = useCallback(() => {
         const req: RequestRepoIssueClose = {
             name: object_id,
             issue_id: issue_id,
-            author_name: owner,
+            author_name: owner
         };
         requestLocal('repo/issue/close', req).then((resp) => {
             if (resp.err) {
@@ -106,7 +105,6 @@ const RepoIssueDetail: React.FC = () => {
             }
         });
     }, []);
-
 
     if (loading || data == undefined) {
         return <Spin />;
@@ -127,7 +125,7 @@ const RepoIssueDetail: React.FC = () => {
                 </h1>
             </div>
             <div className={styles.status}>
-                {topic.status == "open" ? <div className={styles.tag}>{topic.status}</div> : <div className={styles.closeTag}>{topic.status}</div>}
+                {topic.status == 'open' ? <div className={styles.tag}>{topic.status}</div> : <div className={styles.closeTag}>{topic.status}</div>}
                 <IssueNameDate className={styles.statusName} issue={topic} />
             </div>
 
@@ -145,7 +143,7 @@ const RepoIssueDetail: React.FC = () => {
                             <Editor onChange={setContent} />
 
                             <div className={styles.submit}>
-                                {topic.status == "open" && 
+                                {topic.status == 'open' && 
                                     <button className={classSet([styles.button, styles.closeButton])} onClick={onCloseIssue}>
                                         Close issue
                                     </button>

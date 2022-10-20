@@ -1,6 +1,5 @@
 import React, { DependencyList, useEffect, useLayoutEffect, useState } from 'react';
 import { message } from 'antd';
-// import type {classKey} from '../../@types'
 import dayjs from 'dayjs';
 import { useParams } from 'react-router-dom';
 import _ from 'lodash';
@@ -17,7 +16,7 @@ export const useRequest = (fn: Function, dependencies: DependencyList, error_mes
         setLoading(true);
         fn()
             /* eslint-disable */
-            .then((r:any) => {
+            .then((r: any) => {
                 if (r.err) {
                     message.error(error_message + r.msg);
                     return;
@@ -48,7 +47,11 @@ export const useRequest = (fn: Function, dependencies: DependencyList, error_mes
 };
 
 // 简单的封装一下 useEffect + 请求数据处理
-export const useRequestShadow = <S>(fn: Function, dependencies: DependencyList, error_message: string) => {
+export const useRequestShadow = <S>(
+    fn: Function,
+    dependencies: DependencyList,
+    error_message: string
+) => {
     const [data, setData] = useState<S>();
     const [loading, setLoading] = useState(true);
 
@@ -57,9 +60,10 @@ export const useRequestShadow = <S>(fn: Function, dependencies: DependencyList, 
         setLoading(true);
         fn()
             /* eslint-disable */
-            .then((r:any) => {
+            .then((r: any) => {
                 if (r.err) {
-                    if(r.m_code !== BuckyErrorCode.Timeout){ // 超时暂不提示错误
+                    if (r.m_code !== BuckyErrorCode.Timeout) {
+                        // 超时暂不提示错误
                         message.error(error_message);
                     }
                     return;
@@ -88,27 +92,31 @@ export const useRequestShadow = <S>(fn: Function, dependencies: DependencyList, 
 };
 
 export function classSet(classes: classKey[]): string {
-    return classes.map((item: classKey):string => {
-        if (typeof item === 'string') {
-            return item;
-        } else {
-            for (const key in item) {
-                if (item[key]) {
-                    return key;
-                } else {
-                    return '';
+    return classes
+        .map((item: classKey): string => {
+            if (typeof item === 'string') {
+                return item;
+            } else {
+                for (const key in item) {
+                    if (item[key]) {
+                        return key;
+                    } else {
+                        return '';
+                    }
                 }
+                return '';
             }
-            return '';
-        }
-    }).filter((item) => item).join(' ');
+        })
+        .filter((item) => item)
+        .join(' ');
 }
 
 export function toYMDHMS(time: number | string) {
     return dayjs(time).format('YYYY-MM-DD HH:mm:ss');
 }
 
-export function enCodePath(path: string): string { // 对特殊字符encode，含%的不允许创建
+export function enCodePath(path: string): string {
+    // 对特殊字符encode，含%的不允许创建
     let str = path;
     const obj: { [key: string]: (name: string) => string } = {
         '?': (name) => name.replace(/\?/g, encodeURIComponent('?')),
@@ -117,9 +125,9 @@ export function enCodePath(path: string): string { // 对特殊字符encode，�
         '&': (name) => name.replace(/&/g, encodeURIComponent('&')),
         '/': (name) => name.replace(/\//g, encodeURIComponent('/')),
         '+': (name) => name.replace(/\+/g, encodeURIComponent('+'))
-    };    
+    };
     for (const ff of Object.keys(obj)) {
-        if(str.includes(ff)){
+        if (str.includes(ff)) {
             str = obj[ff](str);
         }
     }
@@ -137,6 +145,6 @@ export function getBranch() {
 
 export function getPageIndex() {
     const searchParams = new URLSearchParams(location.hash.split('?').pop());
-    const index = Number(searchParams.get('pageIndex')) || 0;    
+    const index = Number(searchParams.get('pageIndex')) || 0;
     return index;
 }

@@ -1,8 +1,8 @@
 import React, { useEffect, Component, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { message } from 'antd';
-import { requestLocal, toYMDHMS } from '../../../utils';
-import CommitsGraph from '../../../components/Graph/CommitGraph';
+import { requestLocal, toYMDHMS } from '@src/utils';
+import CommitsGraph from '@src/components/Graph/CommitGraph';
 import styles from './RepoGroph.css';
 
 interface CommitInfo {

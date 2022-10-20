@@ -1,5 +1,5 @@
 import React from 'react';
-import { withRouter, Switch, Route, RouteComponentProps, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import styles from './DaoIndex.css';
 import Logo2Icon from '@src/assets/images/logo2.png';
 import BannerHandIcon from '@src/assets/images/banner_hand.png';

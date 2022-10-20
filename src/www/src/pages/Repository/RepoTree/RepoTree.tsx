@@ -1,15 +1,11 @@
 import React, { useEffect } from 'react';
-
 import { useParams } from 'react-router-dom';
 import { Spin } from 'antd';
-import {
-    repositoryChildPath,
-    useCleanSwitchPath
-} from '../../../stores/repository';
+import { repositoryChildPath, useCleanSwitchPath } from '@src/stores/repository';
 import RepoFiles from '../../RepoFiles/RepoFiles';
 import { useRepoFile } from '../../RepoFile/RepoFile';
 import { useSetRecoilState } from 'recoil';
-import { getBranch } from '../../../utils';
+import { getBranch } from '@src/utils';
 
 // RepoTree 仓库下的文件树
 const RepoTree: React.FC = () => {
@@ -19,15 +15,19 @@ const RepoTree: React.FC = () => {
     // const [branch] = useRecoilState(repositoryCurrentBranchAtom)
     const branch = getBranch();
 
-    const { data, loading, fileFullPath } = useRepoFile({
-        name: object_id,
-        owner: owner,
-        author_name: owner,
-        file_name: '',
-        path: '',
-        hash: '',
-        branch: branch
-    }, 'tree', branch);
+    const { data, loading, fileFullPath } = useRepoFile(
+        {
+            name: object_id,
+            owner: owner,
+            author_name: owner,
+            file_name: '',
+            path: '',
+            hash: '',
+            branch: branch
+        },
+        'tree',
+        branch
+    );
 
     useEffect(() => {
         let isSubscribed = true;
@@ -35,14 +35,16 @@ const RepoTree: React.FC = () => {
             setRepositoryChildPath(fileFullPath);
             cleanRepositoryPathData();
         }
-        return () => {isSubscribed = false;};
+        return () => {
+            isSubscribed = false;
+        };
     }, [fileFullPath]);
 
-    if (loading || data === undefined ) {
+    if (loading || data === undefined) {
         return <Spin />;
     }
 
-    const fileData:RepoFileList = {
+    const fileData: RepoFileList = {
         files: [],
         readme: {
             content: '',
@@ -56,7 +58,7 @@ const RepoTree: React.FC = () => {
         }
     }
 
-    return <RepoFiles data={ fileData }/>;
+    return <RepoFiles data={fileData} />;
 };
 
 export default RepoTree;

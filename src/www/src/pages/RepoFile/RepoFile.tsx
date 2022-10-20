@@ -1,8 +1,8 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { toYMDHMS, requestTarget, useRequestShadow, requestLocal } from '../../utils/index';
+import { toYMDHMS, requestTarget, useRequestShadow, requestLocal } from '@src/utils/index';
 import { Spin } from 'antd';
-import { requestFileData } from '../../types';
+import { requestFileData } from '@src/types';
 import { useTranslation } from 'react-i18next';
 import styles from './RepoFile.css';
 

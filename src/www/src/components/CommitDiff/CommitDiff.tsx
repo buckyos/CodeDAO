@@ -1,6 +1,5 @@
 import React from 'react';
 import styles from './CommitDiff.module.less';
-import { DiffLineData } from '../../common/types';
 
 const CommitDiff: React.FC<CommitDiffProps> = ({ diffData, header = true }) => {
     return (

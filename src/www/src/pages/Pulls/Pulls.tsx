@@ -1,8 +1,8 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { Spin, Tag } from 'antd';
-import { toYMDHMS, requestLocal, useRequestShadow } from '../../utils';
-import { ResponseMerge, ResponseMergeList } from '../../types/index';
+import { toYMDHMS, requestLocal, useRequestShadow } from '@src/utils';
+import { ResponseMerge, ResponseMergeList } from '@src/types/index';
 import { useTranslation } from 'react-i18next';
 import styles from './Pulls.css';
 

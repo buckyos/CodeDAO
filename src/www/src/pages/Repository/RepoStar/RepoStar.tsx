@@ -1,12 +1,12 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { stackInfo } from '@src/utils/stack';
-import { repositoryAtom, repositoryStarCountAtom } from '../../../stores/repository';
+import { repositoryAtom, repositoryStarCountAtom } from '@src/stores/repository';
 import { message } from 'antd';
-import { requestTarget, requestLocal } from '../../../utils/index';
+import { requestTarget, requestLocal } from '@src/utils/index';
 import { useRecoilState } from 'recoil';
 import { useTranslation } from 'react-i18next';
-import { userInfoAtom } from '../../../stores/user';
+import { userInfoAtom } from '@src/stores/user';
 import ForkIcon from '@src/assets/images/fork.png';
 import EyeIcon from '@src/assets/images/eye.png';
 import StarIcon from '@src/assets/images/star.png';

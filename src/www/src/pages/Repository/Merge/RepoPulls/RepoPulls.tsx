@@ -1,7 +1,7 @@
 import React from 'react';
 import { withRouter, Link, RouteComponentProps } from 'react-router-dom';
 import { Table, Spin } from 'antd';
-import { requestLocal, requestTarget, useRequest } from '../../../../utils/index';
+import { requestLocal, requestTarget, useRequest } from '@src/utils/index';
 import { useTranslation } from 'react-i18next';
 import styles from './RepoPulls.module.less';
 

@@ -4,11 +4,11 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { stackInfo } from '@src/utils/stack';
-import { validateEmail } from '../../utils/validate/validate';
-import { RequestUserSetting } from '../../types';
-import { userInfoAtom } from '../../stores/user';
-import { requestLocal } from '../../utils';
-import { updateUserInfoCache } from '../../utils/cache';
+import { validateEmail } from '@src/utils/validate/validate';
+import { RequestUserSetting } from '@src/types';
+import { userInfoAtom } from '@src/stores/user';
+import { requestLocal } from '@src/utils';
+import { updateUserInfoCache } from '@src/utils/cache';
 import { useTranslation } from 'react-i18next';
 import styles from './UserSetting.module.less';
 

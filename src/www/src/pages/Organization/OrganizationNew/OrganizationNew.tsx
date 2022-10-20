@@ -1,9 +1,9 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { message, Input } from 'antd';
-import { requestLocal } from '../../../utils/index';
-import { RequestOrganizationCreate } from '../../../types';
-import { validateEmail, validateName } from '../../../utils/validate/validate';
+import { requestLocal } from '@src/utils/index';
+import { RequestOrganizationCreate } from '@src/types';
+import { validateEmail, validateName } from '@src/utils/validate/validate';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import styles from './OrganizationNew.module.less';

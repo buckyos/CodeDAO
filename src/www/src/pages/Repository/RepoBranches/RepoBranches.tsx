@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRecoilState } from 'recoil';
-import { branchesAtom } from '../../../stores/repository';
+import { branchesAtom } from '@src/stores/repository';
 import styles from './RepoBranches.css';
 
 const RepoBranches: React.FC = () => {

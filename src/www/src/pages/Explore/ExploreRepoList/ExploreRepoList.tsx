@@ -2,7 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { Spin } from 'antd';
 import { getPageIndex, requestLocal, toYMDHMS, useRequest } from '../../../utils';
-import { PaginationBottom } from '../../../components/Pagination/Pagination';
+import { PaginationBottom } from '@src/components/Pagination/Pagination';
 import { useTranslation } from 'react-i18next';
 import PrivateImg from '@src/assets/images/private.png';
 import OpenImg from '@src/assets/images/open.png';

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import { toYMDHMS, requestLocal } from '../../utils';
+import { toYMDHMS, requestLocal } from '@src/utils';
 import { message } from 'antd';
-import { ResponseCheckUser } from '../../types';
-import { userInfoAtom } from '../../stores/user';
-import UserLogo from '../../components/UserLogo/UserLogo';
+import { ResponseCheckUser } from '@src/types';
+import { userInfoAtom } from '@src/stores/user';
+import UserLogo from '@src/components/UserLogo/UserLogo';
 import { useRecoilState } from 'recoil';
-import { PaginationBottom } from '../../components/Pagination/Pagination';
+import { PaginationBottom } from '@src/components/Pagination/Pagination';
 import { useTranslation } from 'react-i18next';
 import UserRepoCheckedImg from '@src/assets/images/user_repo_checked.png';
 import UserRepoImg from '@src/assets/images/user_repo.png';

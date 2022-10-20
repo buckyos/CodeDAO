@@ -1,9 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
 import { requestLocal } from '@src/utils/request';
-import { userInfoAtom } from '../../../stores/user';
-import { toYMDHMS } from '../../../utils';
+import { toYMDHMS } from '@src/utils';
 import PrivateImg from '@src/assets/images/private.png';
 import OpenImg from '@src/assets/images/open.png';
 import styles from './OrganizationRepository.css';

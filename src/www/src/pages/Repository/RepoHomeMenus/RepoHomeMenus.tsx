@@ -1,10 +1,8 @@
 import React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import { message } from 'antd';
-import { userInfoAtom } from '../../../stores/user';
 import { useRecoilState } from 'recoil';
 import { useTranslation } from 'react-i18next';
-import { repositoryAtom, repositorySettingAtom } from '../../../stores/repository';
+import { repositoryAtom, repositorySettingAtom } from '@src/stores/repository';
 import FileIcon from '@src/assets/images/file.png';
 import FileCheckedIcon from '@src/assets/images/file_checked.png';
 import IssueIcon from '@src/assets/images/issue.png';

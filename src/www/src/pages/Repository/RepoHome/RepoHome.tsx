@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { Switch, Route, useParams } from 'react-router-dom';
-
 import { message, Spin } from 'antd';
 import RepoDetailTabs from '../RepoHomeMenus/RepoHomeMenus';
 import RepoIssue from '../Issue/RepoIssue/RepoIssue';
@@ -18,8 +17,8 @@ import {
     repositoryLastCommitAtom,
     repositoryStarCountAtom,
     repositorySettingAtom
-} from '../../../stores/repository';
-import { requestLocal, requestTarget } from '../../../utils/index';
+} from '@src/stores/repository';
+import { requestLocal, requestTarget } from '@src/utils/index';
 import RepoIssueNew from '../Issue/RepoIssueNew/RepoIssueNew';
 import RepoIssueDetail from '../Issue/RepoIssueDetail/RepoIssueDetail';
 import * as _ from 'lodash';

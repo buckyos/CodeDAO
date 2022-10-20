@@ -1,6 +1,6 @@
 import React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import { branchesAtom } from '../../../../stores/repository';
+import { branchesAtom } from '@src/stores/repository';
 import { useRecoilState } from 'recoil';
 import { useTranslation } from 'react-i18next';
 import { ForkOutlined } from '@ant-design/icons';

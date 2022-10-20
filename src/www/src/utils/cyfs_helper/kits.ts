@@ -1,7 +1,5 @@
-/* eslint-disable @typescript-eslint/no-empty-interface */
-/**
- * cyfs零散的工具类函数
- */
+// cyfs scattered utility functions
+
 import * as cyfs from 'cyfs-sdk';
 
 export async function listObjects(
@@ -136,9 +134,9 @@ export function toNONObjectInfo(obj: AsObject): cyfs.NONObjectInfo {
 
 export function fromNONObjectInfo<O extends AsObject>(
     nonObj: cyfs.NONObjectInfo,
-    decoderGen: new () => AsDecoderFromRaw<O>
+    DecoderGen: new () => AsDecoderFromRaw<O>
 ): cyfs.BuckyResult<O> {
-    return new decoderGen().from_raw(nonObj.object_raw);
+    return new DecoderGen().from_raw(nonObj.object_raw);
 }
 
 export function wrapPostResponseResult(
@@ -181,7 +179,7 @@ export function checkObjectIdArray(ids: Array<Uint8Array>): {
 }
 
 /**
- * 校验peopleId数组
+ * Check the peopleId array
  * @param ids
  * @returns
  */

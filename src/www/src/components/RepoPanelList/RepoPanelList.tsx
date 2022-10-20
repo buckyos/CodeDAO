@@ -1,6 +1,6 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { repositorysAtom } from '../../stores/repository';
+import { repositorysAtom } from '@src/stores/repository';
 import { useRecoilState } from 'recoil';
 import PrivateImg from '@src/assets/images/private.png';
 import OpenImg from '@src/assets/images/open.png';

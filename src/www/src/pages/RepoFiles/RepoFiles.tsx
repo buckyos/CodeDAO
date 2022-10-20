@@ -5,9 +5,9 @@ import {
     repositoryCurrentBranchAtom,
     repositoryLastCommitAtom,
     useCleanSwitchPath
-} from '../../stores/repository';
-import { enCodePath, toYMDHMS } from '../../utils';
-import { MdShow } from '../../components/MdShow/MdShow';
+} from '@src/stores/repository';
+import { enCodePath, toYMDHMS } from '@src/utils';
+import { MdShow } from '@src/components/MdShow/MdShow';
 import { useRecoilState } from 'recoil';
 import DirLogoIcon from '@src/assets/images/dir_logo.png';
 import FileLogoIcon from '@src/assets/images/file_logo.png';

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef } from 'react';
-import { modalStore } from '../../stores/modal';
+import { modalStore } from '@src/stores/modal';
 import QRCode from 'qrcode';
 import { Observer } from 'mobx-react';
 import { Modal } from 'antd';

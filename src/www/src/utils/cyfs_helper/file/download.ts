@@ -4,7 +4,7 @@ import * as cyfs from 'cyfs-sdk';
 import { makeBuckyErr } from '../kits';
 
 /**
- * TODO: 把文件本身的owner作为加速节点
+ * TODO: Use the owner of the file itself as the acceleration node
  */
 export enum DownloadFileTaskState {
     STANDBY = 0,
@@ -16,10 +16,10 @@ export enum DownloadFileTaskState {
 }
 
 export interface DownloadFileTaskEvent {
-    on: ((event: 'state', listener: () => void) => this) & // 文件上传/下载任务状态改变
-        ((event: 'progress', listener: () => void) => this) & // 文件上传/下载进度改变
-        ((event: 'name', listener: () => void) => this) & // 名字改变
-        ((event: 'total', listener: () => void) => this); // 大小改变
+    on: ((event: 'state', listener: () => void) => this) & // File upload/download task status change
+        ((event: 'progress', listener: () => void) => this) & // File upload/download progress changes
+        ((event: 'name', listener: () => void) => this) & // name change
+        ((event: 'total', listener: () => void) => this); // size change
 }
 
 export class DownloadFileTask extends EventEmitter implements DownloadFileTaskEvent {
@@ -46,7 +46,7 @@ export class DownloadFileTask extends EventEmitter implements DownloadFileTaskEv
         options: {
             stack: cyfs.SharedCyfsStack;
             owner?: cyfs.PeopleId;
-            mainDeviceIdOrTaskId?: cyfs.DeviceId | string; // 续传任务填TaskId(string)
+            mainDeviceIdOrTaskId?: cyfs.DeviceId | string; // Fill in TaskId(string) for the resumed task
             accDeviceList: cyfs.DeviceId[];
             decId: cyfs.ObjectId;
         }
@@ -314,7 +314,7 @@ export class DownloadFileTask extends EventEmitter implements DownloadFileTaskEv
             }
         }
 
-        // 无主文件，只能靠传入设备作为下载源
+        // No owner file, can only rely on the incoming device as the download source
         if (!ownerId) {
             return cyfs.Ok(undefined);
         }

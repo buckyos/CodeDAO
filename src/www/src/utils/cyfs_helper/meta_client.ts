@@ -1,5 +1,8 @@
 import * as cyfs from 'cyfs-sdk';
-import { EnvTarget } from './constant';
+export enum EnvTarget {
+    NIGHTLY = 'nightly',
+    BETA = 'beta'
+}
 
 export class MetaClientWraper {
     protected m_metaChain: cyfs.MetaClient;

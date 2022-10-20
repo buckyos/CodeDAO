@@ -8,7 +8,7 @@ import {
     repositoryCommitCountAtom,
     repositoryCurrentBranchAtom,
     repositoryReleaseCountAtom
-} from '../../../../stores/repository';
+} from '@src/stores/repository';
 import RepoHomeCodeHeaderBranch from '../RepoHomeCodeBranch/RepoHomeCodeBranch';
 import { useHistory, useParams } from 'react-router-dom';
 import { useRecoilState } from 'recoil';

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Spin } from 'antd';
 import { responseUser } from '@src/types';
-import { getPageIndex, requestLocal, useRequest } from '../../../utils/index';
+import { getPageIndex, requestLocal, useRequest } from '@src/utils/index';
 import { useHistory } from 'react-router-dom';
-import UserLogo from '../../../components/UserLogo/UserLogo';
-import { PaginationBottom } from '../../../components/Pagination/Pagination';
+import UserLogo from '@src/components/UserLogo/UserLogo';
+import { PaginationBottom } from '@src/components/Pagination/Pagination';
 import { useTranslation } from 'react-i18next';
 import styles from './UserList.css';
 

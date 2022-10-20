@@ -3,13 +3,12 @@ import { useHistory, useParams } from 'react-router-dom';
 import { message } from 'antd';
 import { useRecoilState } from 'recoil';
 import { useTranslation } from 'react-i18next';
-import { requestLocal } from '../../../../utils/index';
+import { requestLocal } from '@src/utils/index';
 import { stackInfo } from '@src/utils/stack';
-import UserLogo from '../../../../components/UserLogo/UserLogo';
-import Editor from '../../../../components/Editor/Editor';
-import { classSet } from '../../../../utils/util';
+import UserLogo from '@src/components/UserLogo/UserLogo';
+import Editor from '@src/components/Editor/Editor';
 import styles from './RepoIssueNew.module.less';
-import { userInfoAtom } from '../../../../stores/user';
+import { userInfoAtom } from '@src/stores/user';
 
 const RepoIssueNew: React.FC = () => {
     const { owner, object_id } = useParams<RepoUrlParams>();

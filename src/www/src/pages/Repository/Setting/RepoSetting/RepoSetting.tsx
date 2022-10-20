@@ -1,10 +1,10 @@
 import React from 'react';
 import { Switch, useHistory, useParams, Route, useLocation } from 'react-router-dom';
-import { classSet } from '../../../../utils/index';
+import { classSet } from '@src/utils/index';
 import RepoSettingMember from '../Member/Member';
 import RepoSettingDefault from '../Default/Default';
 import { useRecoilState } from 'recoil';
-import { userInfoAtom } from '../../../../stores/user';
+import { userInfoAtom } from '@src/stores/user';
 import { useTranslation } from 'react-i18next';
 import styles from './RepoSetting.css';
 
@@ -30,9 +30,7 @@ const RepoSetting: React.FC = () => {
         { name: 'Branch', navPath: '/branch' }
     ];
 
-    const settingNavMap = isAdmin ?
-        [{ name: t('repository.settings.tabbar.repository'), navPath: '' }, ...baseMap] :
-        baseMap;
+    const settingNavMap = isAdmin ? [{ name: t('repository.settings.tabbar.repository'), navPath: '' }, ...baseMap] : baseMap;
 
     React.useEffect(() => {
         const current = locationState.pathname.replace(`/${owner}/${object_id}/setting`, '');

@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import styles from './PersonPageCommonTitle.module.less';
 import defaultIcon from '@src/assets/images/logo.png';
-import * as cyfs from 'cyfs-sdk';
-import { queryPeopleInfo } from '../../apis/user';
 
 interface Props {
-	title?: string;
-	icon?: string;
+    title?: string;
+    icon?: string;
 }
 
 export default function PersonPageCommonTitle({ title = '', icon }: Props) {

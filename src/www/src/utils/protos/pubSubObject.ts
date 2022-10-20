@@ -131,10 +131,6 @@ export class PubSubObjectDescDecoder extends cyfs.NamedObjectDescDecoder<PubSubO
 }
 
 export class PubSubObjectBodyContent extends cyfs.ProtobufBodyContent {
-    public constructor() {
-        super();
-    }
-
     public try_to_proto(): cyfs.BuckyResult<protos.NoneObject> {
         return cyfs.Ok(new protos.NoneObject());
     }

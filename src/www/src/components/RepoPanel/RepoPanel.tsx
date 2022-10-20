@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { message } from 'antd';
-import { repositorysAtom } from '../../stores/repository';
+import { repositorysAtom } from '@src/stores/repository';
 import RepoPanelList from '../RepoPanelList/RepoPanelList';
-import { requestLocal } from '../../utils/index';
+import { requestLocal } from '@src/utils/index';
 import { useRecoilState } from 'recoil';
 import { useTranslation } from 'react-i18next';
 import BookIcon from '@src/assets/images/book.png';
@@ -43,9 +43,7 @@ const RepoPanel: React.FC = () => {
         console.log('request local', r);
         if (r.data) {
             const data =
-                isSearch || pageIndex === 0 ?
-                    r.data.data :
-                    Array.from(new Set(repositorys.concat(r.data.data)));
+                isSearch || pageIndex === 0 ? r.data.data : Array.from(new Set(repositorys.concat(r.data.data)));
             setRepositorys(data);
             setTotal(r.data!.count);
         }

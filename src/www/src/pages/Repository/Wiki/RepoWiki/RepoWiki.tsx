@@ -1,13 +1,13 @@
-import { message, Spin } from 'antd';
-import React, { useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
-import { enCodePath, requestTarget } from '../../../../utils';
-import style from './RepoWiki.css';
-import { MdShow } from '../../../../components/MdShow/MdShow';
-import { ResponseIssue } from '../../../../common/types';
-import dayjs from 'dayjs';
+// import { message, Spin } from 'antd';
+import React from 'react';
+// import { useHistory, useParams } from 'react-router-dom';
+// import { enCodePath, requestTarget } from '@src/utils';
+// import style from './RepoWiki.css';
+// import { MdShow } from '@src/components/MdShow/MdShow';
+// import { ResponseIssue } from '@src/types';
+// import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
-import WikiDownIcon from '@src/assets/images/wiki_down.png';
+// import WikiDownIcon from '@src/assets/images/wiki_down.png';
 
 export const PageNameDate: React.FC<{ page: ResponseRepoWikiPage }> = ({ page }) => {
     // if(!page.publisher_id){

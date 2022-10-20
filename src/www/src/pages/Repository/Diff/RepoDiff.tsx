@@ -1,10 +1,9 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { requestLocal, useRequestShadow } from '../../../utils/index';
+import { requestLocal, useRequestShadow } from '@src/utils/index';
 import { Skeleton } from 'antd';
-import CommitDiff from '../../../components/CommitDiff/CommitDiff';
+import CommitDiff from '@src/components/CommitDiff/CommitDiff';
 import dayjs from 'dayjs';
-// @ts-ignore
 import styles from './RepoDiff.css';
 
 const RepoDiff: React.FC = () => {
@@ -31,7 +30,7 @@ const RepoDiff: React.FC = () => {
     // console.log("RepoDiff ", resp)
     const info = data.data.header_info;
     const author = JSON.parse(info.author);
-    const date = dayjs.unix(author.date.split(" ")[0]).format('YYYY-MM-DD');
+    const date = dayjs.unix(author.date.split(' ')[0]).format('YYYY-MM-DD');
 
     return (
         <div className={styles.main}>

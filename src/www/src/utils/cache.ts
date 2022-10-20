@@ -1,7 +1,7 @@
 import { now } from 'lodash';
 // import type {cacheDataStruct, cacheResponse} from '../../@types/index'
 import _ from 'lodash';
-import { responseUser } from '../common/types';
+// import { responseUser } from '../types';
 
 export function cacheSet(key: string, data: string | Object, ttl: number) {
     const value: cacheDataStruct = {

@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { Modal, message } from 'antd';
-import { commitModelAtom } from '../../stores/commit';
+import { commitModelAtom } from '@src/stores/commit';
 import { observer } from 'mobx-react';
 import { RequestCommits, ResponseCommit } from '@src/types';
-import { toYMDHMS, requestLocal } from '../../utils';
+import { toYMDHMS, requestLocal } from '@src/utils';
 
-import { NftModal, NftIcon } from '../../components/NftModal/Nft';
+import { NftModal, NftIcon } from '@src/components/NftModal/Nft';
 import { useSetRecoilState } from 'recoil';
 import CommitPointIcon from '@src/assets/images/commit_point.png';
 import HashLogoIcon from '@src/assets/images/hash_logo.png';

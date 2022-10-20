@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Pagination, Spin } from 'antd';
-import { getPageIndex, requestLocal, toYMDHMS, useRequest } from '../../../utils/index';
+import { getPageIndex, requestLocal, toYMDHMS, useRequest } from '@src/utils/index';
 import { useHistory } from 'react-router-dom';
-import OrganizationLogo from '../../../components/OrganizationLogo/OrganizationLogo';
-import { PaginationBottom } from '../../../components/Pagination/Pagination';
+import OrganizationLogo from '@src/components/OrganizationLogo/OrganizationLogo';
+import { PaginationBottom } from '@src/components/Pagination/Pagination';
 import { useTranslation } from 'react-i18next';
 import styles from './OrganizationList.css';
 

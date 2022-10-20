@@ -3,7 +3,7 @@ import { useHistory, useParams } from 'react-router-dom';
 import { Spin, Skeleton } from 'antd';
 import { RequestRepoIssue, ResponseRepositoryIssues, ResponseIssueItem } from '@src/types/rpc_def';
 import { CommentOutlined } from '@ant-design/icons';
-import { requestLocal, useRequestShadow } from '../../../../utils/index';
+import { requestLocal, useRequestShadow } from '@src/utils/index';
 import { IssueNameDate } from '../RepoIssueDetail/RepoIssueDetail';
 import styles from './RepoIssue.module.less';
 import { useTranslation } from 'react-i18next';
@@ -60,7 +60,7 @@ const RepoIssue: React.FC = () => {
                     </div>
                 </div>
                 {data.data.issues.map((issue: ResponseIssueItem, key) => {
-                    let icon = issue.status == "open" ? <img src={IssueOpenIcon} alt="" />: <img src={IssueCloseIcon} alt="" />
+                    const icon = issue.status == 'open' ? <img src={IssueOpenIcon} alt="" />: <img src={IssueCloseIcon} alt="" />;
                     return (
                         <div
                             className={styles.listItem}
