@@ -10,9 +10,10 @@
         "www:build:nightly:copy": "npm run www:build:nightly && node tools/copy_js_to_deploy.js",
         "dev": "cd www && cross-env ENV_TYPE=dev npx webpack serve --hot  --mode development --env development",
         "deploy:devtest": "npm run prepare:devtest && npm run www:build:devtest && cd deploy && cyfs deploy",
-        "prepare_protoc": "copy /Y 3rd\\protoc\\bin\\protoc.exe node_modules\\.bin\\ && npm i -g ts-protoc-gen",
-        "protos_core": "protoc.exe --proto_path=./common/protos --js_out=import_style=commonjs,binary:./common/protos --ts_out=./common/protos ./common/protos/objects.proto",
-        "protos": "npm run prepare_protoc && npm run protos_core",
+        "proto-mac-pre": "npm i -g ts-protoc-gen && cd 3rd && chmod 775 protoc",
+        "proto-mac": "cd 3rd && ./protoc --proto_path=../src/utils/protos --js_out=import_style=commonjs,binary:../src/utils/protos --ts_out=../src/utils/protos ../src/utils/protos/objects.proto",
+        "proto-windows-pre": "npm i -g ts-protoc-gen",
+        "proto-windows": "cd 3rd && protoc.exe --proto_path=../src/utils/protos --js_out=import_style=commonjs,binary:../src/utils/protos --ts_out=../src/utils/protos ../src/utils/protos/objects.proto",
         "lint": "eslint \"**/*.{ts,tsx}\"",
         "lint-fix": "eslint \"**/*.{ts,tsx}\" --fix"
     },
