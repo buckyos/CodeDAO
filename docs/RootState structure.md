@@ -1,3 +1,4 @@
+```
 /app
     |--organization
     |   |--list // ORG_LIST_PATH
@@ -35,3 +36,4 @@
     |--username
     |   |--list // USER_NAME_LIST_PATH
     |   |   |--${user.name}-->UserInfo
+```
