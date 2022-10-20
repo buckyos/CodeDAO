@@ -8,7 +8,7 @@
         "www:build:devtest": "cd www && set ENV_TYPE=dev_beta && npx webpack --env production",
         "www:build:nightly": "cd www && cross-env ENV_TYPE=beta npx webpack --env production",
         "www:build:nightly:copy": "npm run www:build:nightly && node tools/copy_js_to_deploy.js",
-        "dev": "cd www && cross-env ENV_TYPE=dev npx webpack serve --hot  --mode development --env development",
+        "dev": "cross-env ENV_TYPE=dev npx webpack serve --hot  --mode development --env development",
         "deploy:devtest": "npm run prepare:devtest && npm run www:build:devtest && cd deploy && cyfs deploy",
         "proto-mac-pre": "npm i -g ts-protoc-gen && cd 3rd && chmod 775 protoc",
         "proto-mac": "cd 3rd && ./protoc --proto_path=../src/utils/protos --js_out=import_style=commonjs,binary:../src/utils/protos --ts_out=../src/utils/protos ../src/utils/protos/objects.proto",
