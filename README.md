@@ -45,8 +45,27 @@ There are also a git-remote-helper component, which named `git-remote-cyfs` to t
 
 (below develop guides part need to be replenish)
 ## Dec App
+Ensure the cyfs service's gateway is running.
+And in `src/service`
+
+```
+cargo build -p dec-app
+```
+
 ## www
+in `src/www` 
+
+```
+npm install
+npm run dev
+```
+
 ## git-remote-cyfs
+In the `src/service`
+```
+cargo build -p git-remote-cyfs
+```
+And copy the result(`target/debug/git-remote-cyfs`) to the excutable path of system.
 
 
 
