@@ -18,13 +18,13 @@
     |   |   |   |--refs
     |   |   |   |   |--${ref.name}-->branch
     |   |   |   |--star
-    |   |   |   |   |--${user.name}-->RepositoryStar
+    |   |   |   |   |--${user.id}-->RepositoryStar
     |   |   |   |--member
     |   |   |   |   |--${user.peopleid}-->repo.member
     |   |   |   |--tree
     |   |   |   |   |--${tree.id}-->Tree
     |   |   |   |--issue
-    |   |   |   |   |--${topic.id}-->Issue
+    |   |   |   |   |--${topic.id}-->Issue // topic.id: Autoincrement
     |   |   |   |--issue_comment
     |   |   |   |   |--${topic.id}
     |   |   |   |   |   |--${comment.id}-->Issue
