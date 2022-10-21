@@ -2,7 +2,7 @@
 
 ```
 ├── 3rd
-| └── protoc //Object protobuf processing
+|   ├──protoc //Object protobuf processing
 ├── .eslintignore // Configuration file to be ignored by eslint
 ├── .eslintrc.js // eslint configuration file
 ├── package.json // cyfs package and upload the dependent node library
