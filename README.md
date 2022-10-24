@@ -72,7 +72,7 @@ And copy the result(`target/debug/git-remote-cyfs`) to the excutable path of sys
 ```
 ├── docs // Document related
 ├── src // Project main folder
-    ├── install // Front-end project folder
+    ├── install
     ├── service // Front-end project folder
         ├── config
         ├── cyfs-git-base
