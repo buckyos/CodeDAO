@@ -6,7 +6,11 @@ import Header from './components/Header/Header';
 import MainRoutes from './routers/MainRoutes';
 import InitUser from './pages/InitUser/InitUser';
 import DaoIndex from './pages/Dao/DaoIndex';
-import { stack, stackInfo } from '@src/utils/stack';
+import {
+    stack,
+    stackInfo
+    // initSimulatorStack
+} from '@src/utils/stack';
 
 import './i18n/i18n';
 import { initWithNativeStack } from './utils/cyfs_helper/stack_wraper';
@@ -41,6 +45,9 @@ const Main = () => {
 };
 
 async function main() {
+    // Simulator debugging
+    // await initSimulatorStack();
+    // if Simulator debugging, this line should be commented
     await stack.online();
     await stackInfo.init();
     // TODO: 重构初始化Stack及api封装

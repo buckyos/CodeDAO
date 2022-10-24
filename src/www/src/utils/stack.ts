@@ -4,13 +4,44 @@ import {
     SharedCyfsStack,
     UtilGetDeviceStaticInfoResponse,
     UtilGetDeviceResponse,
-    DecApp
+    DecApp,
+    SharedCyfsStackParam,
+    JSBI
 } from 'cyfs-sdk';
 
 export const stack = (function () {
     console.log('www open_runtime');
     return SharedCyfsStack.open_runtime();
 })();
+
+// Simulator debugging
+// export let stack: SharedCyfsStack;
+// export async function initSimulatorStack() {
+//     const service_http_port = 21000;
+//     // ws-port of emulator zone1-ood1
+//     const ws_port = 21001;
+//     // cyfs.config.json -> app_id
+//     const decId = ObjectId.from_base_58('9tGpLNnPcyQpfa3URQVhx4odXPfGK5Q9FT8dnEz3id3p').unwrap();
+//     // Parameters are required to open the Simulator SharedCyfsStack
+//     const param = SharedCyfsStackParam.new_with_ws_event_ports(service_http_port, ws_port, decId);
+//     if (param.err) {
+//         console.error(`init SharedCyfsStackParam failed, ${param}`);
+//         return;
+//     }
+//     // Open SharedCyfsStack
+//     stack = SharedCyfsStack.open(param.unwrap());
+//     // Waiting for Stack to go online
+//     while (true) {
+//         const r = await stack.wait_online(JSBI.BigInt(1000000));
+//         if (r.err) {
+//             console.error(`wait online err: ${r.val}`);
+//         } else {
+//             console.info('online success.');
+//             break;
+//         }
+//     }
+// }
+// const appId = ObjectId.from_base_58('9tGpLNnPcyQpfa3URQVhx4odXPfGK5Q9FT8dnEz3id3p').unwrap();
 
 interface CONFIG_MAP {
     [key: string]: string;
@@ -46,7 +77,6 @@ class StackInfo {
         this.device_id = new DeviceId(appID);
         this.owner = appID;
         this.ood_device_id = new DeviceId(appID);
-
         this.appID = appID;
     }
 
