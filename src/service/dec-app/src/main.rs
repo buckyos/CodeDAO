@@ -1,20 +1,18 @@
 //#![windows_subsystem = "windows"]
-use cyfs_lib::*;
-use cyfs_debug::*;
 use async_std::sync::Arc;
-use std::str::FromStr;
-use log::*;
+use cyfs_debug::*;
 use cyfs_git_base::*;
+use cyfs_lib::*;
+use log::*;
+use std::str::FromStr;
 
-mod handler;
 mod controller;
+mod handler;
 mod init;
 mod put_object;
 
-use put_object::*;
 use controller::*;
-
-
+use put_object::*;
 
 #[async_std::main]
 async fn main() {
@@ -36,15 +34,28 @@ async fn main() {
 
     info!("get cyfs-git dec app id: {:?}", dec_id());
     let stack = Arc::new(SharedCyfsStack::open_default(Some(dec_id())).await.unwrap());
+    // Simulator debugging
+    // let parm_obj = SharedCyfsStackParam::new_with_ws_event(
+    //     Some(dec_id()),
+    //     "http://127.0.0.1:21000",
+    //     "ws://127.0.0.1:21001",
+    // )
+    // .unwrap();
+    // let stack = Arc::new(SharedCyfsStack::open(parm_obj).await.unwrap());
     stack.wait_online(None).await.unwrap();
 
     let initor = init::DaohubInit::new(stack.clone());
-    initor.init_stack_helper().await
-    //    .init_current_space().await
-        .init_cache().await
-        .init_sqlite_database().await
-        .init_stack_handler().await.unwrap();
-
+    initor
+        .init_stack_helper()
+        .await
+        //    .init_current_space().await
+        .init_cache()
+        .await
+        .init_sqlite_database()
+        .await
+        .init_stack_handler()
+        .await
+        .unwrap();
 
     async_std::task::block_on(async_std::future::pending::<()>());
 }

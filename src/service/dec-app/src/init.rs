@@ -13,7 +13,7 @@ pub struct DaohubInit {
 
 impl DaohubInit {
     pub fn new(stack: Arc<SharedCyfsStack>) -> Self {
-        DaohubInit { stack: stack }
+        DaohubInit { stack }
     }
 
     pub async fn init_stack_helper(self) -> Self {
@@ -22,13 +22,14 @@ impl DaohubInit {
         // init STACK_ACTION
         let _ = STACK_ACTION.set(StackActionStruct {
             stack: self.stack.clone(),
-            owner: owner,
+            owner,
             dec_id: dec_id(),
         });
         info!("init stack action(helper) ok");
         self
     }
 
+    #[allow(dead_code)]
     pub async fn init_current_space(self) -> Self {
         if set_current_space(&self.stack).await.is_err() {
             info!("set current space failed, maybe no init");
@@ -62,29 +63,26 @@ impl DaohubInit {
         meta.add_access(GlobalStatePathAccessItem {
             path: DEC_APP_HANDLER.to_string(),
             access: GlobalStatePathGroupAccess::Default(access.value()),
-        }).await?;
-	info!("add path access ok");
+        })
+        .await?;
+        info!("add path access ok");
         //meta.add_access(GlobalStatePathAccessItem {
         //    path: DEC_APP_OBJECT.to_string(),
         //    access: GlobalStatePathGroupAccess::Default(access.value()),
         //})
         //.await?;
 
-
-
-        self.stack
-            .router_handlers()
-            .add_handler(
-                RouterHandlerChain::Handler,
-                "common-post-object-handler",
-                -1,
-                None,
-                Some(DEC_APP_HANDLER.to_string()),
-                RouterHandlerAction::Reject,
-                Some(Box::new(listener)),
-            )?;
+        self.stack.router_handlers().add_handler(
+            RouterHandlerChain::Handler,
+            "common-post-object-handler",
+            -1,
+            None,
+            Some(DEC_APP_HANDLER.to_string()),
+            RouterHandlerAction::Pass,
+            Some(Box::new(listener)),
+        )?;
         info!("init stack handlers ok");
 
-	Ok(self)
+        Ok(self)
     }
 }
