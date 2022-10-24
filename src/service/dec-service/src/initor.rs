@@ -1,7 +1,7 @@
 use cyfs_base::*;
 use cyfs_debug::*;
-use cyfs_lib::*;
 use cyfs_git_base::*;
+use cyfs_lib::*;
 // use cyfs_core::*;
 use async_std::sync::Arc;
 use log::*;
@@ -17,7 +17,20 @@ impl DaohubServiceInit {
     pub async fn new_with_stack(dec_id: Option<ObjectId>) -> Self {
         let stack = Arc::new(SharedCyfsStack::open_default(dec_id).await.unwrap());
         stack.wait_online(None).await.unwrap();
-        Self { stack: stack }
+        Self { stack }
+    }
+
+    #[allow(dead_code)]
+    pub async fn new_with_stack_simulator(
+        service_http_port: &str,
+        ws_port: &str,
+        dec_id: Option<ObjectId>,
+    ) -> Self {
+        let parm_obj =
+            SharedCyfsStackParam::new_with_ws_event(dec_id, service_http_port, ws_port).unwrap();
+        let stack = Arc::new(SharedCyfsStack::open(parm_obj).await.unwrap());
+        stack.wait_online(None).await.unwrap();
+        Self { stack }
     }
 
     pub fn init_process_check() {
@@ -85,11 +98,13 @@ impl DaohubServiceInit {
 
         let meta = self.stack.root_state_meta_stub(None, Some(dec_id()));
         let access = AccessString::full();
-        let _ = meta.add_access(GlobalStatePathAccessItem {
-            path: DEC_SERVICE_HANDLER.to_string(),
-            access: GlobalStatePathGroupAccess::Default(access.value()),
-        }).await.unwrap();
-
+        let _ = meta
+            .add_access(GlobalStatePathAccessItem {
+                path: DEC_SERVICE_HANDLER.to_string(),
+                access: GlobalStatePathGroupAccess::Default(access.value()),
+            })
+            .await
+            .unwrap();
 
         self.stack
             .router_handlers()
@@ -104,7 +119,6 @@ impl DaohubServiceInit {
             )
             .unwrap();
         info!("init stack handlers ok");
-
 
         self
     }
