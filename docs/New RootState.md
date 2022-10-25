@@ -3,8 +3,7 @@
 |   |--${org.name}
 |   |   |--info-->organization
 |   |`  |--members
-|   |   |   |--${org.name}
-|   |   |   |   |--${member.name}-->org.member
+|   |   |   |--${member.name}-->org.member
 |   |   |--repos
 |   |   |   |--${repo.name}-->repo
 |--repo
