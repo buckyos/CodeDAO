@@ -16,14 +16,14 @@ export const stack = (function () {
 
 // Simulator debugging
 // export let stack: SharedCyfsStack;
+// // you can get from code-dao-service console,such as `get cyfs-git dec app id: 9tGpLNnSSRzEN5gRmdB77yTtmdsFMqzs3U9z2QWEuDDK`
+// const appID = ObjectId.from_base_58('9tGpLNnSSRzEN5gRmdB77yTtmdsFMqzs3U9z2QWEuDDK').unwrap();
 // export async function initSimulatorStack() {
 //     const service_http_port = 21000;
 //     // ws-port of emulator zone1-ood1
 //     const ws_port = 21001;
-//     // cyfs.config.json -> app_id
-//     const decId = ObjectId.from_base_58('9tGpLNnPcyQpfa3URQVhx4odXPfGK5Q9FT8dnEz3id3p').unwrap();
 //     // Parameters are required to open the Simulator SharedCyfsStack
-//     const param = SharedCyfsStackParam.new_with_ws_event_ports(service_http_port, ws_port, decId);
+//     const param = SharedCyfsStackParam.new_with_ws_event_ports(service_http_port, ws_port, appID);
 //     if (param.err) {
 //         console.error(`init SharedCyfsStackParam failed, ${param}`);
 //         return;
@@ -41,7 +41,6 @@ export const stack = (function () {
 //         }
 //     }
 // }
-// const appId = ObjectId.from_base_58('9tGpLNnPcyQpfa3URQVhx4odXPfGK5Q9FT8dnEz3id3p').unwrap();
 
 interface CONFIG_MAP {
     [key: string]: string;
