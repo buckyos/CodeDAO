@@ -147,8 +147,5 @@ Git--fail-->UpdateVersionStateDoneReqFail[consensus: branch_version.status=Stand
 2. 用户端`DAO化`
     - 参照前面共识过程的划分，设计新的 RootState
     - 去掉第一次启动的用户初始化过程，用`PeopleId`替代旧的`User.name`，实现跨应用的账号一体化
-    - 做第一个带共识的功能，积攒经验，并提高共识框架的易用性
+    - 做第一个带共识的功能(`Repo成员管理`)，积攒经验，并提高共识框架的易用性
     - 集中力量进行多产权改造
-3. 广场端`Fake`实现
-
-    参照`用户端`积累经验进行 DAO 化
