@@ -72,14 +72,14 @@ And copy the result(`target/debug/git-remote-cyfs`) to the excutable path of sys
 ```
 ├── docs // Document related
 ├── src // Project main folder
-    ├── install
-    ├── service // Front-end project folder
-        ├── config
-        ├── cyfs-git-base
-        ├── dec-app
-        ├── dec-service
+    ├── install // install git-remote-cyfs in windows
+    ├── service // services project folder
+        ├── config // config file
+        ├── cyfs-git-base // base lib
+        ├── code-dao-service // code-dao service
+        ├── square-service // square service
         ├── git-remote-cyfs
-        ├── proto
+        ├── proto // service protobuf with rust
         ├── service-manager
         ├── testcase
         └── Cargo.toml
@@ -108,6 +108,10 @@ And copy the result(`target/debug/git-remote-cyfs`) to the excutable path of sys
             └── utils // utility file
 ├── tools // Tool program folder, such as emulator program
 ```
+
+# Run in zone-simulator
+
+See docs/Run in zone-simulator.md
 
 # TODOList
 
