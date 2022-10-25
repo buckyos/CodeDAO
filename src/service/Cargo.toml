@@ -2,8 +2,8 @@
 resolver = "2"
 
 members = [
-    "./dec-app",
-    "./dec-service",
+    "./code-dao-service",
+    "./square-service",
     "./proto",
     "./testcase",
     "./cyfs-git-base",
