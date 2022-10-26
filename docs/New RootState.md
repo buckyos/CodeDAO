@@ -1,3 +1,5 @@
+# code-dao-service RootState
+
 ```
 |--organization
 |   |--${org.name}
@@ -23,9 +25,6 @@
 |   |   |--issues
 |   |   |   |--${topic.id}-->Issue // topic.id: Autoincrement
 |--user
-|   |--list // USER_LIST_PATH
-|   |   |--${user.peopleid}-->UserInfo
-|--username
-|   |--list // USER_NAME_LIST_PATH
-|   |   |--${user.name}-->UserInfo
+|   |--info -->UserInfo
+
 ```
