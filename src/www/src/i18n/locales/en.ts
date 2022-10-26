@@ -21,9 +21,9 @@ const base = {
     'home.repository.show.more': 'Show more',
     'home.activity.title': 'All activity',
     'home.activity.prompt':
-		'No data currently available, follow interesting projects and users to expand your feed',
+        'No data currently available, follow interesting projects and users to expand your feed',
     'home.activity.desc':
-		'Your feed helps you keep track of the latest records of repositories and users you follow',
+        'Your feed helps you keep track of the latest records of repositories and users you follow',
     'home.activity.explore': 'Explore',
     'user.info.repositorys': 'Repositories',
     'user.info.activity': 'Activity',
@@ -52,13 +52,12 @@ const base = {
     'create.repository.owner': 'Owner',
     'create.repository.name': 'Name',
     'create.repository.name.remark':
-		'Great repository names are generally short, impressive, and unique',
+        'Great repository names are generally short, impressive, and unique',
     'create.repository.visibility': 'Visibility',
     'create.repository.public': 'Public',
     'create.repository.private': 'Private',
     'create.repository.description': 'Description',
-    'create.repository.description.remark':
-		'Repository description, up to 512 characters',
+    'create.repository.description.remark': 'Repository description, up to 512 characters',
     'create.repository.gitignore': '.gitignore',
     'create.repository.gitignore.remark': 'Select the .gitignore template',
     'create.repository.license': 'License',
@@ -73,8 +72,7 @@ const base = {
     'create.organization.cancel': 'Cancel',
     'repository.empty.title': 'Quick help',
     'repository.empty.new.text': 'Create a new repository from the command line',
-    'repository.empty.push.text':
-		'Push an already created repository from the command line',
+    'repository.empty.push.text': 'Push an already created repository from the command line',
     'repository.tab.file': 'File',
     'repository.tab.issue': 'Issue',
     'repository.tab.pull.request': 'Pull requests',
@@ -104,8 +102,7 @@ const base = {
     'repository.file.release.new.content.input': 'Please enter content',
     'repository.file.release.new.btn': 'Release version',
     'repository.file.release.new.prompt': 'prompt', // 提示
-    'repository.file.release.new.prompt.delete':
-		'Whether to delete this version release', // 是否删除此次版本发布
+    'repository.file.release.new.prompt.delete': 'Whether to delete this version release', // 是否删除此次版本发布
     'repository.file.tag.update.btn': 'Updated version',
     'repository.file.tag.delete.btn': 'Delete version',
     'repository.file.tag.cancel': 'Cancel',
@@ -113,15 +110,15 @@ const base = {
     'repository.file.tag.detail.download': 'Download attachments',
     'repository.file.tag.detail.code': 'Source code',
     'repository.file.display.too_big':
-		'Current file size is too large. File ontent can not displayed',
+        'Current file size is too large. File ontent can not displayed',
     'repository.file.display.not_suport_type':
-		'Current file extension type does not support display',
+        'Current file extension type does not support display',
     'repository.pull.create.btn': 'New pull request',
     'repository.pull.list.title': 'Pull request',
     'repository.pull.list.status': 'Status',
     'repository.pull.create.title': 'New merge request',
     'repository.pull.create.description':
-		'Please select the source and target branches of the merge request and view the commit history and file changes. After merging, the target branch will contain the changes from the source branch.',
+        'Please select the source and target branches of the merge request and view the commit history and file changes. After merging, the target branch will contain the changes from the source branch.',
     'repository.pull.create.source.branch': 'Source branch',
     'repository.pull.create.pull': 'Merge to',
     'repository.pull.create.traget.branch': 'Traget branch',
@@ -141,8 +138,7 @@ const base = {
     'repository.settings.repository.private': 'Set to private',
     'repository.settings.repository.delete': 'Delete',
     'repository.settings.repository.prompt': 'prompt', // 提示
-    'repository.settings.repository.delete.text':
-		'Whether to delete the repository',
+    'repository.settings.repository.delete.text': 'Whether to delete the repository',
     'repository.settings.repository.switch.text': 'Whether to repository',
     'repository.settings.tabbar.member': 'Member',
     'repository.settings.member.title': 'Member management',
@@ -171,7 +167,7 @@ const errorPrompt = {
     'error.repository.new.name.empty': 'Repository name cannot be empty',
     'error.repository.new.name': 'Repository name',
     'error.repository.new.format':
-		'incorrect format: only supports alphanumeric underscore_, and at least 3 characters, can only start with numbers or letters',
+        'incorrect format: only supports alphanumeric underscore_, and at least 3 characters, can only start with numbers or letters',
     'error.repository.new.owner.empty': 'Please select a repository owner',
     'error.repository.new.fail': 'Failed to create',
     'error.release.download': 'Download error',
@@ -182,7 +178,7 @@ const errorPrompt = {
     'error.organization.new.name.empty': 'Organization name cannot be empty',
     'error.organization.new.name': 'Organization name',
     'error.organization.new.format':
-		'incorrect format: only supports alphanumeric underscore_, and at least 3 characters, can only start with numbers or letters',
+        'incorrect format: only supports alphanumeric underscore_, and at least 3 characters, can only start with numbers or letters',
     'error.organization.new.email.empty': 'Email cannot be empty',
     'error.organization.new.email': 'Email',
     'error.organization.new.email.format': 'incorrect format',
@@ -191,7 +187,7 @@ const errorPrompt = {
     'error.user.new.email.empty': 'Email cannot be empty',
     'error.user.new.name': 'Name',
     'error.user.new.name.format':
-		'incorrect format: only supports alphanumeric underscore_, and at least 3 characters, can only start with numbers or letters',
+        'incorrect format: only supports alphanumeric underscore_, and at least 3 characters, can only start with numbers or letters',
     'error.user.new.email': 'Email',
     'error.user.new.email.format': 'incorrect format',
     'error.user.new.fail': 'Failed to create',
@@ -234,7 +230,7 @@ const successPrompt = {
     'success.wiki.delete': 'Deleted successfully',
     'success.organization.member.add': 'Added successfully',
     'success.organization.new': 'Submitted successfully, jumping...',
-    'success.user.new': 'Submitted successfully, jumping...',
+    'success.user.new': 'Submitted successfully.',
     'success.user.setting': 'Submitted successfully, jumping...',
     'success.subscribe': 'Subscribed Successfully'
 };
