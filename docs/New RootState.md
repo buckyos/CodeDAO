@@ -3,28 +3,48 @@
 ```
 |--organization
 |   |--${org.name}
-|   |   |--info-->organization
+|   |   |--info --> Organization
 |   |`  |--members
-|   |   |   |--${member.name}-->org.member
+|   |   |   |--${people_id} --> OrgMember
+|   |   |--members_consensus
+|   |   |   |--raw --> MemberList
+|   |   |   |--members --> ConsensusMemberList
 |   |   |--repos
-|   |   |   |--${repo.name}-->repo
+|   |   |   |--${repo.name} --> Repo
+|   |   |--repos_consensus
+|   |   |   |--raw --> RepoList
+|   |   |   |--members --> ConsensusMemberList
 |--repo
 |   |--${repo.name}
-|   |   |--repo--> RepoObject
-|   |   |--branchs
+|   |   |--repo --> Repo
+|   |   |--branches
 |   |   |   |--${branch_name}
-|   |   |   |   |--info-->BranchInfo
+|   |   |   |   |--info --> BranchInfo
+|   |   |   |   |--commits_consensus
+|   |   |   |   |   |--raw --> CommitList
+|   |   |   |   |   |--members --> ConsensusMemberList
 |   |   |   |   |--commits
-|   |   |   |   |   |--${commit.id}-->commit
+|   |   |   |   |   |--${commit.id} --> Commit
 |   |   |   |   |--stars
-|   |   |   |   |   |--${user.id}-->RepositoryStar
+|   |   |   |   |   |--info --> StartsInfo
+|   |   |   |   |   |--list
+|   |   |   |   |   |   |--${people_id} --> RepositoryStar
+|   |   |--branches_consensus
+|   |   |   |--raw --> BranchList
+|   |   |   |--members --> ConsensusMemberList
 |   |   |--members
-|   |   |   |--${user.peopleid}-->repo.member
-|   |   |--trees
-|   |   |   |--${tree.id}-->Tree
+|   |   |   |--${people_id} --> RepoMember
+|   |   |--members_consensus
+|   |   |   |--raw -->MemberList
+|   |   |   |--members --> ConsensusMemberList
+|   |   |--trees // git trees
+|   |   |   |--${tree_id} --> Tree
 |   |   |--issues
-|   |   |   |--${topic.id}-->Issue // topic.id: Autoincrement
+|   |   |   |--${topic_id} --> Issue // topic_id: Autoincrement
+|   |   |--issues_consensus
+|   |   |   |--raw --> IssueList
+|   |   |   |--members --> ConsensusMemberList
 |--user
-|   |--info -->UserInfo
+|   |--info --> UserInfo
 
 ```
