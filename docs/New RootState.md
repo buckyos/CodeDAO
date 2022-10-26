@@ -60,4 +60,6 @@
 |--user
 |   |--list
 |   |   |--${people_id} --> UserInfo
+|   |--alia_list
+|   |   |--${username} --> UserInfo
 ```
