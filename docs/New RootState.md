@@ -8,7 +8,7 @@
     |   |--${org.id}
     |   |   |--members // cache
     |   |   |   |--${member.people_id} --> OrgMember
-    |   |   |--members_consensus --> MemberList
+    |   |   |--members_consensus
     |   |   |   |--roles
     |   |   |   |   |--${member.people_id} --> MemberRole
     |   |   |--info
@@ -29,26 +29,14 @@
     |   |   |   |--.members --> members_consensus
     |   |   |--branches
     |   |   |   |--${branch_name}
-    |   |   |   |   |--status_lock
-    |   |   |   |   |   |--raw --> Status
-    |   |   |   |   |   |--.members --> members_consensus
     |   |   |   |   |--info
     |   |   |   |   |   |--raw --> BranchInfo
     |   |   |   |   |   |--.members --> members_consensus
-    |   |   |   |   |--commits
-    |   |   |   |   |   |--${commit.id}
-    |   |   |   |   |   |   |--raw --> Commit
-    |   |   |   |   |   |   |--.members --> members_consensus
-    |   |   |   |   |--commits_consensus
-    |   |   |   |   |   |--raw --> Set<Commit.id>
+    |   |   |   |   |--changes
     |   |   |   |   |   |--.members --> members_consensus
-    |   |   |   |   |--merges
-    |   |   |   |   |   |--${merge.id}
-    |   |   |   |   |   |   |--raw --> Merge
-    |   |   |   |   |   |   |--.members --> members_consensus
-    |   |   |   |   |--merges_consensus
-    |   |   |   |   |   |--raw --> Set<merge.id>
-    |   |   |   |   |   |--.members --> members_consensus
+    |   |   |   |   |   |--process_status --> // WillCommit(id), Commiting(id), Standby
+    |   |   |   |   |   |--commits --> Set<Commit.id>
+    |   |   |   |   |   |--merges --> Set<Merge.id>
     |   |   |--branches_consensus
     |   |   |   |--raw --> BranchList
     |   |   |   |--members --> members_consensus

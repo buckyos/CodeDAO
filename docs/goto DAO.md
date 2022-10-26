@@ -15,11 +15,7 @@
 | repo.member             | 是       | 一个仓库参与者                                                         |
 | repo.branch_list        | 是       | 仓库分支列表                                                           |
 | repo.branch             | 是       | 仓库一个分支信息                                                       |
-| repo.branch.status_lock | 是       | 一个分支的版本信息                                                     |
-| repo.branch.commit_list | 是       | 不同分支的提交列表可以并发执行，相同分支只能串行                       |
-| repo.commit             | 是       | 一次提交                                                               |
-| repo.branch.merge_list  | 是       | 不同分支的提交列表可以并发执行，相同分支只能串行                       |
-| repo.merge              | 是       | 一次 merge                                                             |
+| repo.branch.changes     | 是       | 一个分支的变更信息列表(commit/merge)                                   |
 | repo.stars              | 是       |                                                                        |
 | repo.tree               | 是       | 这是啥，待设计                                                         |
 | repo.issue_list         | 是       |                                                                        |
@@ -96,14 +92,14 @@ eg. 前述的分支，每个分支有个`name`作为`key`，它可以被提交�
 graph TB
 Start(Start)-->CheckVersionState{status=Standby}
 CheckVersionState--N-->Conflict(Conflict)
-CheckVersionState--Y-->UpdateVersionStateReq{consensus: status_lock.status=WaitGit+req.id}
+CheckVersionState--Y-->UpdateVersionStateReq{consensus: process_status=WaitGit+req.id}
 --success-->UpdateVersionStateAck[consensus: Ack]
--->VersionSuccessAck{status_lock共识Ack成功}
---success-->Git{调用git}--success-->UpdateOpList[consensus: update commit_list or merge_list...]
--->UpdateVersionStateDoneReq[consensus: status_lock.status=Standby]
+-->VersionSuccessAck{process_status共识Ack成功}
+--success-->Git{调用git}--success-->UpdateOpList[consensus: update process_status=Standby commit_list or merge_list...]
+-->Success
 UpdateVersionStateReq--fail-->Conflict
-VersionSuccessAck--fail-->Rollback[assert: status_lock.status的状态应该已经回滚]-->Conflict
-Git--fail-->UpdateVersionStateDoneReqFail[consensus: status_lock.status=Standby]-->Conflict
+VersionSuccessAck--fail-->Rollback[assert: process_status的状态应该已经回滚]-->Conflict
+Git--fail-->UpdateVersionStateDoneReqFail[consensus: process_status=Standby]-->Conflict
 ```
 
 注意:
