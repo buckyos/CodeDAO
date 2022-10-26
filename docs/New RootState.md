@@ -48,7 +48,7 @@
 |   |--${people_id} --> UserInfo
 ```
 
-# code-dao-service RootState
+# square-service RootState
 
 ```
 |--organization
