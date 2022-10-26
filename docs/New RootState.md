@@ -16,7 +16,7 @@
 |   |   |   |--members --> ConsensusMemberList
 |--repo
 |   |--${repo.name}
-|   |   |--repo --> Repo
+|   |   |--info --> Repo
 |   |   |--branches
 |   |   |   |--${branch_name}
 |   |   |   |   |--info --> BranchInfo
@@ -45,6 +45,19 @@
 |   |   |   |--raw --> IssueList
 |   |   |   |--members --> ConsensusMemberList
 |--user
-|   |--info --> UserInfo
+|   |--${people_id} --> UserInfo
+```
 
+# code-dao-service RootState
+
+```
+|--organization
+|   |--${org.name}
+|   |   |--info --> Organization
+|--repo
+|   |--${repo.name}
+|   |   |--info --> Repo
+|--user
+|   |--list
+|   |   |--${people_id} --> UserInfo
 ```
