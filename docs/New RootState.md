@@ -28,7 +28,7 @@
     |   |   |   |--raw --> Repo
     |   |   |   |--.members --> members_consensus
     |   |   |--branches
-    |   |   |   |--${branch_name}
+    |   |   |   |--${branch.id}
     |   |   |   |   |--info
     |   |   |   |   |   |--raw --> BranchInfo
     |   |   |   |   |   |--.members --> members_consensus
