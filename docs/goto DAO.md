@@ -15,7 +15,7 @@
 | repo.member             | 是       | 一个仓库参与者                                                         |
 | repo.branch_list        | 是       | 仓库分支列表                                                           |
 | repo.branch             | 是       | 仓库一个分支信息                                                       |
-| repo.branch_version     | 是       | 一个分支的版本信息                                                     |
+| repo.branch.status_lock | 是       | 一个分支的版本信息                                                     |
 | repo.branch.commit_list | 是       | 不同分支的提交列表可以并发执行，相同分支只能串行                       |
 | repo.commit             | 是       | 一次提交                                                               |
 | repo.branch.merge_list  | 是       | 不同分支的提交列表可以并发执行，相同分支只能串行                       |
@@ -96,19 +96,19 @@ eg. 前述的分支，每个分支有个`name`作为`key`，它可以被提交�
 graph TB
 Start(Start)-->CheckVersionState{status=Standby}
 CheckVersionState--N-->Conflict(Conflict)
-CheckVersionState--Y-->UpdateVersionStateReq{consensus: branch_version.status=WaitGit+req.id}
+CheckVersionState--Y-->UpdateVersionStateReq{consensus: status_lock.status=WaitGit+req.id}
 --success-->UpdateVersionStateAck[consensus: Ack]
--->VersionSuccessAck{branch_version共识Ack成功}
+-->VersionSuccessAck{status_lock共识Ack成功}
 --success-->Git{调用git}--success-->UpdateOpList[consensus: update commit_list or merge_list...]
--->UpdateVersionStateDoneReq[consensus: branch_version.status=Standby]
+-->UpdateVersionStateDoneReq[consensus: status_lock.status=Standby]
 UpdateVersionStateReq--fail-->Conflict
-VersionSuccessAck--fail-->Rollback[assert: branch_version.status的状态应该已经回滚]-->Conflict
-Git--fail-->UpdateVersionStateDoneReqFail[consensus: branch_version.status=Standby]-->Conflict
+VersionSuccessAck--fail-->Rollback[assert: status_lock.status的状态应该已经回滚]-->Conflict
+Git--fail-->UpdateVersionStateDoneReqFail[consensus: status_lock.status=Standby]-->Conflict
 ```
 
 注意:
 
-1. `Ack`共识用来确保`branch_version.status`共识被二次确认，不会发生状态回滚，保障分支状态的不可重入;
+1. `Ack`共识用来确保`status_lock.status`共识被二次确认，不会发生状态回滚，保障分支状态的不可重入;
 2. 考虑到在状态机运行过程中因停电等不可控因素导致中止，应该选择时机(启动/按需)进行恢复。
 
 # 管理员变更
