@@ -150,6 +150,7 @@ pub struct RepositoryBranchDescContent {
     #[prost(string, tag="4")]
     pub ref_hash: ::prost::alloc::string::String,
 }
+/// repository tree object
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct TreeDescContent {
     #[prost(string, tag="1")]

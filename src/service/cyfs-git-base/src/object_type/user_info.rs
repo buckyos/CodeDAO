@@ -52,10 +52,7 @@ pub trait UserInfoObject {
 
 impl UserInfoObject for UserInfo {
     fn create(owner: ObjectId, name: String, email: String) -> Self {
-        let desc = UserInfoDescContent {
-            name,
-            email,
-        };
+        let desc = UserInfoDescContent { name, email };
         let body = UserInfoBodyContent {};
 
         UserInfoBuilder::new(desc, body)
@@ -107,7 +104,10 @@ impl UserHelper {
 
     pub async fn get_current_user(stack: &Arc<SharedCyfsStack>) -> BuckyResult<UserInfo> {
         let owner_id = get_owner(stack).await.to_string();
-        let env = stack.root_state_stub(None, Some(dec_id())).create_path_op_env().await?;
+        let env = stack
+            .root_state_stub(None, Some(dec_id()))
+            .create_path_op_env()
+            .await?;
         let result = env.get_by_key(USER_LIST_PATH, &owner_id).await?;
         if result.is_none() {
             return Err(BuckyError::new(
