@@ -10,8 +10,8 @@ pub async fn put_object<DC, BC>(
     object: &NamedObjectBase<NamedObjType<DC, BC>>,
 ) -> BuckyResult<NONPutObjectOutputResponse>
 where
-    DC: RawEncode + DescContent + Sync + Send + Clone,
-    BC: Sync + Send + Clone + RawEncode + BodyContent,
+    DC: DescContent + RawEncode + Sync + Send + Clone,
+    BC: BodyContent + RawEncode + Sync + Send + Clone,
 {
     put_object_target(stack, object, None, None).await
 }
@@ -23,8 +23,8 @@ pub async fn put_object_target<DC, BC>(
     req_path: Option<String>,
 ) -> BuckyResult<NONPutObjectOutputResponse>
 where
-    DC: RawEncode + DescContent + Sync + Send + Clone,
-    BC: Sync + Send + Clone + RawEncode + BodyContent,
+    DC: DescContent + RawEncode + Sync + Send + Clone,
+    BC: BodyContent + RawEncode + Sync + Send + Clone,
 {
     let r = stack
         .non_service()

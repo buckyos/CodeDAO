@@ -1,12 +1,10 @@
-use cyfs_lib::*;
+use async_std::sync::Arc;
 use cyfs_base::*;
 use cyfs_core::*;
-use async_std::sync::Arc;
-use std::str::FromStr;
 use cyfs_git_base::*;
+use cyfs_lib::*;
 use serde_json::*;
-
-
+use std::str::FromStr;
 
 pub struct Api {
     stack: Arc<SharedCyfsStack>,
@@ -19,8 +17,16 @@ pub struct Api {
 // }
 
 impl Api {
-    pub fn new(stack: Arc<SharedCyfsStack>, route: impl Into<String>, req_data: Option<String>) -> Self{
-        Self { stack, route: route.into(), req_data }
+    pub fn new(
+        stack: Arc<SharedCyfsStack>,
+        route: impl Into<String>,
+        req_data: Option<String>,
+    ) -> Self {
+        Self {
+            stack,
+            route: route.into(),
+            req_data,
+        }
     }
 }
 
@@ -37,34 +43,32 @@ impl Api {
         };
         post_object(&self.stack, &self.route, data).await;
     }
-    
+
     pub async fn common(&self) {
-	let data = self.req_data.clone().expect("empty data");
-	post_object(&self.stack, &self.route, &data).await;
+        let data = self.req_data.clone().expect("empty data");
+        post_object(&self.stack, &self.route, &data).await;
     }
 }
 
-
-
 pub async fn test_dec_id(stack: &Arc<SharedCyfsStack>) {
     let owner = ObjectId::from_str("5r4MYfFPKMeHa1fec7dHKmBfowySBfVFvRQvKB956dnF").unwrap();
-    let app_dec_id = DecApp::generate_id(owner.clone(), CYFS_GIT_DEC_APP_NAME);
+    let app_dec_id = DecApp::generate_id(owner.clone(), CODE_DAO_SERVICE_NAME);
     println!("dec id {:?}", app_dec_id);
 }
 
-
-
 pub async fn debug_info(stack: &Arc<SharedCyfsStack>, _route: &str) {
-
-    let info = stack.util_service().get_device_static_info(UtilGetDeviceStaticInfoOutputRequest{
-        common: UtilOutputRequestCommon{
-            ..Default::default()
-        }
-    }).await.unwrap();
+    let info = stack
+        .util_service()
+        .get_device_static_info(UtilGetDeviceStaticInfoOutputRequest {
+            common: UtilOutputRequestCommon {
+                ..Default::default()
+            },
+        })
+        .await
+        .unwrap();
 
     println!("info  {:#?}", info);
 }
-
 
 pub async fn repository_merge_compare(stack: &Arc<SharedCyfsStack>, route: &str) {
     let data = r#"
@@ -113,7 +117,6 @@ pub async fn repository_commits(stack: &Arc<SharedCyfsStack>, route: &str) {
     post_object(stack, route, data).await;
 }
 
-
 pub async fn repository_home(stack: &Arc<SharedCyfsStack>, route: &str) {
     let data = r#"
     {
@@ -145,7 +148,6 @@ pub async fn repository_file(stack: &Arc<SharedCyfsStack>, route: &str, file: Op
     post_object(stack, route, data).await;
 }
 
-
 pub async fn repository_push_head(stack: &Arc<SharedCyfsStack>, route: &str) {
     let data = r#"
     {
@@ -154,7 +156,6 @@ pub async fn repository_push_head(stack: &Arc<SharedCyfsStack>, route: &str) {
     }"#;
     post_object(stack, route, data).await;
 }
-
 
 pub async fn repository_delete(stack: &Arc<SharedCyfsStack>, route: &str) {
     let data = r#"
@@ -209,8 +210,6 @@ pub async fn organization_list(stack: &Arc<SharedCyfsStack>) {
     post_object(stack, route, data).await;
 }
 
-
-
 pub async fn user_get_by_name(stack: &Arc<SharedCyfsStack>) {
     let data = r#"
     {
@@ -219,7 +218,6 @@ pub async fn user_get_by_name(stack: &Arc<SharedCyfsStack>) {
     let route = "user/getByName";
     post_object(stack, route, data).await;
 }
-
 
 pub async fn user_list(stack: &Arc<SharedCyfsStack>) {
     let data = r#"
@@ -237,52 +235,58 @@ pub async fn user_check_init(stack: &Arc<SharedCyfsStack>) {
     post_object(stack, route, data).await;
 }
 
-
-pub async fn user_setting(stack: &Arc<SharedCyfsStack>, email:Option<String>) {
-    let data = if email.is_none() { 
+pub async fn user_setting(stack: &Arc<SharedCyfsStack>, email: Option<String>) {
+    let data = if email.is_none() {
         r#"
         {
             "name": "sunxinle",
             "email":"sunxinle@buckyos.com"
-        }"#.to_string()
+        }"#
+        .to_string()
     } else {
-        format!(r#"{{"name": "sunxinle","email": "{}@bukcyos.com"}}"#, email.unwrap())
+        format!(
+            r#"{{"name": "sunxinle","email": "{}@bukcyos.com"}}"#,
+            email.unwrap()
+        )
     };
     let route = "user/setting";
     post_object(stack, route, &data).await;
 }
 
-
-pub async fn post_object(stack: &Arc<SharedCyfsStack>, route:&str, data: &str) {
+pub async fn post_object(stack: &Arc<SharedCyfsStack>, route: &str, data: &str) {
     let owner = get_owner(&stack).await;
 
     println!("route: {:#?}", route);
     println!("post object request data: {:#?}", data);
     let text = GitText::create(
         Some(owner),
-        route.to_string(), 
-        "header".to_string(), 
-        data.to_string());
+        route.to_string(),
+        "header".to_string(),
+        data.to_string(),
+    );
 
     let req_path = Some(DEC_APP_HANDLER.to_string());
 
-    let r = stack.non_service().post_object(NONPostObjectOutputRequest{
-        common: NONOutputRequestCommon {
-            req_path,
-            source: None,
-            dec_id: Some(dec_id()),
-            level: NONAPILevel::Router,
-            // target: Some(get_local_device(stack)),
-            target: None,
-            flags: 0
-        },
-        object: NONObjectInfo{
-            object_id:  text.desc().object_id().clone(),
-            object_raw: text.to_vec().unwrap(),
-            object: None,
-
-        }
-    }).await.unwrap();
+    let r = stack
+        .non_service()
+        .post_object(NONPostObjectOutputRequest {
+            common: NONOutputRequestCommon {
+                req_path,
+                source: None,
+                dec_id: Some(dec_id()),
+                level: NONAPILevel::Router,
+                // target: Some(get_local_device(stack)),
+                target: None,
+                flags: 0,
+            },
+            object: NONObjectInfo {
+                object_id: text.desc().object_id().clone(),
+                object_raw: text.to_vec().unwrap(),
+                object: None,
+            },
+        })
+        .await
+        .unwrap();
     println!("post object {:?}", r.to_string());
 
     let buf = r.object.unwrap().object_raw;

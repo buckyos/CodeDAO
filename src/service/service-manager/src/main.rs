@@ -23,8 +23,10 @@ deploy_owner_id="5r4MYfFQz9iEzjwHUpc79CwrvXqsh7xUzynkiTUEckxB"
 public_service_ood="5aSixgM1oBicrsUdS3nyKM1MA9AgiMEE2y2qFQ3jTTYB""#,
     );
 
-    delete_service_all_repository().await;
-    delete_all_repository().await;
+    // 删除广场的全部仓库
+    delete_service_all_repository().await?;
+    // 删除自己OOD上的全部仓库
+    delete_all_repository().await?;
 
     Ok(())
 }

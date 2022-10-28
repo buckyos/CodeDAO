@@ -1,9 +1,9 @@
 use async_std::sync::Arc;
+use cyfs_git_base::*;
 use cyfs_lib::*;
+use serde_json::json;
 use std::env;
 use std::path::PathBuf;
-use cyfs_git_base::*;
-use serde_json::{json};
 
 mod cmd_handler;
 mod config;
@@ -24,11 +24,13 @@ async fn main() {
     let git_version = option_env!("GIT_COMMIT_HAHS").unwrap_or_default(); // .expect("get GIT_COMMIT_HAHS failed");
     let build_date = option_env!("BUILDDATE").unwrap_or_default();
     let build_number = option_env!("VERSION").unwrap_or_default();
-    let version = format!("1.0.{}.{}(built in {})", build_number, git_version, build_date);
+    let version = format!(
+        "1.0.{}.{}(built in {})",
+        build_number, git_version, build_date
+    );
     eprintln!("git-remote-cyfs version {}", version);
     eprintln!("current channel {}", ConfigManager::channel());
-    
-    
+
     let mut args = env::args();
     eprintln!("git-remote-cyfs argument size {:?} ", args.len());
     // check args number
@@ -37,8 +39,7 @@ async fn main() {
         std::process::exit(0);
     }
     args.next();
-    
-    
+
     let repo_remote_name = args.next().expect("must provide alias");
     // 更改配置文件
     // --channel <[devtest,nightly]>
@@ -72,13 +73,14 @@ async fn main() {
     RuntimeLauncher::launch().await;
 
     let stack = Arc::new(SharedCyfsStack::open_runtime(Some(dec_id())).await.unwrap());
-    let result = stack.wait_online(Some(std::time::Duration::from_secs(5))).await;
+    let result = stack
+        .wait_online(Some(std::time::Duration::from_secs(5)))
+        .await;
     if result.is_err() {
         eprintln!("client connect runtime failed: {:?}", result.err().unwrap());
         std::process::exit(1);
     }
     eprintln!("cyfs open runtime");
-
 
     let git_post = Arc::new(GitPost::new(Arc::clone(&stack)).await);
     let resp = git_post

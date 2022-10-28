@@ -1,16 +1,13 @@
-
-use cyfs_lib::*;
-use cyfs_base::*;
-use log::*;
 use async_std::sync::Arc;
-use serde::{Deserialize, Serialize};
-use serde_json::{json};
+use cyfs_base::*;
 use cyfs_git_base::*;
+use cyfs_lib::*;
+use log::*;
+use serde::{Deserialize, Serialize};
+use serde_json::json;
 
 // use std::str::FromStr;
 // use super::repository::*;
-
-
 
 #[derive(Serialize, Deserialize)]
 struct RequestRepositoryCommits {
@@ -18,7 +15,6 @@ struct RequestRepositoryCommits {
     name: String,
     branch: String,
 }
-
 
 #[derive(Serialize, Deserialize)]
 struct RequestRepositoryCommit {
@@ -36,7 +32,8 @@ pub async fn repository_commits(ctx: Arc<PostContext>) -> BuckyResult<NONPostObj
         return Ok(result);
     }
 
-    let repository = RepositoryHelper::get_repository_object(&ctx.stack, &data.author_name, &data.name).await?;
+    let repository =
+        RepositoryHelper::get_repository_object(&ctx.stack, &data.author_name, &data.name).await?;
     // let commit_object_path = RepositoryHelper::commit_object_map_path(&data.author_name, &data.name);
     let env = ctx.stack_env().await?;
 
@@ -73,7 +70,7 @@ pub async fn repository_commits(ctx: Arc<PostContext>) -> BuckyResult<NONPostObj
     //         // println!("item: {:?}", item);
     //         let (oid, _) = item.into_map_item();
     //         let commit_id = env.get_by_key(oid).await?;
-    //         if commit_id.is_some() { 
+    //         if commit_id.is_some() {
     //             let buf = get_object(stack, commit_id.unwrap()).await?;
     //             let commit = Commit::clone_from_slice(&buf)? as Commit;
     //             data.push(json!({
@@ -91,9 +88,8 @@ pub async fn repository_commits(ctx: Arc<PostContext>) -> BuckyResult<NONPostObj
     //     }
     // }
 
-    Ok(success(json!({"data": result_data})))
+    Ok(success(json!({ "data": result_data })))
 }
-
 
 /// # repository_commit
 /// commit 详细信息
@@ -103,23 +99,27 @@ pub async fn repository_commit(ctx: Arc<PostContext>) -> BuckyResult<NONPostObje
         return Ok(result);
     }
 
-    let repository = RepositoryHelper::get_repository_object(&ctx.stack, &data.author_name, &data.name).await?;
-
+    let repository =
+        RepositoryHelper::get_repository_object(&ctx.stack, &data.author_name, &data.name).await?;
 
     let env = ctx.stack_env().await?;
     let commit_object_path = commit_object_map_key(&data.author_name, &data.name, &data.commit_id);
 
     let result = env.get_by_path(commit_object_path).await?;
     if result.is_none() {
-        return Ok(failed("没有找到对应的 commit"))
+        return Ok(failed("没有找到对应的 commit"));
     }
 
     let commit_id = result.unwrap();
     let buf = get_object(&ctx.stack, commit_id).await?;
     let commit = Commit::clone_from_slice(&buf)? as Commit;
 
-    info!("git_show_commit_diff {:?} {:?}", commit.parent(), commit.object_id());
-    
+    info!(
+        "git_show_commit_diff {:?} {:?}",
+        commit.parent(),
+        commit.object_id()
+    );
+
     let diff = git_show_commit_diff(repository.repo_dir(), commit.parent(), commit.object_id())?;
 
     Ok(success(json!({"data": {
@@ -137,4 +137,3 @@ pub async fn repository_commit(ctx: Arc<PostContext>) -> BuckyResult<NONPostObje
         "diff": diff,
     }})))
 }
-
