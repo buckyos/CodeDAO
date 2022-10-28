@@ -18,15 +18,15 @@ async fn main() {
     ConfigManager::new_oncecell_in_service();
     info!("get cyfs-git service dec id: {:?}", service_dec_id());
 
-    let initor = DaohubServiceInit::new_with_stack(Some(service_dec_id())).await;
+    // let initor = DaohubServiceInit::new_with_stack(Some(service_dec_id())).await;
 
     // Simulator debugging
-    // let initor = DaohubServiceInit::new_with_stack_simulator(
-    //     "http://127.0.0.1:21000",
-    //     "ws://127.0.0.1:21001",
-    //     Some(service_dec_id()),
-    // )
-    // .await;
+    let initor = DaohubServiceInit::new_with_stack_simulator(
+        "http://127.0.0.1:21000",
+        "ws://127.0.0.1:21001",
+        Some(service_dec_id()),
+    )
+    .await;
     initor
         .init_service_deviceid_check()
         .await

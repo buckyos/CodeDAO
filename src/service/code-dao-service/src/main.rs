@@ -16,13 +16,13 @@ use put_object::*;
 
 #[async_std::main]
 async fn main() {
-    let status = cyfs_util::process::check_cmd_and_exec(CYFS_GIT_DEC_APP_NAME);
+    let status = cyfs_util::process::check_cmd_and_exec(CODE_DAO_SERVICE_NAME);
     if status == cyfs_util::process::ProcessAction::Install {
         std::process::exit(0);
     }
     ConfigManager::new_oncecell();
 
-    CyfsLoggerBuilder::new_app(CYFS_GIT_DEC_APP_NAME)
+    CyfsLoggerBuilder::new_app(CODE_DAO_SERVICE_NAME)
         .level("info")
         .console("info")
         .enable_bdt(Some("off"), Some("off"))
@@ -33,15 +33,15 @@ async fn main() {
         .start();
 
     info!("get cyfs-git dec app id: {:?}", dec_id());
-    let stack = Arc::new(SharedCyfsStack::open_default(Some(dec_id())).await.unwrap());
+    // let stack = Arc::new(SharedCyfsStack::open_default(Some(dec_id())).await.unwrap());
     // Simulator debugging
-    // let parm_obj = SharedCyfsStackParam::new_with_ws_event(
-    //     Some(dec_id()),
-    //     "http://127.0.0.1:21000",
-    //     "ws://127.0.0.1:21001",
-    // )
-    // .unwrap();
-    // let stack = Arc::new(SharedCyfsStack::open(parm_obj).await.unwrap());
+    let parm_obj = SharedCyfsStackParam::new_with_ws_event(
+        Some(dec_id()),
+        "http://127.0.0.1:21000",
+        "ws://127.0.0.1:21001",
+    )
+    .unwrap();
+    let stack = Arc::new(SharedCyfsStack::open(parm_obj).await.unwrap());
     stack.wait_online(None).await.unwrap();
 
     let initor = init::DaohubInit::new(stack.clone());

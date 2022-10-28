@@ -34,14 +34,14 @@ impl DaohubServiceInit {
     }
 
     pub fn init_process_check() {
-        let status = cyfs_util::process::check_cmd_and_exec(CYFS_GIT_SERVICE_NAME);
+        let status = cyfs_util::process::check_cmd_and_exec(SQUARE_SERVICE_NAME);
         if status == cyfs_util::process::ProcessAction::Install {
             std::process::exit(0);
         }
     }
 
     pub fn init_logger() {
-        CyfsLoggerBuilder::new_app(CYFS_GIT_SERVICE_NAME)
+        CyfsLoggerBuilder::new_app(SQUARE_SERVICE_NAME)
             .level("info")
             .console("info")
             .enable_bdt(Some("off"), Some("off"))
@@ -71,7 +71,7 @@ impl DaohubServiceInit {
         // init STACK_ACTION
         let _ = STACK_ACTION.set(StackActionStruct {
             stack: self.stack.clone(),
-            owner: owner,
+            owner,
             dec_id: dec_id(),
         });
         info!("init stack action(helper) ok");
