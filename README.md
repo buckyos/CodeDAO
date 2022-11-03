@@ -42,10 +42,10 @@ There are also a git-remote-helper component, which named `git-remote-cyfs` to t
 ## Dec App
 
 Ensure the cyfs service's gateway is running.
-And in `src/service`
+And in `src`
 
 ```
-cargo build -p dec-app
+cargo build -p code-dao-service
 ```
 
 ## www
@@ -59,7 +59,7 @@ npm run dev
 
 ## git-remote-cyfs
 
-In the `src/service`
+In the `src`
 
 ```
 cargo build -p git-remote-cyfs
