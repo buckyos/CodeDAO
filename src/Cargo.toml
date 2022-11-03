@@ -1,0 +1,13 @@
+[workspace]
+resolver = "2"
+
+members = [
+    "./code-dao-service",
+    "./square-service",
+    "./proto",
+    "./testcase",
+    "./cyfs-git-base",
+    "./git-remote-cyfs",
+    "./service-manager",
+    "./install",
+]

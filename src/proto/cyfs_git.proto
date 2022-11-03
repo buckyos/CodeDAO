@@ -1,0 +1,115 @@
+
+syntax = "proto3";
+package cyfs_git;
+
+
+
+// post请求 text object
+message GitTextDescContent {
+}
+message GitTextBodyContent {
+  string id=1;
+  string header = 2;
+  string value = 3;
+}
+
+message UserInfoDescContent {
+  string name = 1;
+  string email = 2;
+}
+
+
+message RepositoryDescContent {
+  string name = 1;
+  string description = 2;
+  int32  init = 3;
+  int32  is_private = 4;
+  string fork_from_id = 5;
+  string author_type = 6;  // 拥有者可以是用户或组
+  string author_name = 7;
+}
+
+
+message CommitDescContent {
+  string object_id = 1;
+  string parent = 2;
+  string tree = 3;
+  string payload = 4;
+  string author = 5;
+  string committer = 6;
+  string parent2 = 7;
+}
+
+message OrganizationDescContent {
+  string name = 1;
+  // repeated bytes members = 2;
+  string email = 2;
+  string description = 3;
+  string avatar = 4;
+}
+
+message OrganizationMemberDescContent {
+  string organization_name = 1;
+  string user_id = 2;
+  string user_name = 3;
+  string role = 4;
+}
+
+message IssueDescContent {
+  string title = 1;
+  string content = 2;
+  string status = 3;
+  string issue_type = 4;
+  string user_name = 5;
+  string id_in_repo = 6;  // 在仓库中的序号， 从1开始
+}
+
+message RepositoryMemberDescContent {
+  string user_id = 1;
+  string repository_id = 2;
+  string role = 3;
+  string user_name = 4;
+  string repository_author_name = 5;
+  string repository_name = 6;
+}
+
+
+message RepositoryStarDescContent {
+  string user_id = 1;
+  string user_name = 2;
+  string repository_id = 3;
+  string repository_author_name = 4;
+  string repository_name = 5;
+}
+
+message MergeRequestDescContent {
+  string title = 1;
+  string origin_branch = 2;
+  string target_branch = 3;
+  string merge_type = 4;
+  string status = 5;
+  string repository_author_name = 6;
+  string repository_name = 7;
+  string user_name = 8;
+}
+
+
+message RepositoryBranchDescContent {
+  string repository_author_name = 1;
+  string repository_name = 2;
+  string ref_name = 3;
+  string ref_hash = 4;
+}
+
+// repository tree object
+message TreeDescContent {
+  string tree_id = 1;
+  repeated  TreeItem tree = 2;
+}
+
+message TreeItem {
+  string mode = 1;
+  string hash = 2;
+  string file_name = 3;
+  string file_type = 4;
+}
