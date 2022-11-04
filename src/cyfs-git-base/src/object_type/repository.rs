@@ -273,10 +273,29 @@ impl RepositoryHelper{
 /// static method
 impl RepositoryHelper {
     pub fn repo_dir(author_name: &str, name: &str) -> PathBuf{
-        let mut dir = cyfs_util::get_app_data_dir(APP_BASE_DIR);
-        dir.push(author_name);
-        dir.push(name);
-        dir
+        let mut base_dir = cyfs_util::get_cyfs_root_path();
+        base_dir.push("data");
+        base_dir.push("app");
+        base_dir.push(dec_id().to_string());
+        base_dir.push(APP_BASE_DIR);
+        if let Err(e) = std::fs::create_dir_all(&base_dir) {
+            error!(
+                "RepositoryHelper repo_dir create app data dir failed! dir={}, err={}",
+                base_dir.display(),
+                e
+            );
+        }
+        // let mut dir = cyfs_util::get_app_data_dir(APP_BASE_DIR);
+        base_dir.push(author_name);
+        base_dir.push(name);
+        if let Err(e) = std::fs::create_dir_all(&base_dir) {
+            error!(
+                "RepositoryHelper repo_dir create repo dir failed! dir={}, err={}",
+                base_dir.display(),
+                e
+            );
+        }
+        base_dir
     }
 
     pub fn object_map_path_base(author_name: &str) -> String {

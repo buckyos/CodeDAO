@@ -207,7 +207,19 @@ pub fn git_rev_list_objects(repo_dir: PathBuf, rev_list_params: &str) ->  BuckyR
 /// git_pack_objects_to_file
 /// 将object列表 pack 到文件中. 并返回文件路径
 pub fn git_pack_objects_to_file(repo_dir: PathBuf, objects: String)  ->  BuckyResult<String> {
-    let pack_target = cyfs_util::get_app_data_dir("cyfs-git-pack");
+    let mut pack_target = cyfs_util::get_cyfs_root_path();
+    pack_target.push("data");
+    pack_target.push("app");
+    pack_target.push(dec_id().to_string());
+    pack_target.push(APP_REPOSITORY_PACK_DIR);
+    if let Err(e) = std::fs::create_dir_all(&pack_target) {
+        error!(
+            "RepositoryHelper repo_dir create app data dir failed! dir={}, err={}",
+            pack_target.display(),
+            e
+        );
+    }
+    // let pack_target = cyfs_util::get_app_data_dir(APP_REPOSITORY_PACK_DIR);
     let pack_target = pack_target.join("pack");  // add file prefix
     let pack_target = pack_target.to_str().unwrap();
     info!("pack_target {:?} ",pack_target);

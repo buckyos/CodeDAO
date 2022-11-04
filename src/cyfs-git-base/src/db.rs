@@ -48,7 +48,12 @@ impl  CyfsGitDatabase{
     }
 
     pub async fn conn() -> BuckyResult<SqliteConnection> {
-        let db_path = cyfs_util::get_app_data_dir(CYFS_GIT_DB_BASE_PATH);
+        let mut db_path = cyfs_util::get_cyfs_root_path();
+        db_path.push("data");
+        db_path.push("app");
+        db_path.push(dec_id().to_string());
+        db_path.push(CYFS_GIT_DB_BASE_PATH);
+        // let db_path = cyfs_util::get_app_data_dir(CYFS_GIT_DB_BASE_PATH);
         if !db_path.exists() {
             std::fs::create_dir_all(&db_path).map_err(|e| {
                 BuckyError::new(BuckyErrorCode::Failed, format!("{:?}", e))
