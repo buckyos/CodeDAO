@@ -20,5 +20,5 @@ jobs:
     - name: Build
       run: |
         cd src
-        cargo build --verbose code-dao-service --release
+        cargo build -p code-dao-service --verbose --release
 
