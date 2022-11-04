@@ -3,15 +3,36 @@ name: Rust
 on:
   push:
     tags:
-      - '*'
+    - "[0-9]+.[0-9]+.[0-9]+"
 
 env:
   CARGO_TERM_COLOR: always
   CHANNEL: beta
 
 jobs:
-  build:
+  create-release: 
+    name: create-release
     runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.release.outputs.upload_url }}
+    steps:
+      - name: Create GitHub release
+        id: release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+
+  build:
+    name: build-release
+    needs: ['create-release']
+    # runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
     steps:
     - name: Checkout Code
       uses: actions/checkout@v3
@@ -29,24 +50,20 @@ jobs:
       run: |
         cd src
         cargo build -p code-dao-service --release
-        
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@latest
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref_name }}
-        release_name: Release ${{ github.ref_name }}
-        draft: false
-        prerelease: false
+        if [ "${{ matrix.os }}" = "windows-latest" ]; then
+          echo "ASSET=./src/target/release/code-dao-service.exe" >> $GITHUB_ENV
+          echo "ASSET_NAME=code-dao-service.exe" >> $GITHUB_ENV
+        else
+          echo "ASSET=./src/target/release/code-dao-service" >> $GITHUB_ENV
+          echo "ASSET_NAME=code-dao-service" >> $GITHUB_ENV
+        fi
         
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
         asset_path: ./src/target/release/code-dao-service
         asset_name: code-dao-service
         asset_content_type: application/octet-stream
