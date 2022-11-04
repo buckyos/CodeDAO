@@ -12,13 +12,23 @@ env:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
     - name: Build
       run: |
         cd src
         cargo build -p code-dao-service --verbose --release
-
+    - name: Release binary
+      id: create_release
+      uses: actions/create-release@latest
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: ${{ github.ref }}
+        body: codedao service
+        draft: false
+        prerelease: false
+        files: |
+          src/target/release/code-dao-service
