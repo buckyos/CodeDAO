@@ -28,6 +28,13 @@ CodeDAO is built on CYFS, a next-generation Web3 infrastructure technology that 
 
 Currently, open source projects can only develop underlying tools used by Web2 companies, making it hard to change the world like free software once did and earn income. With CYFS, you can develop open source Web3 apps, directly developing products that can benefit the public and earn income.
 
+# Full view of CodeDAO
+
+<p align="center">
+<img src="./docs/img/full_view.jpg"/>
+</p>
+
+
 # Status
 
 The source code in the initial version
@@ -49,6 +56,7 @@ cargo build -p code-dao-service
 ```
 
 ## www
+web3 entry ui
 
 in `src/www`
 
@@ -73,16 +81,15 @@ And copy the result(`target/debug/git-remote-cyfs`) to the excutable path of sys
 ├── docs // Document related
 ├── src // Project main folder
     ├── install // install git-remote-cyfs in windows
-    ├── service // services project folder
-        ├── config // config file
-        ├── cyfs-git-base // base lib
-        ├── code-dao-service // code-dao service
-        ├── square-service // square service
-        ├── git-remote-cyfs
-        ├── proto // service protobuf with rust
-        ├── service-manager
-        ├── testcase
-        └── Cargo.toml
+    ├── config // config file
+    ├── cyfs-git-base // base lib
+    ├── code-dao-service // code-dao service
+    ├── square-service // square service
+    ├── git-remote-cyfs
+    ├── proto // service protobuf with rust
+    ├── service-manager
+    ├── testcase
+    ├── Cargo.toml
     ├── www // Front-end project folder
         ├── 3rd
         |   ├──protoc //Object protobuf processing
