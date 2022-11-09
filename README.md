@@ -34,6 +34,11 @@ Currently, open source projects can only develop underlying tools used by Web2 c
 <img src="./docs/img/full_view.jpg"/>
 </p>
 
+# Git push & pull process, and the rootstate path design
+<p align="center">
+<img src="./docs/img/push_pull.jpg"/>
+</p>
+
 
 # Status
 

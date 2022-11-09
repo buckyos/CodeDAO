@@ -53,6 +53,18 @@ impl DaohubServiceInit {
             .start();
     }
 
+    pub async fn start(self) -> BuckyResult<()> {
+        self.init_service_deviceid_check()
+            .await
+            .init_stack_helper()
+            .await
+            .init_sqlite_database()
+            .await
+            .init_stack_handler()
+            .await;
+        Ok(())
+    }
+
     pub async fn init_service_deviceid_check(self) -> Self {
         // mark global var
         is_ood_service(&self.stack).await;
