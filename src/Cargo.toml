@@ -3,11 +3,11 @@ resolver = "2"
 
 members = [
     "./code-dao-service",
+    "./code-dao-cli",
     "./square-service",
     "./proto",
     "./testcase",
     "./cyfs-git-base",
     "./git-remote-cyfs",
-    "./service-manager",
     "./install",
 ]

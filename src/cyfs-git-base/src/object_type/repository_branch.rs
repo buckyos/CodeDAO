@@ -1,10 +1,9 @@
-use cyfs_base::*;
-use cyfs_lib::*;
+use crate::*;
 use async_std::sync::Arc;
 use async_trait::async_trait;
+use cyfs_base::*;
+use cyfs_lib::*;
 use log::*;
-use crate::*;
-
 
 #[derive(Clone, Default, ProtobufEncode, ProtobufDecode, ProtobufTransform)]
 #[cyfs_protobuf_type(crate::object_type::proto::cyfs_git::RepositoryBranchDescContent)]
@@ -28,10 +27,8 @@ impl DescContent for RepositoryBranchDescContent {
     type PublicKeyType = SubDescNone;
 }
 
-
 #[derive(Clone, Default, ProtobufEmptyEncode, ProtobufEmptyDecode)]
-pub struct RepositoryBranchBodyContent {
-}
+pub struct RepositoryBranchBodyContent {}
 
 impl BodyContent for RepositoryBranchBodyContent {
     fn format(&self) -> u8 {
@@ -40,14 +37,21 @@ impl BodyContent for RepositoryBranchBodyContent {
 }
 
 type RepositoryBranchType = NamedObjType<RepositoryBranchDescContent, RepositoryBranchBodyContent>;
-type RepositoryBranchBuilder = NamedObjectBuilder<RepositoryBranchDescContent, RepositoryBranchBodyContent>;
+type RepositoryBranchBuilder =
+    NamedObjectBuilder<RepositoryBranchDescContent, RepositoryBranchBodyContent>;
 // type RepositoryBranchDesc = NamedObjectDesc<RepositoryBranchDescContent>;
 
 pub type RepositoryBranchId = NamedObjectId<RepositoryBranchType>;
 pub type RepositoryBranch = NamedObjectBase<RepositoryBranchType>;
 
 pub trait RepositoryBranchObject {
-    fn create(owner: ObjectId, repository_author_name: String, repository_name: String, ref_name: String, ref_hash: String) -> Self;
+    fn create(
+        owner: ObjectId,
+        repository_author_name: String,
+        repository_name: String,
+        ref_name: String,
+        ref_hash: String,
+    ) -> Self;
     fn id(&self) -> String;
     fn date(&self) -> u64;
     fn repository_author_name(&self) -> &String;
@@ -57,8 +61,13 @@ pub trait RepositoryBranchObject {
 }
 
 impl RepositoryBranchObject for RepositoryBranch {
-    fn create(owner: ObjectId, repository_author_name: String, repository_name: String, ref_name: String, ref_hash: String) -> Self {
-
+    fn create(
+        owner: ObjectId,
+        repository_author_name: String,
+        repository_name: String,
+        ref_name: String,
+        ref_hash: String,
+    ) -> Self {
         let desc = RepositoryBranchDescContent {
             repository_author_name,
             repository_name,
@@ -94,21 +103,20 @@ impl RepositoryBranchObject for RepositoryBranch {
     }
 }
 
-
-pub fn refs_map_path(author_name: &str, repo_name: &str, ref_name: &str) -> String {
-    format!("{}{}/{}/refs/{}", REPOSITORY_PATH, author_name, repo_name, ref_name)
-}
-
-pub fn refs_map_path_base(author_name: &str, repo_name: &str) -> String {
-    format!("{}{}/{}/refs", REPOSITORY_PATH, author_name, repo_name)
-}
-
-
 #[async_trait]
 pub trait RepositoryBranchUtil {
     async fn insert_ref(&self, stack: &Arc<SharedCyfsStack>) -> BuckyResult<()>;
-    async fn read_refs(stack: &Arc<SharedCyfsStack>, space: &str, name: &str) -> BuckyResult<Vec<GitRef>>;
-    async fn read_ref(stack: &Arc<SharedCyfsStack>, space: &str, name: &str, ref_name: &str) -> BuckyResult<RepositoryBranch>;
+    async fn read_refs(
+        stack: &Arc<SharedCyfsStack>,
+        space: &str,
+        name: &str,
+    ) -> BuckyResult<Vec<GitRef>>;
+    async fn read_ref(
+        stack: &Arc<SharedCyfsStack>,
+        space: &str,
+        name: &str,
+        ref_name: &str,
+    ) -> BuckyResult<RepositoryBranch>;
 }
 
 #[async_trait]
@@ -117,33 +125,45 @@ impl RepositoryBranchUtil for RepositoryBranch {
         let id = self.desc().calculate_id();
         let _r = put_object(stack, self).await?;
 
-
-        let env = stack.root_state_stub(None, Some(dec_id())).create_path_op_env().await?;
-        let full_path = refs_map_path(
+        let env = stack
+            .root_state_stub(None, Some(dec_id()))
+            .create_path_op_env()
+            .await?;
+        let full_path = rootstate_repo_refs(
             self.repository_author_name(),
             self.repository_name(),
             self.ref_name(),
         );
 
-        let _r = env.set_with_path(full_path.clone(), &id, None, true).await?;
+        let _r = env
+            .set_with_path(full_path.clone(), &id, None, true)
+            .await?;
         let _ = env.commit().await?;
 
-        info!("insert repository ref ok {}: {}", full_path, self.ref_hash());
+        info!(
+            "insert repository ref ok {}: {}",
+            full_path,
+            self.ref_hash()
+        );
         Ok(())
     }
 
-    async fn read_refs(stack: &Arc<SharedCyfsStack>, space: &str, name: &str) -> BuckyResult<Vec<GitRef>> {
+    async fn read_refs(
+        stack: &Arc<SharedCyfsStack>,
+        space: &str,
+        name: &str,
+    ) -> BuckyResult<Vec<GitRef>> {
         let mut branches: Vec<RepositoryBranch> = vec![];
         let mut resp_refs: Vec<GitRef> = vec![];
 
-        let refs_base_path = refs_map_path_base(
-            space,
-            name,
-        );
-        let env = stack.root_state_stub(None, Some(dec_id())).create_single_op_env().await?;
+        let refs_base_path = rootstate_repo_refs_list(space, name);
+        let env = stack
+            .root_state_stub(None, Some(dec_id()))
+            .create_single_op_env()
+            .await?;
         let result = env.load_by_path(refs_base_path).await;
         if result.is_err() {
-            return Ok(resp_refs)
+            return Ok(resp_refs);
         }
 
         let ret = env.list().await?;
@@ -155,7 +175,7 @@ impl RepositoryBranchUtil for RepositoryBranch {
         }
 
         for branch in branches {
-            resp_refs.push(GitRef{
+            resp_refs.push(GitRef {
                 ref_name: format!("refs/heads/{}", branch.ref_name()),
                 branch: branch.ref_name().to_string(),
                 hash: branch.ref_hash().to_string(),
@@ -165,12 +185,18 @@ impl RepositoryBranchUtil for RepositoryBranch {
         Ok(resp_refs)
     }
 
-
     // get single branch info by branch name
-    async fn read_ref(stack: &Arc<SharedCyfsStack>, space: &str, name: &str, ref_name: &str) -> BuckyResult<RepositoryBranch> {
-
-        let env = stack.root_state_stub(None, Some(dec_id())).create_path_op_env().await?;
-        let full_path = refs_map_path(space, name, ref_name);
+    async fn read_ref(
+        stack: &Arc<SharedCyfsStack>,
+        space: &str,
+        name: &str,
+        ref_name: &str,
+    ) -> BuckyResult<RepositoryBranch> {
+        let env = stack
+            .root_state_stub(None, Some(dec_id()))
+            .create_path_op_env()
+            .await?;
+        let full_path = rootstate_repo_refs(space, name, ref_name);
         let id = env.get_by_path(full_path).await?.unwrap();
         // if id.is_none
 

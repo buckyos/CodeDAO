@@ -8,13 +8,12 @@ use std::str::FromStr;
 
 mod controller;
 mod handler;
-mod service;
 mod put_object;
+mod service;
 
 use controller::*;
 use put_object::*;
 use service::CodeDaoService;
-
 
 fn main() {
     cyfs_debug::ProcessDeadHelper::patch_task_min_thread();
@@ -38,7 +37,7 @@ async fn main_run() {
         .unwrap()
         .start();
 
-    info!("CodeDAO decID: {:?}", dec_id());
+    info!("CodeDAO Service decID: {:?}", dec_id());
     let stack = Arc::new(SharedCyfsStack::open_default(Some(dec_id())).await.unwrap());
     // Simulator debugging
     // let parm_obj = SharedCyfsStackParam::new_with_ws_event(

@@ -1,14 +1,12 @@
-use cyfs_lib::*;
-use cyfs_base::*;
-use log::*;
-use std::path::{PathBuf};
 use async_std::sync::Arc;
-use serde_json::{json, Value};
 use async_trait::async_trait;
+use cyfs_base::*;
+use cyfs_lib::*;
+use log::*;
+use serde_json::{json, Value};
+use std::path::PathBuf;
 // use super::issue::*;
 use crate::*;
-
-
 
 // #[derive(Clone, Default, ProtobufEmptyEncode, ProtobufEmptyDecode)]
 #[derive(Clone, Default, ProtobufEncode, ProtobufDecode, ProtobufTransform)]
@@ -36,10 +34,8 @@ impl DescContent for RepositoryDescContent {
     type PublicKeyType = SubDescNone;
 }
 
-
 #[derive(Clone, Default, ProtobufEmptyEncode, ProtobufEmptyDecode)]
-pub struct RepositoryBodyContent {
-}
+pub struct RepositoryBodyContent {}
 
 impl BodyContent for RepositoryBodyContent {
     fn format(&self) -> u8 {
@@ -55,22 +51,37 @@ pub type RepositoryId = NamedObjectId<RepositoryType>;
 pub type Repository = NamedObjectBase<RepositoryType>;
 
 pub trait RepositoryObject {
-    fn create(owner: ObjectId, name: String, description: String, is_private: i32, author_type: String, author_name: String, init: i32 ) -> Self;
+    fn create(
+        owner: ObjectId,
+        name: String,
+        description: String,
+        is_private: i32,
+        author_type: String,
+        author_name: String,
+        init: i32,
+    ) -> Self;
 
     fn id(&self) -> String;
     fn date(&self) -> u64;
     fn name(&self) -> &String;
     fn description(&self) -> &String;
-    fn init(&self) ->i32;
+    fn init(&self) -> i32;
     fn is_private(&self) -> i32;
     fn author_type(&self) -> &String;
     fn author_name(&self) -> &String;
     fn fork_from_id(&self) -> &String;
 }
 
-
 impl RepositoryObject for Repository {
-    fn create(owner: ObjectId, name: String, description: String, is_private: i32, author_type: String, author_name: String, init: i32 ) -> Self {
+    fn create(
+        owner: ObjectId,
+        name: String,
+        description: String,
+        is_private: i32,
+        author_type: String,
+        author_name: String,
+        init: i32,
+    ) -> Self {
         let desc = RepositoryDescContent {
             name,
             description,
@@ -120,7 +131,11 @@ impl RepositoryObject for Repository {
 #[async_trait]
 pub trait RepositoryObjectUtil {
     fn update_column(repository: Repository, column: Value) -> BuckyResult<Repository>;
-    async fn update(repository: Repository, stack: &Arc<SharedCyfsStack>, column: Value) -> BuckyResult<Repository>;
+    async fn update(
+        repository: Repository,
+        stack: &Arc<SharedCyfsStack>,
+        column: Value,
+    ) -> BuckyResult<Repository>;
 
     async fn repository(stack: &Arc<SharedCyfsStack>, id: ObjectId) -> BuckyResult<Repository>;
     fn repo_dir(&self) -> PathBuf;
@@ -130,10 +145,10 @@ pub trait RepositoryObjectUtil {
 }
 
 #[async_trait]
-impl RepositoryObjectUtil for Repository  {
+impl RepositoryObjectUtil for Repository {
     // update_ colunm
     fn update_column(repository: Repository, column: Value) -> BuckyResult<Repository> {
-        let mut desc = RepositoryDescContent{
+        let mut desc = RepositoryDescContent {
             name: repository.name().to_string(),
             description: repository.description().to_string(),
             init: repository.init(),
@@ -145,12 +160,15 @@ impl RepositoryObjectUtil for Repository  {
 
         let target_column = column["target"].as_str();
         if target_column.is_none() {
-            return  Err(BuckyError::new(BuckyErrorCode::InvalidParam, "empty target key"))
+            return Err(BuckyError::new(
+                BuckyErrorCode::InvalidParam,
+                "empty target key",
+            ));
         }
         let target_column = target_column.unwrap();
         match target_column {
-            "is_private" => desc.is_private = column["value"].as_i64().unwrap() as i32 ,
-            "init" => desc.init = column["value"].as_i64().unwrap() as i32 ,
+            "is_private" => desc.is_private = column["value"].as_i64().unwrap() as i32,
+            "init" => desc.init = column["value"].as_i64().unwrap() as i32,
             _ => {
                 info!("repository unkown change target column {}", target_column)
             }
@@ -166,14 +184,20 @@ impl RepositoryObjectUtil for Repository  {
         Ok(r)
     }
 
-    async fn update(repository: Repository, stack: &Arc<SharedCyfsStack>, column: Value) -> BuckyResult<Repository> {
+    async fn update(
+        repository: Repository,
+        stack: &Arc<SharedCyfsStack>,
+        column: Value,
+    ) -> BuckyResult<Repository> {
         let repository_update = Repository::update_column(repository.clone(), column)?;
         let _r = put_object(&stack, &repository_update).await?;
         let id = repository_update.desc().object_id();
-        let env = stack.root_state_stub(None, Some(dec_id())).create_path_op_env().await?;
-        let (full_path,_) = RepositoryHelper::object_map_path(
-            repository.author_name(), 
-            repository.name());
+        let env = stack
+            .root_state_stub(None, Some(dec_id()))
+            .create_path_op_env()
+            .await?;
+        let (full_path, _) =
+            RepositoryHelper::object_map_path(repository.author_name(), repository.name());
         let _r = env.set_with_path(full_path, &id, None, true).await?;
         let _root = env.commit().await?;
         Ok(repository_update)
@@ -207,7 +231,7 @@ impl RepositoryObjectUtil for Repository  {
         }
         Ok(branches)
     }
-    
+
     fn json(&self) -> Value {
         json!({
             "id": self.id(),
@@ -223,15 +247,13 @@ impl RepositoryObjectUtil for Repository  {
     }
 }
 
-
-
 pub struct RepositoryHelper {
     pub stack: Arc<SharedCyfsStack>,
     pub author_name: String,
     pub name: String,
 }
 
-impl RepositoryHelper{
+impl RepositoryHelper {
     pub fn new(stack: Arc<SharedCyfsStack>, author_name: String, name: String) -> Self {
         Self {
             stack: stack,
@@ -241,7 +263,9 @@ impl RepositoryHelper{
     }
 
     pub async fn repository(&self) -> BuckyResult<Repository> {
-        let result = RepositoryHelper::get_repository_object(&self.stack, &self.author_name, &self.name).await;
+        let result =
+            RepositoryHelper::get_repository_object(&self.stack, &self.author_name, &self.name)
+                .await;
         result
     }
 
@@ -250,7 +274,11 @@ impl RepositoryHelper{
         let mut count = 0;
 
         let key = RepositoryHelper::star_base_path(&self.author_name, &self.name);
-        let env = self.stack.root_state_stub(None, Some(dec_id())).create_single_op_env().await?;
+        let env = self
+            .stack
+            .root_state_stub(None, Some(dec_id()))
+            .create_single_op_env()
+            .await?;
 
         let result = env.load_by_path(key).await;
         if result.is_ok() {
@@ -260,7 +288,7 @@ impl RepositoryHelper{
                     break;
                 }
                 for _ in ret {
-                    count +=1;
+                    count += 1;
                 }
             }
         }
@@ -268,11 +296,15 @@ impl RepositoryHelper{
     }
 }
 
+// RootState Map
+pub fn repository_object_map_path(author_name: &str, name: &str) -> String {
+    format!("{}{}/{}/repo", REPOSITORY_PATH, author_name, name)
+}
 
 /// RepositoryHelper
 /// static method
 impl RepositoryHelper {
-    pub fn repo_dir(author_name: &str, name: &str) -> PathBuf{
+    pub fn repo_dir(author_name: &str, name: &str) -> PathBuf {
         let mut base_dir = cyfs_util::get_cyfs_root_path();
         base_dir.push("data");
         base_dir.push("app");
@@ -304,7 +336,7 @@ impl RepositoryHelper {
     pub fn object_map_path(author_name: &str, name: &str) -> (String, String) {
         (
             format!("{}{}/{}/repo", REPOSITORY_PATH, author_name, name),
-            format!("{}{}/{}", REPOSITORY_PATH, author_name, name)
+            format!("{}{}/{}", REPOSITORY_PATH, author_name, name),
         )
     }
     /// commit_object_map_path
@@ -313,15 +345,20 @@ impl RepositoryHelper {
         format!("{}{}/{}/commit", REPOSITORY_PATH, author_name, name)
     }
 
-
     pub fn star_user_key(author_name: &str, name: &str, user_name: &str) -> String {
-        format!("{}{}/{}/star/{}", REPOSITORY_PATH, author_name, name, user_name)
+        format!(
+            "{}{}/{}/star/{}",
+            REPOSITORY_PATH, author_name, name, user_name
+        )
     }
     pub fn star_base_path(author_name: &str, name: &str) -> String {
         format!("{}{}/{}/star", REPOSITORY_PATH, author_name, name)
     }
     pub fn member_key(author_name: &str, name: &str, user_id: &str) -> String {
-        format!("{}{}/{}/member/{}", REPOSITORY_PATH, author_name, name, user_id)
+        format!(
+            "{}{}/{}/member/{}",
+            REPOSITORY_PATH, author_name, name, user_id
+        )
     }
     pub fn member_base_path(author_name: &str, name: &str) -> String {
         format!("{}{}/{}/member", REPOSITORY_PATH, author_name, name)
@@ -333,13 +370,21 @@ impl RepositoryHelper {
         format!("{}{}/{}/merge", REPOSITORY_PATH, author_name, name)
     }
 
-
-    pub async fn by_path(stack: &Arc<SharedCyfsStack>, object_map_path: &str) -> BuckyResult<Repository>{
-        let env = stack.root_state_stub(None, Some(dec_id())).create_path_op_env().await?;
+    pub async fn by_path(
+        stack: &Arc<SharedCyfsStack>,
+        object_map_path: &str,
+    ) -> BuckyResult<Repository> {
+        let env = stack
+            .root_state_stub(None, Some(dec_id()))
+            .create_path_op_env()
+            .await?;
         let repository_object_id = env.get_by_path(object_map_path).await?;
         info!("env.get_by_path {:?}", repository_object_id);
         if repository_object_id.is_none() {
-            return Err(BuckyError::new(BuckyErrorCode::NotFound, format!("Repository not found by path: {}", object_map_path)));
+            return Err(BuckyError::new(
+                BuckyErrorCode::NotFound,
+                format!("Repository not found by path: {}", object_map_path),
+            ));
         }
         let buf = get_object(stack, repository_object_id.unwrap()).await?;
         let repository = Repository::clone_from_slice(&buf)? as Repository;
@@ -357,8 +402,16 @@ impl RepositoryHelper {
     //     Ok(issue)
     // }
 
-    pub async fn member_by_path(stack: &Arc<SharedCyfsStack>, space: &str, name: &str, repo_member_id: &str) -> BuckyResult<RepositoryMember>{
-        let env = stack.root_state_stub(None, Some(dec_id())).create_path_op_env().await?;
+    pub async fn member_by_path(
+        stack: &Arc<SharedCyfsStack>,
+        space: &str,
+        name: &str,
+        repo_member_id: &str,
+    ) -> BuckyResult<RepositoryMember> {
+        let env = stack
+            .root_state_stub(None, Some(dec_id()))
+            .create_path_op_env()
+            .await?;
         let key = RepositoryHelper::member_key(space, name, repo_member_id);
         let object_id = env.get_by_path(&key).await?;
 
@@ -367,7 +420,10 @@ impl RepositoryHelper {
         Ok(member)
     }
 
-    pub async fn by_id(stack: &Arc<SharedCyfsStack>, object_id: ObjectId) -> BuckyResult<Repository>{
+    pub async fn by_id(
+        stack: &Arc<SharedCyfsStack>,
+        object_id: ObjectId,
+    ) -> BuckyResult<Repository> {
         let buf = get_object(stack, object_id).await?;
         let repository = Repository::clone_from_slice(&buf)? as Repository;
         Ok(repository)
@@ -375,8 +431,12 @@ impl RepositoryHelper {
 
     /// get_repository_object
     /// quik get by path
-    pub async fn get_repository_object(stack: &Arc<SharedCyfsStack>, space: &str, name: &str) ->BuckyResult<Repository> {
-        let (object_map_path,_) = RepositoryHelper::object_map_path(space, name);
+    pub async fn get_repository_object(
+        stack: &Arc<SharedCyfsStack>,
+        space: &str,
+        name: &str,
+    ) -> BuckyResult<Repository> {
+        let (object_map_path, _) = RepositoryHelper::object_map_path(space, name);
         trace!("object_map_path {:?}", object_map_path);
 
         let repository = RepositoryHelper::by_path(stack, &object_map_path).await?;

@@ -1,27 +1,28 @@
 [package]
-name = "service-manager"
+name = "code-dao-cli"
 version = "0.1.0"
 edition = "2021"
 
+#default-run = "codedao"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[[bin]]
+name = "codedao"
+path = "src/main.rs"
+
 [dependencies]
-# cyfs lib
-cyfs-util= "*"
+#cyfs-util= "*"
 cyfs-base = "*"
-cyfs-core = "*"
+#cyfs-core = "*"
 cyfs-lib = "*"
 cyfs-debug = "*"
 
-# others
 cyfs-git-base =  { path = "../cyfs-git-base" }
+git2="*"
 async-std = {version="*", features = ["unstable", "attributes"]}
+#prost="*"
 log = { version = "=0.4.16", features = ["max_level_trace", "release_max_level_trace"] }
-async-trait = "*"
+#async-trait = "*"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-
-[target.'cfg(all(target_os="windows", target_env = "gnu"))'.dependencies]
-sqlx = { version = "0.5", features = [ "runtime-async-std-native-tls", "sqlite" ] }
-[target.'cfg(any(not(target_os="windows"), not(target_env = "gnu")))'.dependencies]
-sqlx = { version = "0.5", features = [ "runtime-async-std-rustls", "sqlite" ] }
+clap = { version = "4", features = ["derive"] }

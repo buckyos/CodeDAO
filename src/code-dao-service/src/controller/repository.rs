@@ -1,13 +1,18 @@
-
-use cyfs_lib::*;
-use cyfs_base::*;
-use log::*;
 use async_std::sync::Arc;
+use cyfs_base::*;
+use cyfs_git_base::*;
+use cyfs_lib::*;
+use log::*;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use cyfs_git_base::*;
 
-
+#[derive(Serialize, Deserialize)]
+struct RequestRepositoryInit {
+    name: String,
+    description: String,
+    is_private: i32,
+    author_type: String,
+}
 
 #[derive(Serialize, Deserialize)]
 struct RequestRepositoryNew {
@@ -43,7 +48,49 @@ pub struct RequestRepositoryList {
 type RequestRepositoryFind = RequestRepositoryDelete;
 type RequestRepositorySetting = RequestRepositoryDelete;
 
+/// # repository_init
+/// init a pure rootstate repository
+pub async fn repository_init(ctx: Arc<PostContext>) -> BuckyResult<NONPostObjectInputResponse> {
+    let data: RequestRepositoryInit = serde_json::from_str(&ctx.data).map_err(transform_err)?;
 
+    let people_id = ctx.caller.to_string();
+    let repository = Repository::create(
+        ctx.caller,
+        data.name.clone(),
+        data.description,
+        data.is_private,
+        data.author_type.clone(),
+        people_id.clone(),
+        0,
+    );
+
+    let _r = put_object(&ctx.stack, &repository).await?;
+    let path_name = repository_object_map_path(&people_id, &repository.name());
+    let env = ctx
+        .stack
+        .root_state_stub(None, Some(dec_id()))
+        .create_path_op_env()
+        .await?;
+    let result = env.get_by_path(&path_name).await?;
+    if result.is_some() {
+        let msg = format!(
+            "repository[{}/{}] was already created",
+            repository.author_name(),
+            repository.name()
+        );
+        error!("{}", msg);
+        return Err(BuckyError::new(BuckyErrorCode::AlreadyExists, msg));
+    }
+
+    let _r = env
+        .set_with_path(&path_name, &repository.desc().calculate_id(), None, true)
+        .await?;
+    let root = env.commit().await?;
+    info!("add repository commit: {:?}", root);
+
+    info!("repo full name {}/{}", ctx.caller, data.name);
+    Ok(success(json!({"message": "ok"})))
+}
 
 /// # repository_new    
 /// 新建仓库， object + git init
@@ -75,12 +122,16 @@ pub async fn repository_new(ctx: Arc<PostContext>) -> BuckyResult<NONPostObjectI
     );
 
     if repository.is_private() == 0 {
-        info!("send repository object to service {}  {}/{}",  repository.desc().object_id(), repository.author_name(), repository.name());
+        info!(
+            "send repository object to service {}  {}/{}",
+            repository.desc().object_id(),
+            repository.author_name(),
+            repository.name()
+        );
         post_special_object_service(&ctx.stack, &repository, "repository").await?;
     }
     let r = put_object(&ctx.stack, &repository).await?;
-    info!("put_object local result: {:?}", r.result );
-
+    info!("put_object local result: {:?}", r.result);
 
     // insert into sqlite
     insert_repository(&ctx.stack, &repository).await?;
@@ -90,7 +141,9 @@ pub async fn repository_new(ctx: Arc<PostContext>) -> BuckyResult<NONPostObjectI
     if data.author_type == "org" {
         let env = ctx.stack_env().await?;
         let key = format!("{}/{}/{}", ORG_REPO_PATH, data.author_name, data.name);
-        let _r = env.set_with_path(&key, &repository.desc().calculate_id(), None, true).await?;
+        let _r = env
+            .set_with_path(&key, &repository.desc().calculate_id(), None, true)
+            .await?;
         let root = env.commit().await;
         info!("env set_with_path repository{:?}  result:{:?}", key, root);
 
@@ -98,39 +151,40 @@ pub async fn repository_new(ctx: Arc<PostContext>) -> BuckyResult<NONPostObjectI
             // TO UP
             // let device = get_device_name(stack, &user_name).await?;
             let _ = put_object_target(
-                &ctx.stack, &repository, 
-                Some(*ctx.source_device.object_id()), 
-                Some("repo/new".to_string())
-            ).await;
+                &ctx.stack,
+                &repository,
+                Some(*ctx.source_device.object_id()),
+                Some("repo/new".to_string()),
+            )
+            .await;
         }
     }
 
     // 本地data目录
     {
         let repo_target_dir = repository.repo_git_dir();
-        std::fs::create_dir_all(&repo_target_dir).map_err(|e| {
-            BuckyError::new(BuckyErrorCode::Failed, format!("{:?}", e))
-        })?;
+        std::fs::create_dir_all(&repo_target_dir)
+            .map_err(|e| BuckyError::new(BuckyErrorCode::Failed, format!("{:?}", e)))?;
         info!("repo_target_dir: {:?}", &repo_target_dir);
         let _ = git_init(repo_target_dir.clone())?;
         git_config_quotepath(repo_target_dir);
     }
 
-
     Ok(success(json!({"message": "ok"})))
 }
 
-
-
-
-
 /// # repository_global_list    
 /// pub仓库列表
-pub async fn repository_global_list(ctx: Arc<PostContext>) -> BuckyResult<NONPostObjectInputResponse> {
-    let (_, resp_body) = STACK_ACTION.get().unwrap().post_service("repo/list", &ctx.data).await?;
+pub async fn repository_global_list(
+    ctx: Arc<PostContext>,
+) -> BuckyResult<NONPostObjectInputResponse> {
+    let (_, resp_body) = STACK_ACTION
+        .get()
+        .unwrap()
+        .post_service("repo/list", &ctx.data)
+        .await?;
     Ok(success_proxy(resp_body))
 }
-
 
 /// # repository_list    
 /// 仓库列表
@@ -143,13 +197,13 @@ pub async fn repository_list(ctx: Arc<PostContext>) -> BuckyResult<NONPostObject
             return Ok(result);
         }
     }
-    
+
     let env = ctx.stack_single_env().await?;
     let result = env.load_by_path(REPOSITORY_PATH).await;
     if result.is_err() {
         return Ok(success(json!({"data": []})));
     }
-    
+
     let mut data: Vec<serde_json::Value> = Vec::new();
     let ret = env.list().await?;
     for item in ret {
@@ -184,11 +238,8 @@ pub async fn repository_list(ctx: Arc<PostContext>) -> BuckyResult<NONPostObject
     // }
     data.sort_by(sort_list_by_date_reverse);
 
-
-
-    Ok(success(json!({"data": data})))
+    Ok(success(json!({ "data": data })))
 }
-
 
 /// # repository_find
 /// 查找仓库 （用于 remote模块）
@@ -203,14 +254,20 @@ pub async fn repository_find(ctx: Arc<PostContext>) -> BuckyResult<NONPostObject
 
     let repository = ctx
         .repository_helper(space.clone(), name.clone())
-        .repository().await?;
+        .repository()
+        .await?;
 
-    info!("find [{}/{}], private: {}", space, name, repository.is_private());
-    if repository.is_private() == 1 &&  ctx.is_other_caller() {
+    info!(
+        "find [{}/{}], private: {}",
+        space,
+        name,
+        repository.is_private()
+    );
+    if repository.is_private() == 1 && ctx.is_other_caller() {
         // check
         let member_list = crate::member_list(&ctx.stack, &space, &name).await?;
         if member_list.len() == 0 {
-            return Ok(failed("target repo are not permission granted"))
+            return Ok(failed("target repo are not permission granted"));
         }
 
         let is_merber = member_list.iter().any(|member| {
@@ -218,13 +275,9 @@ pub async fn repository_find(ctx: Arc<PostContext>) -> BuckyResult<NONPostObject
         });
 
         if !is_merber {
-            return Ok(failed("target repo are not permission granted"))
+            return Ok(failed("target repo are not permission granted"));
         }
     }
-    
-
-
-
 
     Ok(success(json!({
         "repository": repository.json()
@@ -253,10 +306,10 @@ pub async fn repository_home(ctx: Arc<PostContext>) -> BuckyResult<NONPostObject
             "branches": 0,
             "last_commit": {},
             "commit_count": 0,
-        })))
+        })));
     }
     let branches = repository.branches()?;
-    
+
     let repo_dir = repository.repo_dir();
     let last_commit_info = git_log_last_commit_message(repo_dir.clone(), &data.branch)?;
     let commit_count = git_rev_list_count(repo_dir.clone(), &data.branch)?;
@@ -275,11 +328,11 @@ pub async fn repository_home(ctx: Arc<PostContext>) -> BuckyResult<NONPostObject
     })))
 }
 
-
-
 /// # repository_language_statistics    
 /// 仓库的文件的语言统计
-pub async fn repository_language_statistics(ctx: Arc<PostContext>) -> BuckyResult<NONPostObjectInputResponse> {
+pub async fn repository_language_statistics(
+    ctx: Arc<PostContext>,
+) -> BuckyResult<NONPostObjectInputResponse> {
     let data: RequestRepositoryHome = serde_json::from_str(&ctx.data).map_err(transform_err)?;
     let space = data.author_name;
     let name = data.name;
@@ -295,25 +348,24 @@ pub async fn repository_language_statistics(ctx: Arc<PostContext>) -> BuckyResul
     let cache_key = format!("language.stat.{}/{}/{}", space, name, hash);
     let languages = stat_repo_with_cache(repo_dir, &data.branch, &cache_key)?;
 
-    
     Ok(success(json!({
         "data": languages,
     })))
 }
 
-
 /// # repository_setting_state_switch    
 /// 切换仓库 的visible字段
-pub async fn repository_setting_state_switch(ctx: Arc<PostContext>) -> BuckyResult<NONPostObjectInputResponse> {
+pub async fn repository_setting_state_switch(
+    ctx: Arc<PostContext>,
+) -> BuckyResult<NONPostObjectInputResponse> {
     let data: RequestRepositorySetting = serde_json::from_str(&ctx.data).map_err(transform_err)?;
     let space = data.author_name;
     let name = data.name;
 
-
     // 不用forward，只需要check
     let is_local = check_space_local(&ctx.stack, &space).await?;
     if !is_local {
-        return Ok(failed("no permission"))
+        return Ok(failed("no permission"));
     }
 
     info!("to set repository visible");
@@ -322,33 +374,52 @@ pub async fn repository_setting_state_switch(ctx: Arc<PostContext>) -> BuckyResu
 
     let old_is_public = repository.is_private() == 0;
     let new_value = repository.is_private().clone() ^ 1;
-    let new_repository = Repository::update(repository, &ctx.stack,json!({
-        "target": "is_private",
-        "value": new_value,
-    }) ).await?;
+    let new_repository = Repository::update(
+        repository,
+        &ctx.stack,
+        json!({
+            "target": "is_private",
+            "value": new_value,
+        }),
+    )
+    .await?;
     info!("update repository column visible success");
     // insert_repository(&ctx.stack, &repository).await?;
 
-    if old_is_public { // public -> private
-        let (_, value) = STACK_ACTION.get().unwrap().post_service("repo/delete", &json!({"author_name": space, "name": name}).to_string()).await?;
+    if old_is_public {
+        // public -> private
+        let (_, value) = STACK_ACTION
+            .get()
+            .unwrap()
+            .post_service(
+                "repo/delete",
+                &json!({"author_name": space, "name": name}).to_string(),
+            )
+            .await?;
         info!("set reposiotry public to private {}", value);
     } else {
-        info!("send repository object to service {}  {}/{}",  new_repository.desc().object_id(), new_repository.author_name(), new_repository.name());
+        info!(
+            "send repository object to service {}  {}/{}",
+            new_repository.desc().object_id(),
+            new_repository.author_name(),
+            new_repository.name()
+        );
         post_special_object_service(&ctx.stack, &new_repository, "repository").await?;
     }
 
-    // update column in sqlite 
+    // update column in sqlite
     let db = CyfsGitDatabase::instance().await.unwrap();
-    db.update_repository_visible(&space, &name, new_value).await?;
+    db.update_repository_visible(&space, &name, new_value)
+        .await?;
 
-    
     Ok(success(json!({})))
 }
 
-
 /// # repository_log_graph
 /// log graph
-pub async fn repository_log_graph(ctx: Arc<PostContext>) -> BuckyResult<NONPostObjectInputResponse> {
+pub async fn repository_log_graph(
+    ctx: Arc<PostContext>,
+) -> BuckyResult<NONPostObjectInputResponse> {
     let data: RequestRepositoryHome = serde_json::from_str(&ctx.data).map_err(transform_err)?;
     let space = data.author_name;
     let name = data.name;
@@ -360,10 +431,8 @@ pub async fn repository_log_graph(ctx: Arc<PostContext>) -> BuckyResult<NONPostO
     let repository = RepositoryHelper::get_repository_object(&ctx.stack, &space, &name).await?;
     let repo_dir = repository.repo_dir();
 
-
     let graph = git_log_graph(repo_dir, 0, 20)?;
 
-    
     Ok(success(json!({
         "data": graph,
     })))
@@ -377,34 +446,48 @@ pub async fn repository_delete(ctx: Arc<PostContext>) -> BuckyResult<NONPostObje
     let name = data.name;
     let env = ctx.stack_env().await?;
 
-    let (repository_key,_) = RepositoryHelper::object_map_path(&space, &name);
+    let (repository_key, _) = RepositoryHelper::object_map_path(&space, &name);
 
     // check key exist
     let result = env.get_by_path(&repository_key).await?;
     if result.is_none() {
-        return Ok(failed(&format!("repository[{}/{}] not exist", &space, &name)))
+        return Ok(failed(&format!(
+            "repository[{}/{}] not exist",
+            &space, &name
+        )));
     }
 
     let repository = RepositoryHelper::get_repository_object(&ctx.stack, &space, &name).await?;
     // call dec-service delete
     if repository.is_private() == 0 {
-        info!("public repository call to service delete {}  {}/{}",  repository.desc().object_id(), repository.author_name(), repository.name());
-        let _ = STACK_ACTION.get().unwrap().post_service("repo/delete", &ctx.data).await.map_err(|e| {
-            error!("post to dec service failed, {:?}", e);
-            e
-        })?;
+        info!(
+            "public repository call to service delete {}  {}/{}",
+            repository.desc().object_id(),
+            repository.author_name(),
+            repository.name()
+        );
+        let _ = STACK_ACTION
+            .get()
+            .unwrap()
+            .post_service("repo/delete", &ctx.data)
+            .await
+            .map_err(|e| {
+                error!("post to dec service failed, {:?}", e);
+                e
+            })?;
     }
 
     sqlite_delete_repository(&space, &name).await?;
 
-
     // TODO check permission
     let object_id = result.unwrap();
-    info!("result: {:?}",object_id);
-    let _r = env.remove_with_path(&repository_key, Some(object_id)).await?;
+    info!("result: {:?}", object_id);
+    let _r = env
+        .remove_with_path(&repository_key, Some(object_id))
+        .await?;
     // 重复的去删除 创建，  commit可能会失败
     let root = env.commit().await;
-    println!("remove commit: {:?}",root);
+    println!("remove commit: {:?}", root);
 
     std::fs::remove_dir_all(RepositoryHelper::repo_dir(&space, &name)).map_err(|e| {
         BuckyError::new(BuckyErrorCode::InvalidParam, format!("删除仓库失败{:?}", e))
@@ -414,26 +497,30 @@ pub async fn repository_delete(ctx: Arc<PostContext>) -> BuckyResult<NONPostObje
     Ok(success(json!({"message": "ok"})))
 }
 
-
 /// # remote_repository_delete
 /// 删除仓库(仅map)
-pub async fn remote_repository_delete(ctx: Arc<PostContext>) -> BuckyResult<NONPostObjectInputResponse> {
+pub async fn remote_repository_delete(
+    ctx: Arc<PostContext>,
+) -> BuckyResult<NONPostObjectInputResponse> {
     let data: RequestRepositoryDelete = serde_json::from_str(&ctx.data).map_err(transform_err)?;
     let space = data.author_name;
     let name = data.name;
     let env = ctx.stack_env().await?;
 
-    let (repository_key,_) = RepositoryHelper::object_map_path(&space, &name);
+    let (repository_key, _) = RepositoryHelper::object_map_path(&space, &name);
 
     // check key exist
     let result = env.get_by_path(&repository_key).await?;
     if result.is_none() {
-        return Ok(failed(&format!("repository[{}/{}] not exist", &space, &name)))
+        return Ok(failed(&format!(
+            "repository[{}/{}] not exist",
+            &space, &name
+        )));
     }
 
     let _r = env.remove_with_path(&repository_key, None).await?;
     let root = env.commit().await;
-    println!("remove commit: {:?}",root);
+    println!("remove commit: {:?}", root);
 
     Ok(success(json!({"message": "ok"})))
 }
