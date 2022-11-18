@@ -8,6 +8,11 @@ codedao create <name>
 codedao push
 codedao pull
 codedao view 
+
+
+
+# read
+codedao cat <oid>
 ````
 
 ## create repostiory
@@ -30,3 +35,7 @@ run in repository sub dir, match target `.git`
 ## development
 `codedao init` auto init cwd dir name 's repository,  and get a line to ask use(Y/N) 
 `codedao init <name>`
+
+
+## upload blob file
+create task call in runtime (trigger the task start in ood)

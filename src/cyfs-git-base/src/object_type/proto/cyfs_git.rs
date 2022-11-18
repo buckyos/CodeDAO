@@ -40,18 +40,27 @@ pub struct RepositoryDescContent {
 pub struct CommitDescContent {
     #[prost(string, tag="1")]
     pub object_id: ::prost::alloc::string::String,
-    #[prost(string, tag="2")]
-    pub parent: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag="2")]
+    pub parents: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
     #[prost(string, tag="3")]
-    pub tree: ::prost::alloc::string::String,
+    pub tree_id: ::prost::alloc::string::String,
     #[prost(string, tag="4")]
     pub payload: ::prost::alloc::string::String,
-    #[prost(string, tag="5")]
-    pub author: ::prost::alloc::string::String,
-    #[prost(string, tag="6")]
-    pub committer: ::prost::alloc::string::String,
-    #[prost(string, tag="7")]
-    pub parent2: ::prost::alloc::string::String,
+    #[prost(message, optional, tag="5")]
+    pub author: ::core::option::Option<CommitSignature>,
+    ///string parent2 = 7;
+    #[prost(message, optional, tag="6")]
+    pub committer: ::core::option::Option<CommitSignature>,
+}
+/// match git2 stcurt
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct CommitSignature {
+    #[prost(string, tag="1")]
+    pub name: ::prost::alloc::string::String,
+    #[prost(string, tag="2")]
+    pub email: ::prost::alloc::string::String,
+    #[prost(string, tag="3")]
+    pub when: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct OrganizationDescContent {
@@ -150,6 +159,7 @@ pub struct RepositoryBranchDescContent {
     #[prost(string, tag="4")]
     pub ref_hash: ::prost::alloc::string::String,
 }
+/// repository tree object
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct TreeDescContent {
     #[prost(string, tag="1")]

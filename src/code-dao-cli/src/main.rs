@@ -1,9 +1,9 @@
 use async_std::sync::Arc;
 use clap::*;
 use cyfs_debug::*;
-use cyfs_git_base::{dec_id, owner, ConfigManager};
+use cyfs_git_base::*;
 use cyfs_lib::*;
-use git2::*;
+//use git2::*;
 use log::*;
 mod post;
 mod push;
@@ -21,6 +21,7 @@ struct Cli {
 enum Action {
     Init { name: Option<String> },
     Push,
+    // do read, like git cat-file -p
 }
 
 fn init() {
@@ -60,21 +61,17 @@ async fn main_run() {
     }
     info!("connect cyfs-runtime successfully");
 
-    main_test(stack).await;
-    std::process::exit(0);
-
     // get the current dir
     let cwd = std::env::current_dir().expect("failed to get codedao-cli cwd");
+
+    // TOFIX
     let current_dir_name = cwd.into_iter().last();
+
+    let repo = git2::Repository::discover(cwd.clone()).expect("test");
+    info!("r {:?}", repo.workdir());
+
     info!("current relative dir is {:?}", current_dir_name);
     info!("current cwd is {:?}", cwd);
-    let git_dir = cwd.join(".git");
-
-    // if git clone ,no need to this
-    if !git_dir.exists() {
-        error!("local repository's .git dir empty");
-        std::process::exit(0);
-    }
 
     let service = Service::new(Arc::clone(&stack));
     let cli = Cli::parse();
@@ -90,8 +87,8 @@ async fn main_run() {
             }
         }
         Action::Push => {
-            info!("push push");
-            service.push(git_dir).await;
+            info!("arg: push");
+            service.push().await;
         }
     }
 }
@@ -118,65 +115,25 @@ impl Service {
     }
 
     // push
-    pub async fn push(&self, git_dir: std::path::PathBuf) {
-        // read the .git/objects
-        let head_file = git_dir.join("HEAD");
-        let ref_head = std::fs::read_to_string(head_file).expect("read HEAD failed");
-        info!("current branch: {}", ref_head);
-
-        if let Some(branch) = ref_head.split("/").last() {
-            let branch = branch.trim().to_string();
-
-            let ref_head = ref_head.clone();
-            let (_, head_file_path) = ref_head.rsplit_once(":").unwrap();
-
-            let head_file_path = head_file_path.trim();
-            let ref_file = git_dir.join(head_file_path);
-
-            info!("ref file: {:?}", ref_file.display());
-            // get commit HEAD oid
-            let ref_result = std::fs::read_to_string(ref_file);
-            if ref_result.is_err() {
-                println!("no commit yet");
-            }
-
-            // git status
-            let index_file = git_dir.join("index");
-            if index_file.is_file() {
-                println!("git stash no clean; need to commit?");
-            }
-
-            let head_oid = ref_result.unwrap().trim().to_string();
-            info!("{}: {}", branch, head_oid);
-
-            //
-            // read commit oid
-            // TODO commit oid check rootstate
-
-            // commit object path
-
-            let commit_object_path = git_dir
-                .join("objects")
-                .join(&head_oid[..2])
-                .join(&head_oid[2..]);
-            info!("path: {}", commit_object_path.display());
-
-            let commit_message = std::fs::read(commit_object_path).expect("read commit failed");
-            info!("why {:?}", commit_message);
-        }
+    pub async fn push(&self) {
+        main_test(self.stack.clone()).await.expect("push");
     }
 }
 
 async fn main_test(stack: Arc<SharedCyfsStack>) -> Result<(), git2::Error> {
-    let test_dir_path = "/home/aa/test/2022_1110";
+    let name = "2022_1110";
+    let test_dir_path = format!("/home/aa/test/{}", name);
 
-    let people = owner(&stack);
-    let name = format!("{}/{}", people.to_string(), "2022_1110");
+    let ood = get_ood_device(&stack).await;
+    //let owner = get_owner(&stack).await;
+    let owner = owner(&stack);
+    let name = format!("{}/{}", owner.to_string(), name);
 
-    let repo = Repository::open(test_dir_path).expect("open repo failed");
-    let push_helper = push::Push::new(Arc::new(repo), stack, name);
-    let index = push.index()?;
-    info!("commit oid {}", index);
+    let branch = "main".to_string();
+    let repo = git2::Repository::open(test_dir_path).expect("open repo failed");
+    let push_helper = push::Push::new(Arc::new(repo), stack, name, branch, ood, owner);
+    //let index = push_helper.index()?;
+    //info!("commit oid {}", index);
 
     push_helper.push().await.expect("check remote head");
 

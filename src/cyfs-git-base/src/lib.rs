@@ -10,6 +10,7 @@ mod object_type;
 mod path;
 mod post_context;
 mod response;
+mod stack_util;
 mod stat;
 
 pub use action::*;
@@ -24,4 +25,5 @@ pub use object_type::*;
 pub use path::*;
 pub use post_context::*;
 pub use response::*;
+pub use stack_util::*;
 pub use stat::*;

@@ -80,6 +80,12 @@ cargo build -p git-remote-cyfs
 
 And copy the result(`target/debug/git-remote-cyfs`) to the excutable path of system.
 
+
+## protobuf
+```
+cargo build -p proto  
+```
+
 # Directory Structure
 
 ```
