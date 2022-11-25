@@ -63,15 +63,14 @@ async fn main_run() {
 
     // get the current dir
     let cwd = std::env::current_dir().expect("failed to get codedao-cli cwd");
-
     // TOFIX
     let current_dir_name = cwd.into_iter().last();
 
-    let repo = git2::Repository::discover(cwd.clone()).expect("test");
-    info!("r {:?}", repo.workdir());
+    //let repo = git2::Repository::discover(cwd.clone()).expect("test");
+    //info!("r {:?}", repo.workdir());
 
-    info!("current relative dir is {:?}", current_dir_name);
-    info!("current cwd is {:?}", cwd);
+    //info!("current relative dir is {:?}", current_dir_name);
+    //info!("current cwd is {:?}", cwd);
 
     let service = Service::new(Arc::clone(&stack));
     let cli = Cli::parse();
@@ -87,7 +86,7 @@ async fn main_run() {
             }
         }
         Action::Push => {
-            info!("arg: push");
+            info!("cli action: push");
             service.push().await;
         }
     }
@@ -124,14 +123,25 @@ async fn main_test(stack: Arc<SharedCyfsStack>) -> Result<(), git2::Error> {
     let name = "2022_1110";
     let test_dir_path = format!("/home/aa/test/{}", name);
 
+    info!("current test git dir {}", test_dir_path);
+
     let ood = get_ood_device(&stack).await;
     //let owner = get_owner(&stack).await;
     let owner = owner(&stack);
+
+    /// init stack util helper
+    /// TODO  move put object to this
+    let stack_util = Arc::new(StackUtil::new(
+        Arc::clone(&stack),
+        owner.clone(),
+        ood.clone(),
+    ));
+
     let name = format!("{}/{}", owner.to_string(), name);
 
     let branch = "main".to_string();
     let repo = git2::Repository::open(test_dir_path).expect("open repo failed");
-    let push_helper = push::Push::new(Arc::new(repo), stack, name, branch, ood, owner);
+    let push_helper = push::Push::new(Arc::new(repo), stack, stack_util, name, branch, ood, owner);
     //let index = push_helper.index()?;
     //info!("commit oid {}", index);
 

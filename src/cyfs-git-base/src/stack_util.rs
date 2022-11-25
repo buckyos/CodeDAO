@@ -8,7 +8,7 @@ use std::path::PathBuf;
 pub struct StackUtil {
     stack: Arc<SharedCyfsStack>,
     owner: ObjectId,
-    ood: ObjectId,
+    ood_id: ObjectId,
     device_id: DeviceId,
 }
 
@@ -16,13 +16,14 @@ impl StackUtil {
     pub fn new(
         stack: Arc<SharedCyfsStack>,
         owner: ObjectId,
-        ood: ObjectId,
-        device_id: DeviceId,
+        ood_id: ObjectId,
+        // device_id: DeviceId,
     ) -> Self {
+        let device_id = stack.local_device().desc().device_id();
         Self {
             stack,
             owner,
-            ood,
+            ood_id,
             device_id,
         }
     }
@@ -60,7 +61,7 @@ impl StackUtil {
                     source: None,
                     dec_id: None,
                     level: NONAPILevel::Router,
-                    target: Some(self.ood),
+                    target: Some(self.ood_id),
                     flags: 0,
                 },
                 object: NONObjectInfo {
@@ -79,7 +80,7 @@ impl StackUtil {
                     req_path: None,
                     dec_id: Some(dec_id()),
                     level: NDNAPILevel::NDC,
-                    target: Some(self.ood),
+                    target: Some(self.ood_id),
                     referer_object: vec![],
                     flags: 0,
                 },
@@ -103,7 +104,7 @@ impl StackUtil {
                         req_path: None,
                         dec_id: Some(dec_id()),
                         level: NDNAPILevel::NDC,
-                        target: Some(self.ood),
+                        target: Some(self.ood_id),
                         referer_object: vec![],
                         flags: 0,
                     },
@@ -143,7 +144,7 @@ impl StackUtil {
                     req_path: None,
                     dec_id: None,
                     level: NDNAPILevel::NDC,
-                    target: Some(self.ood),
+                    target: Some(self.ood_id),
                     referer_object: vec![],
                     flags: 0,
                 },

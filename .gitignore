@@ -3,4 +3,4 @@
 cyfs
 target
 node_modules
-
+src/run.sh

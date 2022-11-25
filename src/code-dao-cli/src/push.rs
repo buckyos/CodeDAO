@@ -9,6 +9,7 @@ pub struct Push {
     //cwd: String,
     repo: Arc<git2::Repository>,
     stack: Arc<SharedCyfsStack>,
+    stack_util: Arc<StackUtil>,
     name: String,
     branch: String,
     ood: ObjectId,
@@ -19,10 +20,11 @@ fn map_git_err(err: git2::Error) -> BuckyError {
     BuckyError::new(BuckyErrorCode::InternalError, err.to_string())
 }
 
-impl Push {
+impl<'repo> Push {
     pub fn new(
         repo: Arc<git2::Repository>,
         stack: Arc<SharedCyfsStack>,
+        stack_util: Arc<StackUtil>,
         name: String,
         branch: String,
         ood: ObjectId,
@@ -31,6 +33,7 @@ impl Push {
         Self {
             repo,
             stack,
+            stack_util,
             name,
             branch,
             ood,
@@ -52,7 +55,7 @@ impl Push {
 
     pub async fn push(&self) -> BuckyResult<()> {
         let oid = self.head_remote().await?;
-        info!("remote head oid {:?}", oid);
+        info!("Read remote: head ref oid {:?}", oid);
 
         let commits = self._commits().await?;
 
@@ -66,7 +69,7 @@ impl Push {
         let head = self.repo.head().map_err(map_git_err)?;
         let branch = head.shorthand().expect("get branch failed");
 
-        println!("{:?}", branch);
+        info!("current HEAD branch is {:?}", branch);
         let env = self
             .stack
             .root_state_stub(Some(self.ood), Some(dec_id()))
@@ -79,7 +82,7 @@ impl Push {
             info!("get remote branch oid {}", result.to_string());
             Ok(Some("".to_string()))
         } else {
-            info!("remote empty!");
+            info!("remote/refs/{} empty!", branch);
             Ok(None)
         }
     }
@@ -91,7 +94,7 @@ impl Push {
             .revparse_single(&self.branch)
             .map_err(map_git_err)?
             .id();
-        info!("oid {}", oid.to_string());
+        info!("Local HEAD branch's oid is {}", oid.to_string());
         let mut revwalk = self.repo.revwalk().map_err(map_git_err)?;
         revwalk.push(oid).expect("ok");
 
@@ -102,47 +105,15 @@ impl Push {
 
         for id in revwalk {
             let id = id.expect("id");
+
             let commit = self.repo.find_commit(id).expect("find commit");
-            let commit_object = transform_commit(&commit, self.owner.clone());
-            info!(
-                "object id {}, {}",
-                commit_object.id(),
-                commit_object.object_id()
-            );
+            self._write_commit(commit.clone()).await?;
             // commit tree 是肯定要写入rootstate的，其他的tree和blob可以先对比看情况
             let tree = commit.tree().expect("get commit tree failed");
-            let tree_object = transform_tree(&tree, self.owner.clone());
-            info!(
-                "cyfs tree object {} {}",
-                tree_object.id(),
-                tree_object.tree_id()
-            );
-            // write commit, tree in rootstate
-            put_object_target(&self.stack, &commit_object, Some(self.ood), None).await?;
-            let env = self
-                .stack
-                .root_state_stub(Some(self.ood), Some(dec_id()))
-                .create_path_op_env()
-                .await?;
-            let commit_path = rootstate_repo_commit(&self.name, commit_object.object_id());
-            env.set_with_path(
-                commit_path,
-                &commit_object.desc().calculate_id(),
-                None,
-                true,
-            )
-            .await?;
-            info!("write commit into rootstate ok");
+            self._write_tree(tree.clone()).await?;
 
-            put_object_target(&self.stack, &tree_object, Some(self.ood), None).await?;
-            let tree_path = rootstate_repo_tree2(&self.name, tree_object.tree_id());
-            env.set_with_path(&tree_path, &tree_object.desc().calculate_id(), None, true)
-                .await?;
-            info!("write tree into rootstate ok");
-            env.commit().await?;
             //
             // TODO walk all
-            // TODO write upload_ood fn
 
             let mut ct = 0;
             tree.walk(git2::TreeWalkMode::PreOrder, |_, entry| {
@@ -150,8 +121,18 @@ impl Push {
                 //let kind = entry.kind().unwrap().to_string();
                 //info!("entry kind {}", kind);
                 if let Some(git2::ObjectType::Blob) = entry.kind() {
-                    info!("blob object");
-                    // upload
+                    info!("blob object, {} {:?}", entry.id(), entry.name());
+                    let oid = entry.id().to_string();
+                    // TOFIX 如果blob objects被pack了?
+                    let p = self
+                        .repo
+                        .path()
+                        .join("objects")
+                        .join(&oid[..2])
+                        .join(&oid[2..]);
+                    //info!("blob path {:?}", p);
+                    // block on
+                    async_std::task::block_on(self.stack_util.upload(p));
                 }
 
                 ct += 1;
@@ -169,6 +150,45 @@ impl Push {
 
         // cyfs commit object
 
+        Ok(())
+    }
+
+    async fn _write_tree(&self, tree: git2::Tree<'repo>) -> BuckyResult<()> {
+        let tree_object = transform_tree(&tree, self.owner.clone());
+        info!(
+            "commit main tree, oid {}, cyfs id {}",
+            tree_object.tree_id(),
+            tree_object.id(),
+        );
+        // put object
+        put_object_target(&self.stack, &tree_object, Some(self.ood), None).await?;
+        let env = self
+            .stack
+            .root_state_stub(Some(self.ood), Some(dec_id()))
+            .create_path_op_env()
+            .await?;
+        let tree_path = rootstate_repo_tree2(&self.name, tree_object.tree_id());
+        env.set_with_path(&tree_path, &tree_object.desc().calculate_id(), None, true)
+            .await?;
+        env.commit().await?;
+        Ok(())
+    }
+
+    async fn _write_commit(&self, commit: git2::Commit<'repo>) -> BuckyResult<()> {
+        let commit_object = transform_commit(&commit, self.owner.clone());
+        info!(
+            "git commit oid {}, cyfs id {}",
+            commit_object.object_id(),
+            commit_object.id(),
+        );
+        put_object_target(&self.stack, &commit_object, Some(self.ood), None).await?;
+        let commit_path = rootstate_repo_commit(&self.name, commit_object.object_id());
+        let env = self
+            .stack
+            .root_state_stub(Some(self.ood), Some(dec_id()))
+            .create_path_op_env()
+            .await?;
+        env.commit().await?;
         Ok(())
     }
 }
@@ -212,7 +232,11 @@ fn transform_commit(commit: &git2::Commit, owner: cyfs_base::ObjectId) -> Commit
             parent.id().to_string()
         })
         .collect::<Vec<String>>();
-    info!("parnets len {}", parents.len());
+
+    if parents.len() == 0 {
+        info!("current commit[{}] is init commit", commit.id());
+    }
+    //info!("parnets len {}", parents.len());
 
     let commit_object = Commit::create(
         owner,
