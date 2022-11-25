@@ -124,7 +124,7 @@ impl Push {
                 .root_state_stub(Some(self.ood), Some(dec_id()))
                 .create_path_op_env()
                 .await?;
-            let commit_path = rootstate_repo_commit2(&self.name, commit_object.object_id());
+            let commit_path = rootstate_repo_commit(&self.name, commit_object.object_id());
             env.set_with_path(
                 commit_path,
                 &commit_object.desc().calculate_id(),

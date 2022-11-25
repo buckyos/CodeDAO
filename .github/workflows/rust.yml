@@ -50,6 +50,7 @@ jobs:
       run: |
         cd src
         cargo build -p code-dao-service --release
+        cargo build -p square-service --release
       
     - name: Achive(windows)
       if: matrix.os == 'windows-latest'
@@ -57,14 +58,18 @@ jobs:
       run: |
         echo "ASSET=./src/target/release/code-dao-service.exe" >> $GITHUB_ENV
         echo "ASSET_NAME=code-dao-service.exe" >> $GITHUB_ENV
+        echo "ASSET_SQUARE=./src/target/release/square-service.exe" >> $GITHUB_ENV
+        echo "ASSET_SQUARE_NAME=square-service.exe" >> $GITHUB_ENV
 
     - name: Achive(linux)
       if: matrix.os == 'ubuntu-latest'
       run: |
         echo "ASSET=./src/target/release/code-dao-service" >> $GITHUB_ENV
         echo "ASSET_NAME=code-dao-service" >> $GITHUB_ENV
+        echo "ASSET_SQUARE=./src/target/release/square-service" >> $GITHUB_ENV
+        echo "ASSET_SQUARE_NAME=square-service" >> $GITHUB_ENV
         
-    - name: Upload Release Asset
+    - name: Upload Release Asset(dec-service)
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -73,4 +78,15 @@ jobs:
         asset_path: ${{ env.ASSET }}
         asset_name: ${{ env.ASSET_NAME }}
         asset_content_type: application/octet-stream
+
+    - name: Upload Release Asset(square-service)      
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: ${{ env.ASSET_SQUARE }}
+        asset_name: ${{ env.ASSET_SQUARE_NAME }}
+        asset_content_type: application/octet-stream
+
 

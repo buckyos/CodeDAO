@@ -1,15 +1,14 @@
-use cyfs_lib::*;
-use cyfs_base::*;
-use log::*;
-use async_std::sync::Arc;
-use serde::{Deserialize, Serialize};
-use serde_json::{json};
-use std::str::FromStr;
-use cyfs_git_base::*;
 use crate::*;
+use async_std::sync::Arc;
+use cyfs_base::*;
+use cyfs_git_base::*;
+use cyfs_lib::*;
+use log::*;
+use serde::{Deserialize, Serialize};
+use serde_json::json;
+use std::str::FromStr;
 
-type RequestRepositoryPushHead =  RequestRepositoryDelete;
-
+type RequestRepositoryPushHead = RequestRepositoryDelete;
 
 #[derive(Serialize, Deserialize)]
 struct RequestRepositoryPush {
@@ -33,12 +32,11 @@ struct RequestRepositoryPushTag {
     ref_hash: String,
 }
 
-
-
-
 /// # repository_push_head    
 /// git push head
-pub async fn repository_push_head(ctx: Arc<PostContext>) -> BuckyResult<NONPostObjectInputResponse> {
+pub async fn repository_push_head(
+    ctx: Arc<PostContext>,
+) -> BuckyResult<NONPostObjectInputResponse> {
     let data: RequestRepositoryPushHead = serde_json::from_str(&ctx.data).map_err(transform_err)?;
     let space = data.author_name;
     let name = data.name;
@@ -51,34 +49,34 @@ pub async fn repository_push_head(ctx: Arc<PostContext>) -> BuckyResult<NONPostO
         info!("others try to push, check member permission");
         let member_list = crate::member_list(&ctx.stack, &space, &name).await?;
         if member_list.len() == 0 {
-            return Ok(failed("target repo are not permission granted"))
+            return Ok(failed("target repo are not permission granted"));
         }
         // check 是否有权限push
         let is_permission = member_list.iter().any(|member| {
             let owner_id = member["user_id"].as_str().unwrap().to_string();
             if owner_id != ctx.caller.to_string() {
-                return false
-            } 
-            let role = RepositoryMemberRole::from_str(member["role"].as_str().unwrap()).expect("RepositoryMemberRole parse failed");
+                return false;
+            }
+            let role = RepositoryMemberRole::from_str(member["role"].as_str().unwrap())
+                .expect("RepositoryMemberRole parse failed");
             // member["role"].as_str().unwrap();
             role.push_allow()
         });
         if !is_permission {
-            return Ok(failed("target repo are not permission granted"))
+            return Ok(failed("target repo are not permission granted"));
         }
     }
 
     if repository.init() == 0 {
-        return Ok(success(json!({"refs": []})))
+        return Ok(success(json!({"refs": []})));
     }
 
-    let resp_refs =RepositoryBranch::read_refs(&ctx.stack, &space, &name).await?;
-    Ok(success(json!({"refs": resp_refs})))
+    let resp_refs = RepositoryBranch::read_refs(&ctx.stack, &space, &name).await?;
+    Ok(success(json!({ "refs": resp_refs })))
 }
 
-
 /// # repository_push
-/// git push 
+/// git push
 pub async fn repository_push(ctx: Arc<PostContext>) -> BuckyResult<NONPostObjectInputResponse> {
     let data: RequestRepositoryPush = serde_json::from_str(&ctx.data).map_err(transform_err)?;
     let space = data.author_name;
@@ -90,10 +88,17 @@ pub async fn repository_push(ctx: Arc<PostContext>) -> BuckyResult<NONPostObject
     let pack_file = ObjectId::from_str(&data.pack_file_id).unwrap();
 
     if !check_space_local(&ctx.stack, &space).await? {
-	info!("other runtime push into");
+        info!("other runtime push into");
         // A push to B
         // file:: A.runtime[publish_file] -> A.ood[create_task] -> B.ood[create_task]
-        let _ = file_task(&ctx.stack, pack_file, local_path.clone(), runtime_device.clone(), None).await?;
+        let _ = file_task(
+            &ctx.stack,
+            pack_file,
+            local_path.clone(),
+            runtime_device.clone(),
+            None,
+        )
+        .await?;
         info!("download file to my ood ok, then proxy push request");
         let result = request_other_ood(&ctx.stack, &space, &ctx.route, &ctx.data).await?;
         return Ok(result);
@@ -101,38 +106,44 @@ pub async fn repository_push(ctx: Arc<PostContext>) -> BuckyResult<NONPostObject
 
     let repository = RepositoryHelper::get_repository_object(&ctx.stack, &space, &name).await?;
     info!("get repository {:?}", repository.id());
-    let _ = file_task(&ctx.stack, pack_file, local_path.clone(), runtime_device, Some(ctx.caller)).await?;
-
+    let _ = file_task(
+        &ctx.stack,
+        pack_file,
+        local_path.clone(),
+        runtime_device,
+        Some(ctx.caller),
+    )
+    .await?;
 
     info!("repo push local_file path  {:?}", local_path);
     let repo_dir = repository.repo_dir();
     let _ = git_unbundle_and_unpack_objects(
-        repo_dir.clone(), 
+        repo_dir.clone(),
         local_path.to_str().unwrap(),
         &data.branch,
         &data.ref_hash,
     )?;
 
-
     let repo_ref = RepositoryBranch::create(
-        get_owner(&ctx.stack).await, 
-        space.clone(), 
-        name.clone(), 
-        data.branch.clone(), 
-        data.ref_hash);
+        get_owner(&ctx.stack).await,
+        space.clone(),
+        name.clone(),
+        data.branch.clone(),
+        data.ref_hash,
+    );
     repo_ref.insert_ref(&ctx.stack).await?;
-
 
     // update repository的init字段
     if repository.init() == 0 {
         Repository::update(
-            repository, 
-            &ctx.stack, 
+            repository,
+            &ctx.stack,
             json!({
                 "target": "init",
                 "value": 1
-            })
-        ).await?;
+            }),
+        )
+        .await?;
         info!("change repository column init 0 => 1 ");
     }
 
@@ -142,22 +153,39 @@ pub async fn repository_push(ctx: Arc<PostContext>) -> BuckyResult<NONPostObject
     // let branch = refs["branch"].as_str();
     let commits = git_commits(repo_dir.clone(), &data.branch)?;
 
-
     for commit in commits {
         let commit_object = Commit::create(
             ctx.caller,
             commit.object_id.clone(),
-            commit.parent,  
-            commit.tree.clone(),  
+            vec![commit.parent, commit.parent2],
+            commit.tree.clone(),
             commit.payload,
-            serde_json::to_string(&commit.author).unwrap(),   // 转换成json str
-            serde_json::to_string(&commit.committer).unwrap(),  
-            commit.parent2,
+            Some(CommitSignature {
+                name: commit.author.name,
+                email: commit.author.email,
+                when: commit.author.date,
+            }),
+            Some(CommitSignature {
+                name: commit.committer.name,
+                email: commit.committer.email,
+                when: commit.committer.date,
+            }),
+            //serde_json::to_string(&commit.author).unwrap(), // 转换成json str
+            //serde_json::to_string(&commit.committer).unwrap(),
+            //commit.parent2,
         );
         let commit_object_id = commit_object.desc().object_id();
         println!("commit_obj object id: {:?}", commit_object_id);
         let env = ctx.stack_env().await?;
-        let _r = env.set_with_key(&commit_path, &commit.object_id, &commit_object_id, None, true).await?;
+        let _r = env
+            .set_with_key(
+                &commit_path,
+                &commit.object_id,
+                &commit_object_id,
+                None,
+                true,
+            )
+            .await?;
         let root = env.commit().await;
         println!("new dec root is: {:?}", root);
 
@@ -171,7 +199,6 @@ pub async fn repository_push(ctx: Arc<PostContext>) -> BuckyResult<NONPostObject
     info!("commit_path object map ok");
     Ok(success(json!({})))
 }
-
 
 /// # repository_push_tag
 /// git push only tag
@@ -192,21 +219,26 @@ pub async fn repository_push_tag(ctx: Arc<PostContext>) -> BuckyResult<NONPostOb
     let repo_dir = repository.repo_dir();
 
     let repo_ref = RepositoryBranch::create(
-        get_owner(&ctx.stack).await, 
-        space.clone(), 
-        name.clone(), 
-        branch.clone(), 
-        ref_hash.clone());
+        get_owner(&ctx.stack).await,
+        space.clone(),
+        name.clone(),
+        branch.clone(),
+        ref_hash.clone(),
+    );
     repo_ref.insert_ref(&ctx.stack).await?;
-    info!("[{}/{}] update map ref {} {}", space, name,branch, ref_hash);
-    
+    info!(
+        "[{}/{}] update map ref {} {}",
+        space, name, branch, ref_hash
+    );
+
     git_update_ref(repo_dir, &branch, &ref_hash);
-    info!("[{}/{}] update repostiroy dir ref {} {}", space, name, branch, ref_hash);
+    info!(
+        "[{}/{}] update repostiroy dir ref {} {}",
+        space, name, branch, ref_hash
+    );
 
     Ok(success(json!({})))
 }
-
-
 
 // struct CommitHelper<'a> {
 //     env: &'a  SingleOpEnvStub,
@@ -219,16 +251,16 @@ pub async fn repository_push_tag(ctx: Arc<PostContext>) -> BuckyResult<NONPostOb
 
 //     pub async fn insert(&'a self, repo_dir: std::path::PathBuf, branch: &str, owner:ObjectId) ->BuckyResult<()> {
 //         let commits = git_commits(repo_dir, branch)?;
-        
+
 //         for commit in commits {
 //             let commit_object = Commit::create(
 //                 owner,
 //                 commit.object_id.clone(),
-//                 commit.parent,  
-//                 commit.tree,  
-//                 commit.payload,  
-//                 commit.author,  
-//                 commit.committer,  
+//                 commit.parent,
+//                 commit.tree,
+//                 commit.payload,
+//                 commit.author,
+//                 commit.committer,
 //             );
 //             let commit_object_id = commit_object.desc().object_id();
 //             println!("commit_obj object id: {:?}", commit_object_id);
@@ -236,7 +268,6 @@ pub async fn repository_push_tag(ctx: Arc<PostContext>) -> BuckyResult<NONPostOb
 //             let root = env.commit().await;
 //             println!("new dec root is: {:?}", root);
 //         }
-
 
 //         println!("commit_path object map ok");
 

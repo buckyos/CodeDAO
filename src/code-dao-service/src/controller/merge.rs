@@ -1,22 +1,19 @@
-
-use cyfs_lib::*;
-use cyfs_base::*;
-use async_std::sync::Arc;
-use serde::{Deserialize, Serialize};
-use serde_json::{json};
-use cyfs_git_base::*;
-use log::*;
 use crate::*;
-
-
+use async_std::sync::Arc;
+use cyfs_base::*;
+use cyfs_git_base::*;
+use cyfs_lib::*;
+use log::*;
+use serde::{Deserialize, Serialize};
+use serde_json::json;
 
 #[derive(Serialize, Deserialize)]
 struct RequestRepositoryMergeCompare {
     author_name: String,
     name: String,
     // 目标分支
-    target: String,   
-    // 源分支      
+    target: String,
+    // 源分支
     origin: String,
 }
 
@@ -25,8 +22,8 @@ struct RequestRepositoryMergeCreate {
     author_name: String,
     name: String,
     // 目标分支
-    target: String,   
-    // 源分支      
+    target: String,
+    // 源分支
     origin: String,
     title: String,
     merge_type: String,
@@ -56,19 +53,18 @@ struct RequestRepositoryMergeAccept {
 struct RequestRepositoryMergeCompareFile {
     author_name: String,
     name: String,
-    target: String,   
+    target: String,
     origin: String,
     file_name: String,
 }
 
-
-
-
-
 /// # repository_merge_compare   
 /// 合并 比对分支差异情况
-pub async fn repository_merge_compare(ctx: Arc<PostContext>) -> BuckyResult<NONPostObjectInputResponse> {
-    let data: RequestRepositoryMergeCompare = serde_json::from_str(&ctx.data).map_err(transform_err)?;
+pub async fn repository_merge_compare(
+    ctx: Arc<PostContext>,
+) -> BuckyResult<NONPostObjectInputResponse> {
+    let data: RequestRepositoryMergeCompare =
+        serde_json::from_str(&ctx.data).map_err(transform_err)?;
     let space = data.author_name;
     let name = data.name;
 
@@ -76,15 +72,13 @@ pub async fn repository_merge_compare(ctx: Arc<PostContext>) -> BuckyResult<NONP
         return Ok(result);
     }
 
-
     let repository = RepositoryHelper::get_repository_object(&ctx.stack, &space, &name).await?;
 
     if repository.init() == 0 {
-        return Ok(failed("current repository no init"))
+        return Ok(failed("current repository no init"));
     }
     let repository_dir = repository.repo_dir();
 
-    
     info!("to get compare result");
     let result = git_compare_no_merge(repository_dir.clone(), &data.origin, &data.target)?;
     info!("git compare result {:?}", result);
@@ -100,19 +94,21 @@ pub async fn repository_merge_compare(ctx: Arc<PostContext>) -> BuckyResult<NONP
     })))
 }
 
-
 /// # repository_merge_create
 /// 创建合并请求
-pub async fn repository_merge_create(ctx: Arc<PostContext>) -> BuckyResult<NONPostObjectInputResponse> {
-    let data: RequestRepositoryMergeCreate = serde_json::from_str(&ctx.data).map_err(transform_err)?;
-    
-    if let Some(result) = ctx.check_space_proxy_request(&data.author_name,).await? {
+pub async fn repository_merge_create(
+    ctx: Arc<PostContext>,
+) -> BuckyResult<NONPostObjectInputResponse> {
+    let data: RequestRepositoryMergeCreate =
+        serde_json::from_str(&ctx.data).map_err(transform_err)?;
+
+    if let Some(result) = ctx.check_space_proxy_request(&data.author_name).await? {
         return Ok(result);
     }
 
     // 获取 用户名字
     let user_name = get_user_name_by_owner(&ctx.caller.to_string()).await?;
-    info!("get user name[{}  {}] ",&ctx.caller.to_string(), user_name);
+    info!("get user name[{}  {}] ", &ctx.caller.to_string(), user_name);
     let owner = get_owner(&ctx.stack).await;
 
     // 创建 merge request 对象
@@ -132,7 +128,8 @@ pub async fn repository_merge_create(ctx: Arc<PostContext>) -> BuckyResult<NONPo
     let env = ctx.stack_env().await?;
     let object_id = merge.desc().calculate_id();
 
-    let merge_key = RepositoryHelper::merge_key(&data.author_name, &data.name, &object_id.to_string());
+    let merge_key =
+        RepositoryHelper::merge_key(&data.author_name, &data.name, &object_id.to_string());
     let r = env.insert_with_path(&merge_key, &object_id).await?;
     info!("insert_with_key: {:?}", r);
 
@@ -141,11 +138,13 @@ pub async fn repository_merge_create(ctx: Arc<PostContext>) -> BuckyResult<NONPo
     Ok(success(json!({"message": "ok"})))
 }
 
-
 /// # repository_merge_list
 /// 合并请求的列表
-pub async fn repository_merge_list(ctx: Arc<PostContext>) -> BuckyResult<NONPostObjectInputResponse> {
-    let data: RequestRepositoryMergeList = serde_json::from_str(&ctx.data).map_err(transform_err)?;
+pub async fn repository_merge_list(
+    ctx: Arc<PostContext>,
+) -> BuckyResult<NONPostObjectInputResponse> {
+    let data: RequestRepositoryMergeList =
+        serde_json::from_str(&ctx.data).map_err(transform_err)?;
     let space = data.author_name;
     let name = data.name;
 
@@ -181,21 +180,22 @@ pub async fn repository_merge_list(ctx: Arc<PostContext>) -> BuckyResult<NONPost
         }
     }
 
-    Ok(success(json!({"data": response_data})))
+    Ok(success(json!({ "data": response_data })))
 }
-
 
 /// # repository_merge_detail
 /// 合并请求的详情
-pub async fn repository_merge_detail(ctx: Arc<PostContext>) -> BuckyResult<NONPostObjectInputResponse> {
-    let data: RequestRepositoryMergeDetail = serde_json::from_str(&ctx.data).map_err(transform_err)?;
+pub async fn repository_merge_detail(
+    ctx: Arc<PostContext>,
+) -> BuckyResult<NONPostObjectInputResponse> {
+    let data: RequestRepositoryMergeDetail =
+        serde_json::from_str(&ctx.data).map_err(transform_err)?;
     let space = data.author_name;
     let name = data.name;
 
     if let Some(result) = ctx.check_space_proxy_request(&space).await? {
         return Ok(result);
     }
-
 
     let env = ctx.stack_env().await?;
     let merge_key = RepositoryHelper::merge_key(&space, &name, &data.merge_id);
@@ -224,8 +224,11 @@ pub async fn repository_merge_detail(ctx: Arc<PostContext>) -> BuckyResult<NONPo
 
 /// # repository_merge_accept
 /// 处理合并请求
-pub async fn repository_merge_accept(ctx: Arc<PostContext>) -> BuckyResult<NONPostObjectInputResponse> {
-    let data: RequestRepositoryMergeAccept =  serde_json::from_str(&ctx.data).map_err(transform_err)?;
+pub async fn repository_merge_accept(
+    ctx: Arc<PostContext>,
+) -> BuckyResult<NONPostObjectInputResponse> {
+    let data: RequestRepositoryMergeAccept =
+        serde_json::from_str(&ctx.data).map_err(transform_err)?;
     let space = data.author_name;
     let name = data.name;
 
@@ -249,10 +252,12 @@ pub async fn repository_merge_accept(ctx: Arc<PostContext>) -> BuckyResult<NONPo
     let repository = RepositoryHelper::get_repository_object(&ctx.stack, &space, &name).await?;
     let repository_dir = repository.repo_dir();
 
-
     // set user info
     let user = UserHelper::get_current_user(&ctx.stack).await?;
-    git_exec_base(repository_dir.clone(), ["config", "user.email", user.email()])?;
+    git_exec_base(
+        repository_dir.clone(),
+        ["config", "user.email", user.email()],
+    )?;
     git_exec_base(repository_dir.clone(), ["config", "user.name", user.name()])?;
     // TODO? check: 是否在同一个分支线上。
 
@@ -260,23 +265,36 @@ pub async fn repository_merge_accept(ctx: Arc<PostContext>) -> BuckyResult<NONPo
     // TODO 并发的时候要lock这个文件的处理，现在先这样吧
     let _ = std::fs::remove_file(repository_dir.clone().join(".git/index"));
 
-    let new_hash = git_merge(repository_dir.clone(), merge.origin_branch(), merge.target_branch())?;
-    info!("git_merge[{}] result new_hash: {:?}",merge.target_branch(), new_hash);
+    let new_hash = git_merge(
+        repository_dir.clone(),
+        merge.origin_branch(),
+        merge.target_branch(),
+    )?;
+    info!(
+        "git_merge[{}] result new_hash: {:?}",
+        merge.target_branch(),
+        new_hash
+    );
 
     let commit = git_read_commit_object(repository_dir, &new_hash)?;
     info!("git_read the new merged commit: {:?}", commit);
 
-
-    // TODO  commit save to object
     let commit_object = Commit::create(
-        get_owner(&ctx.stack).await,
+        ctx.caller,
         commit.object_id.clone(),
-        commit.parent,  
-        commit.tree,  
+        vec![commit.parent, commit.parent2],
+        commit.tree.clone(),
         commit.payload,
-        serde_json::to_string(&commit.author).unwrap(),   // 转换成json str
-        serde_json::to_string(&commit.committer).unwrap(),  
-        commit.parent2,
+        Some(CommitSignature {
+            name: commit.author.name,
+            email: commit.author.email,
+            when: commit.author.date,
+        }),
+        Some(CommitSignature {
+            name: commit.committer.name,
+            email: commit.committer.email,
+            when: commit.committer.date,
+        }),
     );
     let commit_object_id = commit_object.desc().object_id();
     put_object(&ctx.stack, &commit_object).await?;
@@ -284,19 +302,30 @@ pub async fn repository_merge_accept(ctx: Arc<PostContext>) -> BuckyResult<NONPo
     info!("commit_obj object id: {:?}", commit_object_id);
     let env = ctx.stack_env().await?;
     let commit_path = RepositoryHelper::commit_object_map_path(&space, &name);
-    let _r = env.set_with_key(&commit_path, &commit.object_id, &commit_object_id, None, true).await?;
+    let _r = env
+        .set_with_key(
+            &commit_path,
+            &commit.object_id,
+            &commit_object_id,
+            None,
+            true,
+        )
+        .await?;
     let root = env.commit().await;
-    info!("repository_merge_accept after create commit object dec root is: {:?}", root);
+    info!(
+        "repository_merge_accept after create commit object dec root is: {:?}",
+        root
+    );
 
     // update-ref
     let repo_ref = RepositoryBranch::create(
-        get_owner(&ctx.stack).await, 
-        space.clone(), 
-        name.clone(), 
-        merge.target_branch().to_string().clone(), 
-        new_hash.clone());
+        get_owner(&ctx.stack).await,
+        space.clone(),
+        name.clone(),
+        merge.target_branch().to_string().clone(),
+        new_hash.clone(),
+    );
     repo_ref.insert_ref(&ctx.stack).await?;
-
 
     // change status
     let new_merge = MergeRequest::create(
@@ -315,7 +344,9 @@ pub async fn repository_merge_accept(ctx: Arc<PostContext>) -> BuckyResult<NONPo
 
     // 可能可以优化这个 env
     let env = ctx.stack_env().await?;
-    let _r = env.set_with_path(merge_key, &new_merge_id, None, true).await?;
+    let _r = env
+        .set_with_path(merge_key, &new_merge_id, None, true)
+        .await?;
     let _root = env.commit().await;
 
     Ok(success(json!({"data": "ok"})))
@@ -323,8 +354,11 @@ pub async fn repository_merge_accept(ctx: Arc<PostContext>) -> BuckyResult<NONPo
 
 /// # repository_merge_compare_file
 /// 合并请求的文件(逐个)比对
-pub async fn repository_merge_compare_file(ctx: Arc<PostContext>) -> BuckyResult<NONPostObjectInputResponse> {
-    let data: RequestRepositoryMergeCompareFile = serde_json::from_str(&ctx.data).map_err(transform_err)?;
+pub async fn repository_merge_compare_file(
+    ctx: Arc<PostContext>,
+) -> BuckyResult<NONPostObjectInputResponse> {
+    let data: RequestRepositoryMergeCompareFile =
+        serde_json::from_str(&ctx.data).map_err(transform_err)?;
     let space = data.author_name;
     let name = data.name;
 
@@ -349,7 +383,6 @@ pub async fn repository_merge_compare_file(ctx: Arc<PostContext>) -> BuckyResult
     })))
 }
 
-
 /// # panel_merge_list
 /// 全局merge列表
 pub async fn panel_merge_list(ctx: Arc<PostContext>) -> BuckyResult<NONPostObjectInputResponse> {
@@ -360,7 +393,7 @@ pub async fn panel_merge_list(ctx: Arc<PostContext>) -> BuckyResult<NONPostObjec
             "data": {
                 "merge_list": []
             }
-        })))
+        })));
     }
 
     let mut response_data: Vec<serde_json::Value> = Vec::new();
@@ -386,7 +419,7 @@ pub async fn panel_merge_list(ctx: Arc<PostContext>) -> BuckyResult<NONPostObjec
             for item in ret {
                 let (id, _) = item.into_map_item();
                 let object_id = ObjectId::from_str(&id)?;
-                let buf= get_object(&ctx.stack, object_id).await?;
+                let buf = get_object(&ctx.stack, object_id).await?;
                 let merge = MergeRequest::clone_from_slice(&buf)?;
                 response_data.push(json!({
                     "id": merge.id(),
@@ -406,5 +439,4 @@ pub async fn panel_merge_list(ctx: Arc<PostContext>) -> BuckyResult<NONPostObjec
             "merge_list": response_data
         }
     })))
-
 }

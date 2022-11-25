@@ -26,12 +26,8 @@ pub fn rootstate_repo_refs_list(author_name: &str, repo_name: &str) -> String {
 /// commit
 /// name <full_name>
 /// path /app/<space>/<name>/commit/<oid>
-pub fn rootstate_repo_commit2(name: &str, oid: &str) -> String {
+pub fn rootstate_repo_commit(name: &str, oid: &str) -> String {
     format!("{}{}/commit/{}", REPOSITORY_PATH, name, oid)
-}
-/// path /app/<space>/<name>/commit/<oid>
-pub fn rootstate_repo_commit(author_name: &str, name: &str, oid: &str) -> String {
-    format!("{}{}/{}/commit/{}", REPOSITORY_PATH, author_name, name, oid)
 }
 
 /// tree
