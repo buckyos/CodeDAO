@@ -301,15 +301,10 @@ pub async fn repository_merge_accept(
 
     info!("commit_obj object id: {:?}", commit_object_id);
     let env = ctx.stack_env().await?;
-    let commit_path = RepositoryHelper::commit_object_map_path(&space, &name);
+    let commit_path = rootstate_repo_commit(&format!("{}/{}", space, name), &commit.object_id);
+    info!("commit rootstate path {}", commit_path);
     let _r = env
-        .set_with_key(
-            &commit_path,
-            &commit.object_id,
-            &commit_object_id,
-            None,
-            true,
-        )
+        .set_with_path(commit_path, &commit_object_id, None, true)
         .await?;
     let root = env.commit().await;
     info!(

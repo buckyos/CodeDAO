@@ -147,9 +147,6 @@ pub async fn repository_push(ctx: Arc<PostContext>) -> BuckyResult<NONPostObject
         info!("change repository column init 0 => 1 ");
     }
 
-    let commit_path = RepositoryHelper::commit_object_map_path(&space, &name);
-    info!("commit_path object id: {:?}", commit_path);
-
     // let branch = refs["branch"].as_str();
     let commits = git_commits(repo_dir.clone(), &data.branch)?;
 
@@ -177,14 +174,11 @@ pub async fn repository_push(ctx: Arc<PostContext>) -> BuckyResult<NONPostObject
         let commit_object_id = commit_object.desc().object_id();
         println!("commit_obj object id: {:?}", commit_object_id);
         let env = ctx.stack_env().await?;
+
+        let commit_path = rootstate_repo_commit(&format!("{}/{}", space, name), &commit.object_id);
+        info!("commit rootstate path: {}", commit_path);
         let _r = env
-            .set_with_key(
-                &commit_path,
-                &commit.object_id,
-                &commit_object_id,
-                None,
-                true,
-            )
+            .set_with_path(commit_path, &commit_object_id, None, true)
             .await?;
         let root = env.commit().await;
         println!("new dec root is: {:?}", root);

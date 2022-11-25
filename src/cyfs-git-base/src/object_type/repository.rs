@@ -339,11 +339,6 @@ impl RepositoryHelper {
             format!("{}{}/{}", REPOSITORY_PATH, author_name, name),
         )
     }
-    /// commit_object_map_path
-    /// path /app/<space>/<name>/commit/<oid>
-    pub fn commit_object_map_path(author_name: &str, name: &str) -> String {
-        format!("{}{}/{}/commit", REPOSITORY_PATH, author_name, name)
-    }
 
     pub fn star_user_key(author_name: &str, name: &str, user_name: &str) -> String {
         format!(
