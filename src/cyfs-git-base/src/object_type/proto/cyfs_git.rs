@@ -167,6 +167,14 @@ pub struct TreeDescContent {
     #[prost(message, repeated, tag="2")]
     pub tree: ::prost::alloc::vec::Vec<TreeItem>,
 }
+/// repository blob object
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct BlobDescContent {
+    #[prost(string, tag="1")]
+    pub blob_id: ::prost::alloc::string::String,
+    #[prost(string, tag="2")]
+    pub file_id: ::prost::alloc::string::String,
+}
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct TreeItem {
     #[prost(string, tag="1")]

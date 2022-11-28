@@ -1,4 +1,5 @@
 use async_std::sync::Arc;
+use async_std::task;
 use cyfs_base::*;
 use cyfs_git_base::*;
 use cyfs_lib::*;
@@ -87,6 +88,9 @@ impl<'repo> Push {
         }
     }
 
+    // TODO debug print a repository rootstate
+    async fn debug(&self) {}
+
     /// calculate commits
     async fn _commits(&self) -> BuckyResult<()> {
         let oid = self
@@ -104,21 +108,18 @@ impl<'repo> Push {
         //info!("mark rev-list oid..oid2");
 
         for id in revwalk {
-            let id = id.expect("id");
+            let id = id.expect("read commit oid failed");
 
+            // write commit and tree into rootstate
             let commit = self.repo.find_commit(id).expect("find commit");
             self._write_commit(commit.clone()).await?;
-            // commit tree 是肯定要写入rootstate的，其他的tree和blob可以先对比看情况
             let tree = commit.tree().expect("get commit tree failed");
             self._write_tree(tree.clone()).await?;
 
-            //
             // TODO walk all
-
             let mut ct = 0;
             tree.walk(git2::TreeWalkMode::PreOrder, |_, entry| {
                 //info!("entry name {} ", entry.name().unwrap());
-                //let kind = entry.kind().unwrap().to_string();
                 //info!("entry kind {}", kind);
                 if let Some(git2::ObjectType::Blob) = entry.kind() {
                     info!("blob object, {} {:?}", entry.id(), entry.name());
@@ -130,29 +131,50 @@ impl<'repo> Push {
                         .join("objects")
                         .join(&oid[..2])
                         .join(&oid[2..]);
-                    //info!("blob path {:?}", p);
-                    // block on
-                    async_std::task::block_on(self.stack_util.upload(p));
+
+                    // block on await fn
+                    // to upload a blob content, and write a cyfs blob object
+                    let file_id = task::block_on(self.stack_util.upload(p))
+                        .expect("upload blob content failed");
+                    task::block_on(self._write_blob(oid.clone(), file_id.to_string()))
+                        .expect("write blob failed");
+                    info!("tree-walk upload and write blob[{}] success", oid);
                 }
+                // TODO tree object
 
                 ct += 1;
                 git2::TreeWalkResult::Ok
             })
             .unwrap();
 
-            info!("tree walk {:?}", ct);
-
+            info!("repository commit tree walk count number: {:?}", ct);
             info!("------");
             info!("");
         }
 
         // commits write into rootstate
-
         // cyfs commit object
 
         Ok(())
     }
 
+    // blob object
+    async fn _write_blob(&self, blob_id: String, file_id: String) -> BuckyResult<()> {
+        let blob_object = Blob::create(self.owner, blob_id.clone(), file_id);
+        put_object_target(&self.stack, &blob_object, Some(self.ood), None).await?;
+        let env = self
+            .stack
+            .root_state_stub(Some(self.ood), Some(dec_id()))
+            .create_path_op_env()
+            .await?;
+        let blob_path = rootstate_repo_blob(&self.name, &blob_id);
+        env.set_with_path(&blob_path, &blob_object.desc().calculate_id(), None, true)
+            .await?;
+        env.commit().await?;
+        Ok(())
+    }
+
+    // put tree object 并写入rootstate
     async fn _write_tree(&self, tree: git2::Tree<'repo>) -> BuckyResult<()> {
         let tree_object = transform_tree(&tree, self.owner.clone());
         info!(
@@ -174,6 +196,7 @@ impl<'repo> Push {
         Ok(())
     }
 
+    // putobject 并写入rootstate
     async fn _write_commit(&self, commit: git2::Commit<'repo>) -> BuckyResult<()> {
         let commit_object = transform_commit(&commit, self.owner.clone());
         info!(
@@ -193,6 +216,7 @@ impl<'repo> Push {
     }
 }
 
+// 转换cyfs object
 fn transform_tree(tree: &git2::Tree, owner: cyfs_base::ObjectId) -> Tree {
     info!("tree id {}, {}", tree.id(), tree.len());
     let items = tree
@@ -212,6 +236,7 @@ fn transform_tree(tree: &git2::Tree, owner: cyfs_base::ObjectId) -> Tree {
     tree_object
 }
 
+// 转换cyfs object
 fn transform_commit(commit: &git2::Commit, owner: cyfs_base::ObjectId) -> Commit {
     let author = CommitSignature {
         name: commit.author().name().unwrap().to_string(),
@@ -237,12 +262,9 @@ fn transform_commit(commit: &git2::Commit, owner: cyfs_base::ObjectId) -> Commit
         info!("current commit[{}] is init commit", commit.id());
     }
     //info!("parnets len {}", parents.len());
-
     let commit_object = Commit::create(
         owner,
         commit.id().to_string(),
-        // TODO handler the multiple parents
-        //commit.parent_id(0).unwrap().to_string(), // ?? PANIC
         parents,
         commit.tree_id().to_string(),
         commit.message().unwrap().to_string(),

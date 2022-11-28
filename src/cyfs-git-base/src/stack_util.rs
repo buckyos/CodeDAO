@@ -28,7 +28,7 @@ impl StackUtil {
         }
     }
 
-    pub async fn upload(&self, local_path: PathBuf) -> BuckyResult<()> {
+    pub async fn upload(&self, local_path: PathBuf) -> BuckyResult<ObjectId> {
         let result = self
             .stack
             .trans()
@@ -152,6 +152,6 @@ impl StackUtil {
             })
             .await?;
 
-        Ok(())
+        Ok(file_id)
     }
 }

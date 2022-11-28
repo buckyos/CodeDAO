@@ -40,3 +40,8 @@ pub fn rootstate_repo_tree(author_name: &str, repo_name: &str, tree_id: &str) ->
 pub fn rootstate_repo_tree2(name: &str, tree_id: &str) -> String {
     format!("{}{}/tree/{}", REPOSITORY_PATH, name, tree_id)
 }
+
+// blob object
+pub fn rootstate_repo_blob(name: &str, blob_id: &str) -> String {
+    format!("{}{}/blob/{}", REPOSITORY_PATH, name, blob_id)
+}

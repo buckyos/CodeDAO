@@ -1,6 +1,4 @@
-
 use cyfs_base::*;
-
 
 #[repr(u16)]
 pub enum CustomObjType {
@@ -16,5 +14,6 @@ pub enum CustomObjType {
     OrganizationMember,
     RepositoryBranch,
     Tree,
-    GitText = 32810   // GitText  要指定这个number， 这个是内置的acl放行过的对象
+    Blob,
+    GitText = 32810, // www的ts也指定了这个number
 }

@@ -114,6 +114,12 @@ message TreeDescContent {
   repeated  TreeItem tree = 2;
 }
 
+// repository blob object
+message BlobDescContent {
+  string blob_id = 1;
+  string file_id = 2;
+}
+
 message TreeItem {
   string mode = 1;
   string hash = 2;
