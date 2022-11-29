@@ -57,11 +57,10 @@ impl<'repo> Push {
     pub async fn push(&self) -> BuckyResult<()> {
         let oid = self.head_remote().await?;
         info!("Read remote: head ref oid {:?}", oid);
+        // check remote HEAD oid
 
         let commits = self._commits().await?;
-
-        // delta object
-        // write tree
+        // TODO delta object
 
         Ok(())
     }
@@ -88,7 +87,7 @@ impl<'repo> Push {
         }
     }
 
-    // TODO debug print a repository rootstate
+    // TODO debug print a repository rootstate, like fd
     async fn debug(&self) {}
 
     /// calculate commits

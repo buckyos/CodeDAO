@@ -39,3 +39,23 @@ run in repository sub dir, match target `.git`
 
 ## upload blob file
 create task call in runtime (trigger the task start in ood)
+
+
+# codedao transformer
+read rootstate -> and generate the .git(as a cached) in OOD
+use git2 to open(read) .git 
+drop the git base cmd code
+
+struct transform
+  repo_name
+  path
+fn read
+  commit
+   .git/objects/xx/xxxx
+  tree
+  <>
+  blob, get blob file
+
+
+# pref testcase 
+  

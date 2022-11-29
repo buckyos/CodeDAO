@@ -29,6 +29,9 @@ pub fn rootstate_repo_refs_list(author_name: &str, repo_name: &str) -> String {
 pub fn rootstate_repo_commit(name: &str, oid: &str) -> String {
     format!("{}{}/commit/{}", REPOSITORY_PATH, name, oid)
 }
+pub fn rootstate_repo_commitbase(name: &str) -> String {
+    format!("{}{}/commit", REPOSITORY_PATH, name)
+}
 
 /// tree
 pub fn rootstate_repo_tree(author_name: &str, repo_name: &str, tree_id: &str) -> String {
@@ -40,8 +43,16 @@ pub fn rootstate_repo_tree(author_name: &str, repo_name: &str, tree_id: &str) ->
 pub fn rootstate_repo_tree2(name: &str, tree_id: &str) -> String {
     format!("{}{}/tree/{}", REPOSITORY_PATH, name, tree_id)
 }
+pub fn rootstate_repo_treebase(name: &str) -> String {
+    format!("{}{}/tree", REPOSITORY_PATH, name)
+}
 
 // blob object
 pub fn rootstate_repo_blob(name: &str, blob_id: &str) -> String {
     format!("{}{}/blob/{}", REPOSITORY_PATH, name, blob_id)
+}
+
+// blob object
+pub fn rootstate_repo_blobbase(name: &str) -> String {
+    format!("{}{}/blob", REPOSITORY_PATH, name)
 }

@@ -28,6 +28,86 @@ impl StackUtil {
         }
     }
 
+    pub async fn download(&self, file_id: ObjectId, target: PathBuf) -> BuckyResult<()> {
+        let task = self
+            .stack
+            .trans()
+            .create_task(&TransCreateTaskOutputRequest {
+                common: NDNOutputRequestCommon {
+                    req_path: None,
+                    dec_id: Some(dec_id()),
+                    level: NDNAPILevel::NDC,
+                    target: Some(self.ood_id),
+                    referer_object: vec![],
+                    flags: 0,
+                },
+                object_id: file_id,
+                // 保存到的本地目录or文件
+                local_path: target,
+                device_list: vec![self.device_id.clone()],
+                context_id: None,
+                // 任务创建完成之后自动启动任务
+                auto_start: true,
+            })
+            .await?;
+        let task_id = task.task_id;
+
+        loop {
+            let state = self
+                .stack
+                .trans()
+                .get_task_state(&TransGetTaskStateOutputRequest {
+                    common: NDNOutputRequestCommon {
+                        req_path: None,
+                        dec_id: Some(dec_id()),
+                        level: NDNAPILevel::NDC,
+                        target: Some(self.ood_id),
+                        referer_object: vec![],
+                        flags: 0,
+                    },
+                    task_id: task_id.clone(),
+                })
+                .await?;
+
+            match state {
+                TransTaskState::Pending => {}
+                TransTaskState::Downloading(_) => {}
+                TransTaskState::Paused | TransTaskState::Canceled => {
+                    let msg = format!("download {} task abnormal exit.", file_id.to_string());
+                    error!("{}", msg.as_str());
+                    return Err(BuckyError::new(BuckyErrorCode::Failed, msg));
+                }
+                TransTaskState::Finished(_) => {
+                    debug!("file task finish {}", file_id.to_string());
+                    break;
+                }
+                TransTaskState::Err(err) => {
+                    let msg = format!("download {} failed.{}", file_id.to_string(), err);
+                    error!("{}", msg.as_str());
+                    return Err(BuckyError::new(err, msg));
+                }
+            }
+            async_std::task::sleep(std::time::Duration::from_millis(400)).await;
+        }
+
+        self.stack
+            .trans()
+            .delete_task(&TransTaskOutputRequest {
+                common: NDNOutputRequestCommon {
+                    req_path: None,
+                    dec_id: None,
+                    level: NDNAPILevel::NDC,
+                    target: Some(self.ood_id),
+                    referer_object: vec![],
+                    flags: 0,
+                },
+                task_id,
+            })
+            .await?;
+
+        Ok(())
+    }
+
     pub async fn upload(&self, local_path: PathBuf) -> BuckyResult<ObjectId> {
         let result = self
             .stack

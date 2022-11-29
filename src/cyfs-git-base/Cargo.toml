@@ -16,6 +16,7 @@ cyfs-debug = "*"
 
 # others
 async-std = {version="*", features = ["unstable", "attributes"]}
+git2="*"
 prost="*"
 log = { version = "=0.4.16", features = ["max_level_trace", "release_max_level_trace"] }
 async-trait = "*"

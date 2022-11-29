@@ -15,6 +15,7 @@ cyfs-debug = "*"
 
 # others
 cyfs-git-base =  { path = "../cyfs-git-base" }
+git2="*"
 async-std = {version="*", features = ["unstable", "attributes"]}
 prost="*"
 log = { version = "=0.4.16", features = ["max_level_trace", "release_max_level_trace"] }
