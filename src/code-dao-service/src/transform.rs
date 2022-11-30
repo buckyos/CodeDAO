@@ -106,21 +106,20 @@ impl Transform {
 
             let buf = get_object(&self.stack, object_id).await?;
             let tree = Tree::clone_from_slice(&buf)?;
-            // tree.tree_id()
+            // write to local
+            let mut treebuilder = self.repo.treebuilder(None)?;
             let entries = tree.tree().to_owned();
             for entry in entries {
                 info!("entry file name {}, {}", entry.file_name, entry.mode);
 
-                // write to local
-                let mut treebuilder = self.repo.treebuilder(None)?;
                 let oid = git2::Oid::from_str(&entry.hash)?;
                 let filemode: i32 = entry.mode.parse().unwrap();
                 treebuilder.insert(entry.file_name, oid, filemode)?;
-                let tree_id_w = treebuilder.write()?;
-                info!("check treebuilder write treeid {}", tree_id_w);
-                if tree_id_w.to_string() != tree_id {
-                    error!("tree builder gen treeid no same with rootstate saved");
-                }
+            }
+            let tree_id_w = treebuilder.write()?;
+            info!("check treebuilder write treeid {}", tree_id_w);
+            if tree_id_w.to_string() != tree_id {
+                error!("tree builder gen treeid no same with rootstate saved");
             }
         }
         Ok(())
@@ -191,11 +190,11 @@ impl Transform {
         // So we need to a path name /<>/head, or in Repository object' desc
         for item in ret {
             let (branch, object_id) = item.into_map_item();
-            info!("branch name {}", branch);
             let buf = get_object(&self.stack, object_id).await?;
             let branch_object = RepositoryBranch::clone_from_slice(&buf)?;
             let oid = git2::Oid::from_str(branch_object.ref_hash())?;
             let commit = self.repo.find_commit(oid)?;
+            info!("branch name {}, current oid {}", branch, oid);
             let branch = self.repo.branch(branch_object.ref_name(), &commit, true)?;
 
             // TODO  move outside of this loop

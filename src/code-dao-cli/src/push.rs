@@ -52,20 +52,22 @@ impl<'repo> Push {
         let head = self.repo.head()?;
         let branch = head.shorthand().expect("get branch name failed");
 
-        let oid = self.head_remote(branch).await?;
-        info!("Read remote: head ref oid {:?}", oid);
+        let remote_latest_id = self.head_remote(branch).await?;
+        info!("Read remote: head ref oid {:?}", remote_latest_id);
 
         // check remote HEAD oid
-        //
-        if oid.is_none() {
-            info!("remote[{}] empty", branch);
-            self.update_remote_branch().await?;
-            // TODO set a default branch
-        }
+        //        if remote_latest_id.is_none() {
+        //        info!("remote[{}] empty", branch);
+        //      }
+
+        let local_id = self.repo.revparse_single(branch)?.id();
+        info!("HEAD branch's oid is {}", local_id);
 
         // handle commits
-        let commits = self._commits().await?;
-        // TODO delta object
+        let commits = self._commits(local_id, remote_latest_id).await?;
+        // update ref
+        self.update_remote_branch(local_id, branch.to_string())
+            .await?;
 
         Ok(())
     }
@@ -78,22 +80,21 @@ impl<'repo> Push {
             .create_path_op_env()
             .await?;
         let branch_path = rootstate_repo_branch(&self.name, branch);
-        //let ref_path
 
-        if let Ok(Some(result)) = env.get_by_path(branch_path).await {
-            info!("get remote branch oid {}", result.to_string());
-            Ok(Some("".to_string()))
+        if let Ok(Some(object_id)) = env.get_by_path(branch_path).await {
+            //info!("get remote branch oid {}", result.to_string());
+            let buf = get_object(&self.stack, object_id).await?;
+            let branch_object = RepositoryBranch::clone_from_slice(&buf)?;
+            let id = branch_object.ref_hash().to_owned();
+            Ok(Some(id))
         } else {
             info!("remote/refs/{} empty!", branch);
             Ok(None)
         }
     }
 
-    async fn update_remote_branch(&self) -> CodedaoResult<()> {
+    async fn update_remote_branch(&self, local_id: git2::Oid, branch: String) -> CodedaoResult<()> {
         info!("update remote branch[{}](ref) value", self.branch);
-        let head = self.repo.head()?;
-        let branch = head.shorthand().expect("get branch name failed");
-        let oid = self.repo.revparse_single(branch)?.id().to_string();
         let mut name = self.name.split("/").into_iter();
         let space = name.next().unwrap().to_owned();
         let repo_name = name.next().unwrap().to_owned();
@@ -102,8 +103,8 @@ impl<'repo> Push {
             self.owner,
             space,
             repo_name,
-            branch.to_string(),
-            oid.clone(),
+            branch.clone(),
+            local_id.to_string(),
         );
         put_object_target(&self.stack, &branch_object, Some(self.ood), None).await?;
         let env = self
@@ -111,7 +112,7 @@ impl<'repo> Push {
             .root_state_stub(Some(self.ood), Some(dec_id()))
             .create_path_op_env()
             .await?;
-        let branch_path = rootstate_repo_branch(&self.name, branch);
+        let branch_path = rootstate_repo_branch(&self.name, &branch);
         env.set_with_path(
             &branch_path,
             &branch_object.desc().calculate_id(),
@@ -120,29 +121,69 @@ impl<'repo> Push {
         )
         .await?;
         env.commit().await?;
-        info!("wirte branch:{} {} to rootstate ok", branch, oid);
+        info!("wirte branch:{} {} to rootstate ok", branch, local_id);
         Ok(())
     }
 
     // TODO debug print a repository rootstate, like fd
-    async fn debug(&self) {
+    pub async fn debug(&self) -> CodedaoResult<()> {
         // print
+        let env = self
+            .stack
+            .root_state_stub(Some(self.ood), Some(dec_id()))
+            .create_path_op_env()
+            .await?;
+        let branch_path = rootstate_repo_branchbase(&self.name);
+        info!("branch ---");
+        let ret = env.list(branch_path).await?;
+        for item in ret {
+            let (branch_name, object_id) = item.into_map_item();
+            let buf = get_object(&self.stack, object_id).await?;
+            let branch_object = RepositoryBranch::clone_from_slice(&buf)?;
+            info!("{}, id: {}", branch_name, branch_object.ref_hash());
+        }
+        let commit_path = rootstate_repo_commitbase(&self.name);
+        info!("commmit---");
+        let ret = env.list(commit_path).await?;
+        for item in ret {
+            let (id, _) = item.into_map_item();
+            info!("{}", id);
+        }
+        let tree_path = rootstate_repo_treebase(&self.name);
+        info!("tree---");
+        let ret = env.list(tree_path).await?;
+        for item in ret {
+            let (id, _) = item.into_map_item();
+            info!("{}", id);
+        }
+        Ok(())
     }
 
     /// calculate commits
-    async fn _commits(&self) -> CodedaoResult<()> {
-        let oid = self.repo.revparse_single(&self.branch)?.id();
-        info!("Local HEAD branch's oid is {}", oid.to_string());
+    async fn _commits(
+        &self,
+        local_id: git2::Oid,
+        remote_lastest: Option<String>,
+    ) -> CodedaoResult<()> {
         let mut revwalk = self.repo.revwalk()?;
-        revwalk.push(oid)?;
+        revwalk.push(local_id)?;
 
-        // TODO check if oid_end
-        //let oid2 = git2::Oid::from_str("66bbc153590d2e9a56d238101527324b5491228b").expect("");
-        //revwalk.hide(oid2).expect("ok");
+        if remote_lastest.is_some() {
+            let oid2 = git2::Oid::from_str(remote_lastest.unwrap().as_str())?;
+            info!("rev walk end in the {}", oid2);
+            revwalk.hide(oid2)?;
+        }
         //info!("mark rev-list oid..oid2");
+        // revwalk 会从最近的commit开始进行迭代
 
+        // TODO stat of {blob,commit,tree}
+        let mut ct = 0;
+
+        // TODO 并行处理
+        // TODO progress show
         for id in revwalk {
             let id = id?;
+            info!("commit id: {}", id);
 
             // write commit and tree into rootstate
             let commit = self.repo.find_commit(id)?;
@@ -151,7 +192,6 @@ impl<'repo> Push {
             self._write_tree(tree.clone()).await?;
 
             // TODO walk all
-            let mut ct = 0;
             tree.walk(git2::TreeWalkMode::PreOrder, |_, entry| {
                 //info!("entry name {} ", entry.name().unwrap());
                 //info!("entry kind {}", kind);
@@ -180,13 +220,14 @@ impl<'repo> Push {
                 git2::TreeWalkResult::Ok
             })?;
 
-            info!("repository commit tree walk count number: {:?}", ct);
             info!("------");
             info!("");
         }
 
         // commits write into rootstate
         // cyfs commit object
+
+        info!("repository commit tree walk count number: {:?}", ct);
 
         Ok(())
     }

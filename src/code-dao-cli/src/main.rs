@@ -119,7 +119,7 @@ impl Service {
     }
 }
 
-async fn main_test(stack: Arc<SharedCyfsStack>) -> Result<(), git2::Error> {
+async fn main_test(stack: Arc<SharedCyfsStack>) -> CodedaoResult<()> {
     let name = "2022_1110";
     let test_dir_path = format!("/home/aa/test/{}", name);
 
@@ -141,11 +141,18 @@ async fn main_test(stack: Arc<SharedCyfsStack>) -> Result<(), git2::Error> {
 
     let branch = "main".to_string();
     let repo = git2::Repository::open(test_dir_path).expect("open repo failed");
-    let push_helper = push::Push::new(Arc::new(repo), stack, stack_util, name, branch, ood, owner);
-    //let index = push_helper.index()?;
-    //info!("commit oid {}", index);
+    let push_helper = push::Push::new(
+        Arc::new(repo),
+        Arc::clone(&stack),
+        stack_util,
+        name,
+        branch,
+        ood,
+        owner,
+    );
 
     push_helper.push().await.expect("check remote head");
+    push_helper.debug().await?;
 
     Ok(())
 }
