@@ -51,6 +51,7 @@ impl Transform {
         self.blob().await?;
         self.tree().await?;
         self.commit().await?;
+        self.branch().await?;
         Ok(())
     }
 
@@ -139,9 +140,71 @@ impl Transform {
             let (commit_id, object_id) = item.into_map_item();
             info!("commit id {}", commit_id);
 
-            // let buf = get_object(&self.stack, object_id).await?;
-            // let commit = Commit::clone_from_slice(&buf)?;
+            // get cyfs commit object
+            let buf = get_object(&self.stack, object_id).await?;
+            let commit = Commit::clone_from_slice(&buf)?;
+
+            let author = commit.author().to_owned().unwrap();
+            let time = git2::Time::new(author.when, author.offset);
+            let author2 = git2::Signature::new(&author.name, &author.email, &time)?;
+
+            let committer = commit.committer().to_owned().unwrap();
+            let time = git2::Time::new(committer.when, author.offset);
+            let committer2 = git2::Signature::new(&committer.name, &committer.email, &time)?;
+
+            let tree_id = git2::Oid::from_str(commit.tree_id())?;
+            let tree = self.repo.find_tree(tree_id)?;
+
+            let parents = commit.parents().to_owned();
+            let oid = if parents.len() == 0 {
+                self.repo
+                    .commit(None, &author2, &committer2, commit.payload(), &tree, &[])?
+            } else {
+                // TODO parents how to pass?
+                let id = parents[0].clone();
+                let commit_id = git2::Oid::from_str(&id)?;
+                let parent = self.repo.find_commit(commit_id)?;
+                self.repo.commit(
+                    None,
+                    &author2,
+                    &committer2,
+                    commit.payload(),
+                    &tree,
+                    &[&parent],
+                )?
+            };
+            info!("git2 gen commit oid {}", oid);
         }
+        Ok(())
+    }
+
+    async fn branch(&self) -> CodedaoResult<()> {
+        let branch_path = rootstate_repo_branchbase(&self.name);
+        let env = self
+            .stack
+            .root_state_stub(Some(self.ood_id), Some(dec_id()))
+            .create_single_op_env()
+            .await?;
+        env.load_by_path(branch_path).await?;
+        let ret = env.list().await?;
+        // TODO only read default.
+        // So we need to a path name /<>/head, or in Repository object' desc
+        for item in ret {
+            let (branch, object_id) = item.into_map_item();
+            info!("branch name {}", branch);
+            let buf = get_object(&self.stack, object_id).await?;
+            let branch_object = RepositoryBranch::clone_from_slice(&buf)?;
+            let oid = git2::Oid::from_str(branch_object.ref_hash())?;
+            let commit = self.repo.find_commit(oid)?;
+            let branch = self.repo.branch(branch_object.ref_name(), &commit, true)?;
+
+            // TODO  move outside of this loop
+            // set repo HEAD
+            let name = format!("refs/heads/{}", branch.name()?.unwrap());
+            self.repo.set_head(&name)?;
+            info!("repository set HEAD:{} OK", name);
+        }
+
         Ok(())
     }
 }

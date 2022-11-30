@@ -59,8 +59,12 @@ pub struct CommitSignature {
     pub name: ::prost::alloc::string::String,
     #[prost(string, tag="2")]
     pub email: ::prost::alloc::string::String,
-    #[prost(string, tag="3")]
-    pub when: ::prost::alloc::string::String,
+    #[prost(int64, tag="3")]
+    pub when: i64,
+    #[prost(int32, tag="4")]
+    pub offset: i32,
+    #[prost(string, tag="5")]
+    pub sign: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct OrganizationDescContent {

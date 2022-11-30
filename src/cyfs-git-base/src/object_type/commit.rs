@@ -24,7 +24,9 @@ pub struct CommitDescContent {
 pub struct CommitSignature {
     pub name: String,
     pub email: String,
-    pub when: String,
+    pub when: i64,
+    pub offset: i32, // 存的时候带了sign
+    pub sign: String,
 }
 
 impl DescContent for CommitDescContent {

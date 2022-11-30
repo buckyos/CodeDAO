@@ -285,16 +285,18 @@ pub async fn repository_merge_accept(
         vec![commit.parent, commit.parent2],
         commit.tree.clone(),
         commit.payload,
-        Some(CommitSignature {
-            name: commit.author.name,
-            email: commit.author.email,
-            when: commit.author.date,
-        }),
-        Some(CommitSignature {
-            name: commit.committer.name,
-            email: commit.committer.email,
-            when: commit.committer.date,
-        }),
+        None,
+        None,
+        // Some(CommitSignature {
+        //     name: commit.author.name,
+        //     email: commit.author.email,
+        //     when: commit.author.date,
+        // }),
+        // Some(CommitSignature {
+        //     name: commit.committer.name,
+        //     email: commit.committer.email,
+        //     when: commit.committer.date,
+        // }),
     );
     let commit_object_id = commit_object.desc().object_id();
     put_object(&ctx.stack, &commit_object).await?;

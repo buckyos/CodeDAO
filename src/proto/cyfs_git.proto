@@ -43,7 +43,9 @@ message CommitDescContent {
 message CommitSignature { // match git2 stcurt
   string name = 1;
   string email = 2;
-  string when = 3;
+  int64 when = 3;
+  int32 offset = 4;
+  string sign = 5;
 }
 
 

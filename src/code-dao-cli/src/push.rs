@@ -17,10 +17,6 @@ pub struct Push {
     owner: ObjectId,
 }
 
-fn map_git_err(err: git2::Error) -> BuckyError {
-    BuckyError::new(BuckyErrorCode::InternalError, err.to_string())
-}
-
 impl<'repo> Push {
     pub fn new(
         repo: Arc<git2::Repository>,
@@ -41,34 +37,40 @@ impl<'repo> Push {
             owner,
         }
     }
-    pub fn index(&self) -> Result<String, git2::Error> {
+    pub fn index(&self) -> CodedaoResult<String> {
         let obj = self
             .repo
             .head()?
             .resolve()?
             .peel(git2::ObjectType::Commit)?;
-        let commit = obj
-            .into_commit()
-            .map_err(|_| git2::Error::from_str("Couldn't find commit"))?;
+        let commit = obj.into_commit().expect("into commit failed");
         let id = commit.id().to_string();
         Ok(id)
     }
 
-    pub async fn push(&self) -> BuckyResult<()> {
-        let oid = self.head_remote().await?;
-        info!("Read remote: head ref oid {:?}", oid);
-        // check remote HEAD oid
+    pub async fn push(&self) -> CodedaoResult<()> {
+        let head = self.repo.head()?;
+        let branch = head.shorthand().expect("get branch name failed");
 
+        let oid = self.head_remote(branch).await?;
+        info!("Read remote: head ref oid {:?}", oid);
+
+        // check remote HEAD oid
+        //
+        if oid.is_none() {
+            info!("remote[{}] empty", branch);
+            self.update_remote_branch().await?;
+            // TODO set a default branch
+        }
+
+        // handle commits
         let commits = self._commits().await?;
         // TODO delta object
 
         Ok(())
     }
 
-    pub async fn head_remote(&self) -> BuckyResult<Option<String>> {
-        let head = self.repo.head().map_err(map_git_err)?;
-        let branch = head.shorthand().expect("get branch failed");
-
+    pub async fn head_remote(&self, branch: &str) -> CodedaoResult<Option<String>> {
         info!("current HEAD branch is {:?}", branch);
         let env = self
             .stack
@@ -87,19 +89,52 @@ impl<'repo> Push {
         }
     }
 
+    async fn update_remote_branch(&self) -> CodedaoResult<()> {
+        info!("update remote branch[{}](ref) value", self.branch);
+        let head = self.repo.head()?;
+        let branch = head.shorthand().expect("get branch name failed");
+        let oid = self.repo.revparse_single(branch)?.id().to_string();
+        let mut name = self.name.split("/").into_iter();
+        let space = name.next().unwrap().to_owned();
+        let repo_name = name.next().unwrap().to_owned();
+
+        let branch_object = RepositoryBranch::create(
+            self.owner,
+            space,
+            repo_name,
+            branch.to_string(),
+            oid.clone(),
+        );
+        put_object_target(&self.stack, &branch_object, Some(self.ood), None).await?;
+        let env = self
+            .stack
+            .root_state_stub(Some(self.ood), Some(dec_id()))
+            .create_path_op_env()
+            .await?;
+        let branch_path = rootstate_repo_branch(&self.name, branch);
+        env.set_with_path(
+            &branch_path,
+            &branch_object.desc().calculate_id(),
+            None,
+            true,
+        )
+        .await?;
+        env.commit().await?;
+        info!("wirte branch:{} {} to rootstate ok", branch, oid);
+        Ok(())
+    }
+
     // TODO debug print a repository rootstate, like fd
-    async fn debug(&self) {}
+    async fn debug(&self) {
+        // print
+    }
 
     /// calculate commits
-    async fn _commits(&self) -> BuckyResult<()> {
-        let oid = self
-            .repo
-            .revparse_single(&self.branch)
-            .map_err(map_git_err)?
-            .id();
+    async fn _commits(&self) -> CodedaoResult<()> {
+        let oid = self.repo.revparse_single(&self.branch)?.id();
         info!("Local HEAD branch's oid is {}", oid.to_string());
-        let mut revwalk = self.repo.revwalk().map_err(map_git_err)?;
-        revwalk.push(oid).expect("ok");
+        let mut revwalk = self.repo.revwalk()?;
+        revwalk.push(oid)?;
 
         // TODO check if oid_end
         //let oid2 = git2::Oid::from_str("66bbc153590d2e9a56d238101527324b5491228b").expect("");
@@ -107,12 +142,12 @@ impl<'repo> Push {
         //info!("mark rev-list oid..oid2");
 
         for id in revwalk {
-            let id = id.expect("read commit oid failed");
+            let id = id?;
 
             // write commit and tree into rootstate
-            let commit = self.repo.find_commit(id).expect("find commit");
+            let commit = self.repo.find_commit(id)?;
             self._write_commit(commit.clone()).await?;
-            let tree = commit.tree().expect("get commit tree failed");
+            let tree = commit.tree()?;
             self._write_tree(tree.clone()).await?;
 
             // TODO walk all
@@ -143,8 +178,7 @@ impl<'repo> Push {
 
                 ct += 1;
                 git2::TreeWalkResult::Ok
-            })
-            .unwrap();
+            })?;
 
             info!("repository commit tree walk count number: {:?}", ct);
             info!("------");
@@ -204,13 +238,24 @@ impl<'repo> Push {
             commit_object.id(),
         );
         put_object_target(&self.stack, &commit_object, Some(self.ood), None).await?;
-        let commit_path = rootstate_repo_commit(&self.name, commit_object.object_id());
         let env = self
             .stack
             .root_state_stub(Some(self.ood), Some(dec_id()))
             .create_path_op_env()
             .await?;
+        let commit_path = rootstate_repo_commit(&self.name, commit_object.object_id());
+        env.set_with_path(
+            commit_path,
+            &commit_object.desc().calculate_id(),
+            None,
+            true,
+        )
+        .await?;
         env.commit().await?;
+        Ok(())
+    }
+
+    async fn _write_ref(&self) -> BuckyResult<()> {
         Ok(())
     }
 }
@@ -237,16 +282,21 @@ fn transform_tree(tree: &git2::Tree, owner: cyfs_base::ObjectId) -> Tree {
 
 // 转换cyfs object
 fn transform_commit(commit: &git2::Commit, owner: cyfs_base::ObjectId) -> Commit {
+    let author = commit.author();
     let author = CommitSignature {
-        name: commit.author().name().unwrap().to_string(),
-        email: commit.author().email().unwrap().to_string(),
-        when: commit.author().when().seconds().to_string(),
+        name: author.name().unwrap().to_string(),
+        email: author.email().unwrap().to_string(),
+        when: author.when().seconds(),
+        offset: author.when().offset_minutes(),
+        sign: author.when().sign().to_string(),
     };
-
+    let committer = commit.committer();
     let committer = CommitSignature {
-        name: commit.committer().name().unwrap().to_string(),
-        email: commit.committer().email().unwrap().to_string(),
-        when: commit.committer().when().seconds().to_string(),
+        name: committer.name().unwrap().to_string(),
+        email: committer.email().unwrap().to_string(),
+        when: committer.when().seconds(),
+        offset: committer.when().offset_minutes(),
+        sign: committer.when().sign().to_string(),
     };
 
     let parents = commit

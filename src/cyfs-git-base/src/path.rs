@@ -11,7 +11,11 @@ pub const USER_NAME_LIST_PATH: &'static str = "/app/username/list/"; // <r>/list
 pub fn rootstate_repo_branch(repo: &str, branch: &str) -> String {
     format!("{}{}/branch/{}", REPOSITORY_PATH, repo, branch)
 }
+pub fn rootstate_repo_branchbase(repo: &str) -> String {
+    format!("{}{}/branch", REPOSITORY_PATH, repo)
+}
 
+// TO destory
 pub fn rootstate_repo_refs(author_name: &str, repo_name: &str, ref_name: &str) -> String {
     format!(
         "{}{}/{}/refs/{}",

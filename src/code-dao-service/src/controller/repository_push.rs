@@ -157,16 +157,18 @@ pub async fn repository_push(ctx: Arc<PostContext>) -> BuckyResult<NONPostObject
             vec![commit.parent, commit.parent2],
             commit.tree.clone(),
             commit.payload,
-            Some(CommitSignature {
-                name: commit.author.name,
-                email: commit.author.email,
-                when: commit.author.date,
-            }),
-            Some(CommitSignature {
-                name: commit.committer.name,
-                email: commit.committer.email,
-                when: commit.committer.date,
-            }),
+            None,
+            None,
+            // Some(CommitSignature {
+            //     name: commit.author.name,
+            //     email: commit.author.email,
+            //     when: commit.author.date,
+            // }),
+            // Some(CommitSignature {
+            //     name: commit.committer.name,
+            //     email: commit.committer.email,
+            //     when: commit.committer.date,
+            // }),
             //serde_json::to_string(&commit.author).unwrap(), // 转换成json str
             //serde_json::to_string(&commit.committer).unwrap(),
             //commit.parent2,
