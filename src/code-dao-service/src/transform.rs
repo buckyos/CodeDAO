@@ -1,10 +1,10 @@
+use async_recursion::async_recursion;
 use async_std::sync::Arc;
 use cyfs_base::*;
 use cyfs_git_base::*;
 use cyfs_lib::*;
 use log::*;
 use std::path::PathBuf;
-
 use std::str::FromStr;
 
 pub struct Transform {
@@ -93,37 +93,59 @@ impl Transform {
     // rebuild TREE object
     async fn tree(&self) -> CodedaoResult<()> {
         let tree_path = rootstate_repo_treebase(&self.name);
-        let env = self
-            .stack
-            .root_state_stub(Some(self.ood_id), Some(dec_id()))
-            .create_single_op_env()
-            .await?;
-        env.load_by_path(tree_path).await?;
-        let ret = env.list().await?;
+        let env = Arc::new(
+            self.stack
+                .root_state_stub(Some(self.ood_id), Some(dec_id()))
+                .create_path_op_env()
+                .await?,
+        );
+        let ret = env.list(tree_path).await?;
         for item in ret {
             let (tree_id, object_id) = item.into_map_item();
             info!("tree id {}", tree_id);
 
             let buf = get_object(&self.stack, object_id).await?;
             let tree = Tree::clone_from_slice(&buf)?;
-            // write to local
-            let mut treebuilder = self.repo.treebuilder(None)?;
-            let entries = tree.tree().to_owned();
-            for entry in entries {
-                info!("entry file name {}, {}", entry.file_name, entry.mode);
-
-                let oid = git2::Oid::from_str(&entry.hash)?;
-                let filemode: i32 = entry.mode.parse().unwrap();
-                treebuilder.insert(entry.file_name, oid, filemode)?;
-            }
-            let tree_id_w = treebuilder.write()?;
-            info!("check treebuilder write treeid {}", tree_id_w);
-            if tree_id_w.to_string() != tree_id {
-                error!("tree builder gen treeid no same with rootstate saved");
-            }
+            self._tree_item(Arc::clone(&env), tree).await?;
         }
         Ok(())
     }
+
+    // write tree to cache
+    // 这里需要通过递归来写tree
+    // 假设仓库
+    // - fileA
+    // - src/fileB
+    // - src/other/fileC
+    // src 是root tree下的一个子项，但是先insert src会失败,
+    // 失败的时候就递归先处理子项(src/other)
+    #[async_recursion(?Send)]
+    async fn _tree_item(&self, env: Arc<PathOpEnvStub>, tree: Tree) -> CodedaoResult<()> {
+        let mut treebuilder = self.repo.treebuilder(None)?;
+        let entries = tree.tree().to_owned();
+        // tree 所有子项
+        for entry in entries {
+            info!("entry file name {}, {}", entry.file_name, entry.mode);
+            let oid = git2::Oid::from_str(&entry.hash)?;
+
+            // 同是tree类型，可能因为顺序问题 不存在.
+            // 如果repo.find_tree成功，就不需要递归进去处理子项
+            if "tree".eq(&entry.file_type) && self.repo.find_tree(oid.clone()).is_err() {
+                info!("current sub tree no in cache db");
+                let tree_path = rootstate_repo_tree2(&self.name, &oid.to_string());
+                let object_id = env.get_by_path(tree_path).await?.unwrap();
+                let buf = get_object(&self.stack, object_id).await?;
+                let tree = Tree::clone_from_slice(&buf)?;
+                self._tree_item(Arc::clone(&env), tree).await?;
+            }
+            let filemode: i32 = entry.mode.parse().unwrap();
+            treebuilder.insert(entry.file_name, oid, filemode)?;
+        }
+        let tree_id_w = treebuilder.write()?;
+        info!("check treebuilder write treeid {}", tree_id_w);
+        Ok(())
+    }
+
     // rebuild Commit object
     async fn commit(&self) -> CodedaoResult<()> {
         let commit_path = rootstate_repo_commitbase(&self.name);

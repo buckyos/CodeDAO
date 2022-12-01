@@ -256,7 +256,7 @@ pub struct RepositoryHelper {
 impl RepositoryHelper {
     pub fn new(stack: Arc<SharedCyfsStack>, author_name: String, name: String) -> Self {
         Self {
-            stack: stack,
+            stack,
             author_name,
             name,
         }
@@ -385,17 +385,6 @@ impl RepositoryHelper {
         let repository = Repository::clone_from_slice(&buf)? as Repository;
         Ok(repository)
     }
-    // pub async fn issue_by_path(stack: &Arc<SharedCyfsStack>, space: &str, name: &str, issue_id: &str, comment_id: &str) -> BuckyResult<Issue>{
-    //     let env = stack.root_state_stub().create_path_op_env().await?;
-    //     let issue_id = issue_id.parse::<i32>().unwrap();
-    //     let comment_id =comment_id.parse::<i32>().unwrap();
-    //     let key = RepositoryHelper::issue_comment_key(space,name, issue_id, comment_id);
-    //     let object_id = env.get_by_path(&key).await?;
-
-    //     let buf = get_object(stack, object_id.unwrap()).await?;
-    //     let issue = Issue::clone_from_slice(&buf)? as Issue;
-    //     Ok(issue)
-    // }
 
     pub async fn member_by_path(
         stack: &Arc<SharedCyfsStack>,

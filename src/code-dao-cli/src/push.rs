@@ -52,16 +52,11 @@ impl<'repo> Push {
         let head = self.repo.head()?;
         let branch = head.shorthand().expect("get branch name failed");
 
-        let remote_latest_id = self.head_remote(branch).await?;
-        info!("Read remote: head ref oid {:?}", remote_latest_id);
-
-        // check remote HEAD oid
-        //        if remote_latest_id.is_none() {
-        //        info!("remote[{}] empty", branch);
-        //      }
+        let remote_latest_id = self.remote_head(branch).await?;
+        info!("remote: head ref oid {:?}", remote_latest_id);
 
         let local_id = self.repo.revparse_single(branch)?.id();
-        info!("HEAD branch's oid is {}", local_id);
+        info!("local: HEAD oid is {}", local_id);
 
         // handle commits
         let commits = self._commits(local_id, remote_latest_id).await?;
@@ -72,7 +67,8 @@ impl<'repo> Push {
         Ok(())
     }
 
-    pub async fn head_remote(&self, branch: &str) -> CodedaoResult<Option<String>> {
+    // get remote branch's latest oid
+    async fn remote_head(&self, branch: &str) -> CodedaoResult<Option<String>> {
         info!("current HEAD branch is {:?}", branch);
         let env = self
             .stack
@@ -93,6 +89,7 @@ impl<'repo> Push {
         }
     }
 
+    // set the remote target branch's oid
     async fn update_remote_branch(&self, local_id: git2::Oid, branch: String) -> CodedaoResult<()> {
         info!("update remote branch[{}](ref) value", self.branch);
         let mut name = self.name.split("/").into_iter();
@@ -174,13 +171,13 @@ impl<'repo> Push {
             revwalk.hide(oid2)?;
         }
         //info!("mark rev-list oid..oid2");
-        // revwalk 会从最近的commit开始进行迭代
 
         // TODO stat of {blob,commit,tree}
         let mut ct = 0;
 
         // TODO 并行处理
         // TODO progress show
+        // revwalk 会从最近的commit开始进行迭代
         for id in revwalk {
             let id = id?;
             info!("commit id: {}", id);
@@ -191,30 +188,36 @@ impl<'repo> Push {
             let tree = commit.tree()?;
             self._write_tree(tree.clone()).await?;
 
-            // TODO walk all
             tree.walk(git2::TreeWalkMode::PreOrder, |_, entry| {
-                //info!("entry name {} ", entry.name().unwrap());
-                //info!("entry kind {}", kind);
-                if let Some(git2::ObjectType::Blob) = entry.kind() {
-                    info!("blob object, {} {:?}", entry.id(), entry.name());
-                    let oid = entry.id().to_string();
-                    // TOFIX 如果blob objects被pack了?
-                    let p = self
-                        .repo
-                        .path()
-                        .join("objects")
-                        .join(&oid[..2])
-                        .join(&oid[2..]);
-
-                    // block on await fn
-                    // to upload a blob content, and write a cyfs blob object
-                    let file_id = task::block_on(self.stack_util.upload(p))
-                        .expect("upload blob content failed");
-                    task::block_on(self._write_blob(oid.clone(), file_id.to_string()))
-                        .expect("write blob failed");
-                    info!("tree-walk upload and write blob[{}] success", oid);
-                }
-                // TODO tree object
+                info!(
+                    "blob object, {} {:?} {:?} ",
+                    entry.id(),
+                    entry.name(),
+                    entry.kind()
+                );
+                match entry.kind().unwrap() {
+                    git2::ObjectType::Blob => {
+                        let oid = entry.id().to_string();
+                        // TOFIX 如果blob objects被pack了?
+                        let p = self
+                            .repo
+                            .path()
+                            .join("objects")
+                            .join(&oid[..2])
+                            .join(&oid[2..]);
+                        // to upload a blob content, and write a cyfs blob object
+                        task::block_on(self.blob(oid, p));
+                    }
+                    // to write subtree of commit
+                    git2::ObjectType::Tree => {
+                        let obj = entry.to_object(&self.repo).unwrap();
+                        let tree = obj.as_tree().unwrap().to_owned();
+                        task::block_on(self._write_tree(tree));
+                    }
+                    _ => {
+                        error!("error type of entry ");
+                    }
+                };
 
                 ct += 1;
                 git2::TreeWalkResult::Ok
@@ -232,19 +235,32 @@ impl<'repo> Push {
         Ok(())
     }
 
-    // blob object
-    async fn _write_blob(&self, blob_id: String, file_id: String) -> BuckyResult<()> {
-        let blob_object = Blob::create(self.owner, blob_id.clone(), file_id);
-        put_object_target(&self.stack, &blob_object, Some(self.ood), None).await?;
+    // blob object handle
+    // upload chunk
+    // write rootstate
+    async fn blob(
+        &self,
+        blob_id: String,
+        blob_object_path: std::path::PathBuf,
+    ) -> CodedaoResult<()> {
+        let blob_path = rootstate_repo_blob(&self.name, &blob_id);
         let env = self
             .stack
             .root_state_stub(Some(self.ood), Some(dec_id()))
             .create_path_op_env()
             .await?;
-        let blob_path = rootstate_repo_blob(&self.name, &blob_id);
-        env.set_with_path(&blob_path, &blob_object.desc().calculate_id(), None, true)
-            .await?;
-        env.commit().await?;
+        if let Some(object_id) = env.get_by_path(blob_path.clone()).await? {
+            info!("blob[{}] already in OOD", blob_id);
+        } else {
+            // upload to ood /cyfs/data/chunk
+            let file_id = self.stack_util.upload(blob_object_path).await?;
+            let blob_object = Blob::create(self.owner, blob_id.clone(), file_id.to_string());
+            put_object_target(&self.stack, &blob_object, Some(self.ood), None).await?;
+            env.set_with_path(&blob_path, &blob_object.desc().calculate_id(), None, true)
+                .await?;
+            env.commit().await?;
+            info!("blob[{}] upload and write success", blob_id);
+        }
         Ok(())
     }
 
