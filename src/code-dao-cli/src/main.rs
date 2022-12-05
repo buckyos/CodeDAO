@@ -5,9 +5,13 @@ use cyfs_git_base::*;
 use cyfs_lib::*;
 //use git2::*;
 use log::*;
+
 mod post;
 mod push;
+mod service;
+
 use post::post_object;
+use service::Service;
 
 #[derive(Parser)]
 #[clap(author, version, about, long_about=None)]
@@ -21,6 +25,7 @@ struct Cli {
 enum Action {
     Init { name: Option<String> },
     Push,
+    Debug,
     // do read, like git cat-file -p
 }
 
@@ -29,6 +34,7 @@ fn init() {
         .level("info")
         .console("info")
         .enable_bdt(Some("error"), Some("error"))
+        .disable_module(vec!["cyfs_lib"], cyfs_debug::LogLevel::Warn)
         .build()
         .unwrap()
         .start();
@@ -59,7 +65,7 @@ async fn main_run() {
         eprintln!("CodeDAO cli connect failed: {:?}", err);
         std::process::exit(1);
     }
-    info!("connect cyfs-runtime successfully");
+    // info!("connect cyfs-runtime successfully");
 
     // get the current dir
     let cwd = std::env::current_dir().expect("failed to get codedao-cli cwd");
@@ -72,7 +78,7 @@ async fn main_run() {
     //info!("current relative dir is {:?}", current_dir_name);
     //info!("current cwd is {:?}", cwd);
 
-    let service = Service::new(Arc::clone(&stack));
+    let service = Service::new(Arc::clone(&stack)).await;
     let cli = Cli::parse();
     match &cli.command {
         Action::Init { name } => {
@@ -89,70 +95,8 @@ async fn main_run() {
             info!("cli action: push");
             service.push().await;
         }
+        Action::Debug => {
+            service.debug().await;
+        }
     }
-}
-
-pub struct Service {
-    stack: Arc<SharedCyfsStack>,
-}
-
-impl Service {
-    pub fn new(stack: Arc<SharedCyfsStack>) -> Self {
-        Self { stack }
-    }
-
-    // create repository
-    pub async fn create(&self, name: &str) {
-        let data = serde_json::json!({
-            "name": name,
-            "description":"aaa",
-            "is_private":0,
-            "author_type":"user",
-        });
-        let data = data.to_string();
-        post_object(&self.stack, "repo/init", &data).await;
-    }
-
-    // push
-    pub async fn push(&self) {
-        main_test(self.stack.clone()).await.expect("push");
-    }
-}
-
-async fn main_test(stack: Arc<SharedCyfsStack>) -> CodedaoResult<()> {
-    let name = "2022_1110";
-    let test_dir_path = format!("/home/aa/test/{}", name);
-
-    info!("current test git dir {}", test_dir_path);
-
-    let ood = get_ood_device(&stack).await;
-    //let owner = get_owner(&stack).await;
-    let owner = owner(&stack);
-
-    /// init stack util helper
-    /// TODO  move put object to this
-    let stack_util = Arc::new(StackUtil::new(
-        Arc::clone(&stack),
-        owner.clone(),
-        ood.clone(),
-    ));
-
-    let name = format!("{}/{}", owner.to_string(), name);
-
-    let branch = "main".to_string();
-    let repo = git2::Repository::open(test_dir_path).expect("open repo failed");
-    let push_helper = push::Push::new(
-        Arc::new(repo),
-        Arc::clone(&stack),
-        stack_util,
-        name,
-        branch,
-        ood,
-        owner,
-    );
-
-    push_helper.push().await.expect("check remote head");
-    push_helper.debug().await?;
-
-    Ok(())
 }

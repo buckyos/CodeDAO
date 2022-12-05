@@ -4,10 +4,8 @@ use cyfs_base::*;
 use cyfs_git_base::*;
 use cyfs_lib::*;
 use log::*;
-//use std::thread;
 
 pub struct Push {
-    //cwd: String,
     repo: Arc<git2::Repository>,
     stack: Arc<SharedCyfsStack>,
     stack_util: Arc<StackUtil>,
@@ -48,6 +46,11 @@ impl<'repo> Push {
         Ok(id)
     }
 
+    // client do push
+    // get meta
+    // head remote
+    // count commit
+    // mount objects & upload chunk
     pub async fn push(&self) -> CodedaoResult<()> {
         let head = self.repo.head()?;
         let branch = head.shorthand().expect("get branch name failed");
@@ -59,7 +62,8 @@ impl<'repo> Push {
         info!("local: HEAD oid is {}", local_id);
 
         // handle commits
-        let commits = self._commits(local_id, remote_latest_id).await?;
+        // let commits =
+        self._commits(local_id, remote_latest_id).await?;
         // update ref
         self.update_remote_branch(local_id, branch.to_string())
             .await?;

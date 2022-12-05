@@ -62,6 +62,7 @@ pub async fn repository_init(ctx: Arc<PostContext>) -> BuckyResult<NONPostObject
         data.author_type.clone(),
         people_id.clone(),
         0,
+        "main".to_string(),
     );
 
     let _r = put_object(&ctx.stack, &repository).await?;
@@ -119,6 +120,7 @@ pub async fn repository_new(ctx: Arc<PostContext>) -> BuckyResult<NONPostObjectI
         data.author_type.clone(),
         data.author_name.clone(),
         0,
+        "main".to_string(),
     );
 
     if repository.is_private() == 0 {

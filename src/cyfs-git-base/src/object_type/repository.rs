@@ -19,6 +19,7 @@ pub struct RepositoryDescContent {
     fork_from_id: String,
     author_type: String,
     author_name: String,
+    branch: String,
 }
 
 impl DescContent for RepositoryDescContent {
@@ -59,8 +60,8 @@ pub trait RepositoryObject {
         author_type: String,
         author_name: String,
         init: i32,
+        branch: String,
     ) -> Self;
-
     fn id(&self) -> String;
     fn date(&self) -> u64;
     fn name(&self) -> &String;
@@ -70,6 +71,7 @@ pub trait RepositoryObject {
     fn author_type(&self) -> &String;
     fn author_name(&self) -> &String;
     fn fork_from_id(&self) -> &String;
+    fn branch(&self) -> &String;
 }
 
 impl RepositoryObject for Repository {
@@ -81,6 +83,7 @@ impl RepositoryObject for Repository {
         author_type: String,
         author_name: String,
         init: i32,
+        branch: String,
     ) -> Self {
         let desc = RepositoryDescContent {
             name,
@@ -90,6 +93,7 @@ impl RepositoryObject for Repository {
             fork_from_id: "".to_string(),
             author_type,
             author_name,
+            branch,
         };
         let body = RepositoryBodyContent {};
 
@@ -126,6 +130,9 @@ impl RepositoryObject for Repository {
     fn fork_from_id(&self) -> &String {
         &self.desc().content().fork_from_id
     }
+    fn branch(&self) -> &String {
+        &self.desc().content().branch
+    }
 }
 
 #[async_trait]
@@ -156,6 +163,7 @@ impl RepositoryObjectUtil for Repository {
             fork_from_id: repository.fork_from_id().to_string(),
             author_type: repository.author_type().to_string(),
             author_name: repository.author_name().to_string(),
+            branch: repository.branch().to_string(),
         };
 
         let target_column = column["target"].as_str();

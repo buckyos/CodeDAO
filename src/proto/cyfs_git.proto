@@ -27,6 +27,7 @@ message RepositoryDescContent {
   string fork_from_id = 5;
   string author_type = 6;  // 拥有者可以是用户或组
   string author_name = 7;
+  string branch = 8; // default branch 
 }
 
 

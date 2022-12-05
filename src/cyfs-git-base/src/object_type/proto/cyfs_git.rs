@@ -35,6 +35,9 @@ pub struct RepositoryDescContent {
     pub author_type: ::prost::alloc::string::String,
     #[prost(string, tag="7")]
     pub author_name: ::prost::alloc::string::String,
+    /// default branch 
+    #[prost(string, tag="8")]
+    pub branch: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CommitDescContent {
