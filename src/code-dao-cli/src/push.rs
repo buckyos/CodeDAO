@@ -3,7 +3,6 @@ use async_std::task;
 use cyfs_base::*;
 use cyfs_git_base::*;
 use cyfs_lib::*;
-use log::*;
 
 pub struct Push {
     repo: Arc<git2::Repository>,

@@ -4,13 +4,14 @@ use cyfs_debug::*;
 use cyfs_git_base::*;
 use cyfs_lib::*;
 //use git2::*;
-use log::*;
+
+#[macro_use]
+extern crate log;
 
 mod post;
 mod push;
 mod service;
 
-use post::post_object;
 use service::Service;
 
 #[derive(Parser)]
@@ -73,8 +74,6 @@ async fn main_run() {
     let current_dir_name = cwd.into_iter().last();
 
     //let repo = git2::Repository::discover(cwd.clone()).expect("test");
-    //info!("r {:?}", repo.workdir());
-
     //info!("current relative dir is {:?}", current_dir_name);
     //info!("current cwd is {:?}", cwd);
 
