@@ -1,15 +1,15 @@
 // package: 
 // file: objects.proto
 
-import * as jspb from 'google-protobuf';
+import * as jspb from "google-protobuf";
 
 export class GitTextDescContent extends jspb.Message {
-    getId(): string;
-    setId(value: string): void;
+  getId(): string;
+  setId(value: string): void;
 
-    serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): GitTextDescContent.AsObject;
-    static toObject(includeInstance: boolean, msg: GitTextDescContent): GitTextDescContent.AsObject;
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GitTextDescContent.AsObject;
+  static toObject(includeInstance: boolean, msg: GitTextDescContent): GitTextDescContent.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
   static serializeBinaryToWriter(message: GitTextDescContent, writer: jspb.BinaryWriter): void;
@@ -18,24 +18,24 @@ export class GitTextDescContent extends jspb.Message {
 }
 
 export namespace GitTextDescContent {
-  export interface AsObject {
+  export type AsObject = {
     id: string,
   }
 }
 
 export class GitTextBodyContent extends jspb.Message {
-    getId(): string;
-    setId(value: string): void;
+  getId(): string;
+  setId(value: string): void;
 
-    getHeader(): string;
-    setHeader(value: string): void;
+  getHeader(): string;
+  setHeader(value: string): void;
 
-    getValue(): string;
-    setValue(value: string): void;
+  getValue(): string;
+  setValue(value: string): void;
 
-    serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): GitTextBodyContent.AsObject;
-    static toObject(includeInstance: boolean, msg: GitTextBodyContent): GitTextBodyContent.AsObject;
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GitTextBodyContent.AsObject;
+  static toObject(includeInstance: boolean, msg: GitTextBodyContent): GitTextBodyContent.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
   static serializeBinaryToWriter(message: GitTextBodyContent, writer: jspb.BinaryWriter): void;
@@ -44,7 +44,7 @@ export class GitTextBodyContent extends jspb.Message {
 }
 
 export namespace GitTextBodyContent {
-  export interface AsObject {
+  export type AsObject = {
     id: string,
     header: string,
     value: string,
@@ -52,31 +52,31 @@ export namespace GitTextBodyContent {
 }
 
 export class PubSubObject extends jspb.Message {
-    getAppname(): string;
-    setAppname(value: string): void;
+  getAppname(): string;
+  setAppname(value: string): void;
 
-    getDecid(): string;
-    setDecid(value: string): void;
+  getDecid(): string;
+  setDecid(value: string): void;
 
-    getActiontype(): ActionsMap[keyof ActionsMap];
-    setActiontype(value: ActionsMap[keyof ActionsMap]): void;
+  getActiontype(): ActionsMap[keyof ActionsMap];
+  setActiontype(value: ActionsMap[keyof ActionsMap]): void;
 
-    getActiontarget(): string;
-    setActiontarget(value: string): void;
+  getActiontarget(): string;
+  setActiontarget(value: string): void;
 
-    hasDescribe(): boolean;
-    clearDescribe(): void;
-    getDescribe(): string;
-    setDescribe(value: string): void;
+  hasDescribe(): boolean;
+  clearDescribe(): void;
+  getDescribe(): string;
+  setDescribe(value: string): void;
 
-    hasOpenurl(): boolean;
-    clearOpenurl(): void;
-    getOpenurl(): string;
-    setOpenurl(value: string): void;
+  hasOpenurl(): boolean;
+  clearOpenurl(): void;
+  getOpenurl(): string;
+  setOpenurl(value: string): void;
 
-    serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): PubSubObject.AsObject;
-    static toObject(includeInstance: boolean, msg: PubSubObject): PubSubObject.AsObject;
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PubSubObject.AsObject;
+  static toObject(includeInstance: boolean, msg: PubSubObject): PubSubObject.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
   static serializeBinaryToWriter(message: PubSubObject, writer: jspb.BinaryWriter): void;
@@ -85,7 +85,7 @@ export class PubSubObject extends jspb.Message {
 }
 
 export namespace PubSubObject {
-  export interface AsObject {
+  export type AsObject = {
     appname: string,
     decid: string,
     actiontype: ActionsMap[keyof ActionsMap],
@@ -96,9 +96,9 @@ export namespace PubSubObject {
 }
 
 export class NoneObject extends jspb.Message {
-    serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): NoneObject.AsObject;
-    static toObject(includeInstance: boolean, msg: NoneObject): NoneObject.AsObject;
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): NoneObject.AsObject;
+  static toObject(includeInstance: boolean, msg: NoneObject): NoneObject.AsObject;
   static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
   static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
   static serializeBinaryToWriter(message: NoneObject, writer: jspb.BinaryWriter): void;
@@ -107,7 +107,7 @@ export class NoneObject extends jspb.Message {
 }
 
 export namespace NoneObject {
-  export interface AsObject {
+  export type AsObject = {
   }
 }
 

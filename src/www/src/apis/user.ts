@@ -54,7 +54,7 @@ export async function queryPeopleInfo(peopleId: cyfs.PeopleId): Promise<PeopleIn
 // 查询people列表
 export async function getPubSubPeopleList(peopleId: string) {
     const stackWraper = checkStack();
-    const textObject = cyfs.TextObject.create(cyfs.Some(stackWraper.checkOwner()), '', 'test', '');
+    const textObject = cyfs.TextObject.create(stackWraper.checkOwner(), '', 'test', '');
     const target = cyfs.PeopleId.from_base_58(peopleId).unwrap().object_id;
     const ret = await stackWraper.postObject(textObject, cyfs.TextObjectDecoder, {
         reqPath: 'pubsub/people_list',

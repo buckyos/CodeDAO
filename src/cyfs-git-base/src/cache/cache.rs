@@ -2,7 +2,7 @@ use lru::LruCache;
 // use cyfs_lib::*;
 use cyfs_base::*;
 
-use std::sync::Mutex;
+use std::{num::NonZeroUsize, sync::Mutex};
 
 use once_cell::sync::OnceCell;
 
@@ -16,8 +16,8 @@ pub struct CyfsGitCache {
 
 impl CyfsGitCache {
     pub fn new() -> BuckyResult<()> {
-        let size = std::num::NonZeroUsize::new(10000).expect("error of init a cache size");
-        let cache: LruCache<String, String> = LruCache::new(size);
+        let cache: LruCache<String, String> =
+            LruCache::new(unsafe { NonZeroUsize::new_unchecked(10000) });
         let _ = LRU_CACHE.set(CyfsGitCache {
             cache: Mutex::new(cache),
         });

@@ -309,8 +309,8 @@ export class DownloadFileTask extends EventEmitter implements DownloadFileTaskEv
             ownerId = this.m_owner.object_id;
         } else if (!ownerId) {
             const owner = this.m_file?.desc().owner();
-            if (owner?.is_some()) {
-                ownerId = owner.unwrap();
+            if (owner) {
+                ownerId = owner;
             }
         }
 

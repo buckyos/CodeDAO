@@ -25,7 +25,7 @@ export class PublishFileTask extends EventEmitter {
                 referer_object: [],
                 dec_id: this.m_decId
             },
-            owner: this.m_stack.local_device().desc().owner()!.unwrap(),
+            owner: this.m_stack.local_device().desc().owner()!,
             local_path: this.m_filePath,
             chunk_size: this.m_chunkSize
         });

@@ -111,7 +111,7 @@ export class StackWraper {
     }
 
     public checkOwner(): cyfs.ObjectId {
-        return this.m_stack.local_device().desc().owner()!.unwrap();
+        return this.m_stack.local_device().desc().owner()!;
     }
 
     public checkOwnerPeopleId(): cyfs.PeopleId {
@@ -393,7 +393,7 @@ export class StackWraper {
         }
     ): Promise<cyfs.BuckyResult<boolean>> {
         {
-            let signsWraper: cyfs.Option<Array<cyfs.Signature>>;
+            let signsWraper: Array<cyfs.Signature> | undefined;
             if (options?.signType === cyfs.VerifySignType.Body) {
                 signsWraper = obj.signs().body_signs();
             } else if (options?.signType === cyfs.VerifySignType.Desc) {
@@ -402,20 +402,20 @@ export class StackWraper {
                 let signsArray: Array<cyfs.Signature> = [];
                 const signsWraperDesc = obj.signs().desc_signs();
                 const signsWraperBody = obj.signs().body_signs();
-                if (signsWraperDesc.is_some()) {
-                    signsArray = signsWraperDesc.unwrap();
+                if (signsWraperDesc) {
+                    signsArray = signsWraperDesc;
                 }
-                if (signsWraperBody.is_some()) {
-                    signsArray.push(...signsWraperBody.unwrap());
+                if (signsWraperBody) {
+                    signsArray.push(...signsWraperBody);
                 }
-                signsWraper = cyfs.Some(signsArray);
+                signsWraper = signsArray;
             } else {
                 const msg = `unknow VerifySignType(${options?.signType})`;
                 console.error(msg);
                 return makeBuckyErr(cyfs.BuckyErrorCode.Unmatch, msg);
             }
 
-            if (signsWraper.is_none() || signsWraper.unwrap().length === 0) {
+            if (!signsWraper || signsWraper.length === 0) {
                 const msg = 'not sign.';
                 return makeBuckyErr(cyfs.BuckyErrorCode.InvalidSignature, msg);
             }
@@ -455,7 +455,7 @@ export class StackWraper {
             return devR;
         }
         const sourceDevice = devR.unwrap();
-        const sourceOwner = sourceDevice.desc().owner()?.unwrap();
+        const sourceOwner = sourceDevice.desc().owner();
         if (!sourceOwner?.eq(this.checkOwner())) {
             return cyfs.Ok(false);
         }
@@ -573,7 +573,7 @@ export class StackWraper {
             } else {
                 console.info('online success.');
                 console.info(`device: ${this.m_stack.local_device_id()}`);
-                console.info(`owner: ${this.m_stack.local_device().desc().owner()?.unwrap()}`);
+                console.info(`owner: ${this.m_stack.local_device().desc().owner()}`);
                 break;
             }
         }
@@ -583,7 +583,7 @@ export class StackWraper {
 
 // OOD端的`DEC-Service`初始化
 class StackInitializerOOD extends StackWraper {
-    public constructor(decId?: cyfs.ObjectId) {
+    public constructor(decId: cyfs.ObjectId) {
         console.info(`will open stack, ${JSON.stringify(process.argv)}.`);
         let stack: cyfs.SharedCyfsStack;
         const simPort = g_simulatorPortOOD[checkSimulator()[0]];
@@ -607,7 +607,7 @@ class StackInitializerOOD extends StackWraper {
 
 // 客户端的`Runtime`初始化
 class StackInitializerRuntime extends StackWraper {
-    public constructor(decId?: cyfs.ObjectId) {
+    public constructor(decId: cyfs.ObjectId) {
         console.info('will open stack runtime.');
         let stack: cyfs.SharedCyfsStack;
         const [simNo, devNo] = checkSimulator();
@@ -633,7 +633,7 @@ export function useSimulator(zoneNo: SimulatorZoneNo, deviceNo: SimulatorDeviceN
     g_useSimulator = { zoneNo, deviceNo };
 }
 
-export async function waitStackOOD(decId?: cyfs.ObjectId): Promise<cyfs.BuckyResult<StackWraper>> {
+export async function waitStackOOD(decId: cyfs.ObjectId): Promise<cyfs.BuckyResult<StackWraper>> {
     if (!g_stack) {
         g_stack = new StackInitializerOOD(decId);
     }
@@ -641,7 +641,7 @@ export async function waitStackOOD(decId?: cyfs.ObjectId): Promise<cyfs.BuckyRes
 }
 
 export async function waitStackRuntime(
-    decId?: cyfs.ObjectId
+    decId: cyfs.ObjectId
 ): Promise<cyfs.BuckyResult<StackWraper>> {
     if (!g_stack) {
         g_stack = new StackInitializerRuntime(decId);

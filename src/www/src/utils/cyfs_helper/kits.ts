@@ -27,10 +27,7 @@ export async function listObjects(
     });
 }
 
-export function textObject(
-    text: string,
-    owner: cyfs.Option<cyfs.ObjectId> = cyfs.None
-): cyfs.TextObject {
+export function textObject(text: string, owner: cyfs.ObjectId | undefined): cyfs.TextObject {
     return cyfs.TextObject.create(owner, text, text, text);
 }
 
@@ -39,17 +36,17 @@ export interface AsObjectDescContent {}
 export interface AsObjectDesc {
     trace_id: () => number;
     content: () => AsObjectDescContent;
-    dec_id: () => cyfs.Option<cyfs.ObjectId>;
-    ref_objs: () => cyfs.Option<cyfs.Vec<cyfs.ObjectLink>>;
-    prev: () => cyfs.Option<cyfs.ObjectId>;
-    create_timestamp: () => cyfs.Option<cyfs.HashValue>;
+    dec_id: () => cyfs.ObjectId | undefined;
+    ref_objs: () => cyfs.Vec<cyfs.ObjectLink> | undefined;
+    prev: () => cyfs.ObjectId | undefined;
+    create_timestamp: () => cyfs.HashValue | undefined;
     create_time: () => cyfs.JSBI;
-    expired_time: () => cyfs.Option<cyfs.JSBI>;
+    expired_time: () => cyfs.JSBI | undefined;
     object_id: () => cyfs.ObjectId;
     calculate_id: () => cyfs.ObjectId;
-    owner: () => cyfs.Option<cyfs.ObjectId> | undefined;
-    area: () => cyfs.Option<cyfs.Area> | undefined;
-    author: () => cyfs.Option<cyfs.ObjectId> | undefined;
+    owner: () => cyfs.ObjectId | undefined;
+    area: () => cyfs.Area | undefined;
+    author: () => cyfs.ObjectId | undefined;
     public_key: () => cyfs.PublicKey | undefined;
     mn_key: () => cyfs.MNPublicKey | undefined;
     raw_measure: (
@@ -80,10 +77,10 @@ export interface AsObjectBody {
     toString: () => string;
     set_trace_id: (trace: number) => void;
     trace_id: () => number | undefined;
-    prev_version: () => cyfs.Option<cyfs.HashValue>;
+    prev_version: () => cyfs.HashValue | undefined;
     update_time: () => cyfs.JSBI;
     content: () => AsObjectBodyContent;
-    user_data: () => cyfs.Option<Uint8Array>;
+    user_data: () => Uint8Array | undefined;
     set_update_time: (value: cyfs.JSBI) => void;
     increase_update_time: (value: cyfs.JSBI) => void;
     set_userdata: (user_data: Uint8Array) => void;
@@ -110,11 +107,11 @@ export interface AsObject {
     to_string: () => string;
     toJSON: () => string;
     desc: () => AsObjectDesc;
-    body: () => cyfs.Option<AsObjectBody>;
+    body: () => AsObjectBody | undefined;
     body_expect: () => AsObjectBody;
     signs: () => cyfs.ObjectSigns;
-    nonce: () => cyfs.Option<cyfs.JSBI>;
-    raw_measure: (_ctx?: any, purpose?: cyfs.RawEncodePurpose) => cyfs.BuckyResult<number>;
+    nonce: () => cyfs.JSBI | undefined;
+    raw_measure: (_ctx?: unknown, purpose?: cyfs.RawEncodePurpose) => cyfs.BuckyResult<number>;
     raw_encode: (
         buf: Uint8Array,
         ctx?: cyfs.NamedObjectContext,
