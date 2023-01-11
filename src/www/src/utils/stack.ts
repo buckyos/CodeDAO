@@ -9,11 +9,6 @@ import {
     JSBI
 } from 'cyfs-sdk';
 
-export const stack = (function () {
-    console.log('www open_runtime');
-    return SharedCyfsStack.open_runtime();
-})();
-
 // Simulator debugging
 // export let stack: SharedCyfsStack;
 // // you can get from code-dao-service console,such as `get cyfs-git dec app id: 9tGpLNnSSRzEN5gRmdB77yTtmdsFMqzs3U9z2QWEuDDK`
@@ -59,6 +54,11 @@ const [appID] = (function () {
     return [dev_id];
 })();
 
+export const stack = (function () {
+    console.log('www open_runtime');
+    return SharedCyfsStack.open_runtime(appID);
+})();
+
 class StackInfo {
     // @var current runtime device id
     device_id: DeviceId;
@@ -101,7 +101,7 @@ class StackInfo {
         // ;(console as any).origin.log('init', JSON.stringify(deviceResp), JSON.stringify(staticInfo))
 
         this.device_id = deviceResp.device_id;
-        this.owner = deviceResp.device.desc().owner()!.unwrap();
+        this.owner = deviceResp.device.desc().owner()!;
 
         this.ood_device_id = staticInfo.info.ood_device_id;
         this.cyfs_root = staticInfo.info.cyfs_root;
